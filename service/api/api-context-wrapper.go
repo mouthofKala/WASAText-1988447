@@ -1,18 +1,22 @@
 package api
 
 import (
+	"net/http"
+
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
-// httpRouterHandler is the signature for functions that accepts a reqcontext.RequestContext in addition to those
+// httpRouterHandler is used for functions that accept a reqcontext.
+//RequestContext is used to add to the context params
 // required by the httprouter package.
+
 type httpRouterHandler func(http.ResponseWriter, *http.Request, httprouter.Params, reqcontext.RequestContext)
 
 // wrap parses the request and adds a reqcontext.RequestContext instance related to the request.
+
 func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		reqUUID, err := uuid.NewV4()

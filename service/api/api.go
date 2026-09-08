@@ -38,10 +38,12 @@ package api
 
 import (
 	"errors"
+	"net/http"
+
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/storage"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 // Config is used to provide dependencies and configuration to the New function.
@@ -51,6 +53,8 @@ type Config struct {
 
 	// Database is the instance of database.AppDatabase where data are saved
 	Database database.AppDatabase
+
+	Storage *storage.Storage
 }
 
 // Router is the package API interface representing an API handler builder
@@ -72,6 +76,10 @@ func New(cfg Config) (Router, error) {
 		return nil, errors.New("database is required")
 	}
 
+	if cfg.Storage == nil {
+		return nil, errors.New("storage is required")
+	}
+
 	// Create a new router where we will register HTTP endpoints. The server will pass requests to this router to be
 	// handled.
 	router := httprouter.New()
@@ -82,15 +90,42 @@ func New(cfg Config) (Router, error) {
 		router:     router,
 		baseLogger: cfg.Logger,
 		db:         cfg.Database,
+		storage:    cfg.Storage,
 	}, nil
 }
 
 type _router struct {
 	router *httprouter.Router
-
-	// baseLogger is a logger for non-requests contexts, like goroutines or background tasks not started by a request.
-	// Use context logger if available (e.g., in requests) instead of this logger.
+	//for non-requests contexts, ex. goroutines, background tasks
+	//not started by a request. Use context logger if available
+	//(e.g., in requests) instead of this logger.
+	storage    *storage.Storage
 	baseLogger logrus.FieldLogger
+	db         database.AppDatabase
+}
 
-	db database.AppDatabase
+var emojiList = map[rune]bool{
+	'😀': true,
+	'😆': true,
+	'😁': true,
+	'😉': true,
+	'😇': true,
+	'😍': true,
+	'🥰': true,
+	'😚': true,
+	'😝': true,
+	'🤔': true,
+	'🤫': true,
+	'😐': true,
+	'😬': true,
+	'😏': true,
+	'🙄': true,
+	'😔': true,
+	'😎': true,
+	'🤓': true,
+	'😭': true,
+	'😱': true,
+	'😮': true,
+	'💀': true,
+	'😡': true,
 }

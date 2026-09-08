@@ -1,6 +1,6 @@
 module git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated
 
-go 1.17
+go 1.26.6
 
 require (
 	github.com/ardanlabs/conf v1.5.0

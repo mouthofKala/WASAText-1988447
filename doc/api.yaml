@@ -12,7 +12,7 @@ info:
   version: 1.0.0
 security:
   - BearerAuth: []
-
+#18---------------------------------------------------------------------------------------------------
 paths:
   /status:
     parameters:
@@ -36,7 +36,6 @@ paths:
                 $ref: "#/components/schemas/StatusInfo"
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-
   /session: 
     post:
       tags: ["login"]
@@ -72,14 +71,15 @@ paths:
                   identifier:
                     type: string
                     example: "gugugaga555"
-
+        '400': {$ref: "#/components/responses/BadRequest"}
+        '500': {$ref: "#/components/responses/InternalServerError"}
 
   /users:
     get:
       operationId: searchUsers
       parameters:
         - in: query
-          name: username
+          name: searchkey
           required: false
           schema:
             type: string
@@ -127,9 +127,9 @@ paths:
               schema:
                 type: object
                 required:
-                  - name
+                  - targetusername
                 properties:
-                  name:
+                  targetusername:
                     type: string
                     example: Maria03
                     minLength: 3
@@ -142,7 +142,6 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
         "409":
           description: username already in use
-
 
   /profile/photo:
     put:
@@ -180,7 +179,6 @@ paths:
                   $ref: "#/components/schemas/Chat"
         '204':
           description: you have no chats :(
-        '400': {$ref: "#/components/responses/BadRequest"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     post: 
@@ -193,10 +191,17 @@ paths:
             schema:
               type: object
               required:
-                - userID
+                - members
               properties:
-                userID:
+                chatName:
                   type: string
+                photo:
+                  type: string
+                  format: uri
+                members:
+                  type: array
+                  items:
+                    type: string
       responses:
         '201':
           description: made a new chat
@@ -212,15 +217,16 @@ paths:
                 chatID: $response.body#/chatID
         '400': {$ref: "#/components/responses/BadRequest"}
         '409':
-          description: convo with this user exists already
+          description: convo with this user/group exists already
         '500': {$ref: "#/components/responses/InternalServerError"}
 
 
-
-  /chats/groups:
+  /chats/groups: 
     post: 
       operationId: makeGroup
-      description: makes a new group, returns a chat. requesting user automatically added
+      description: |-
+        makes a new group, returns a chat.
+        requesting user added to members by api handler
       requestBody:
         required: true
         content: 
@@ -247,21 +253,26 @@ paths:
         '500': {$ref: "#/components/responses/InternalServerError"}
 
 
-  /chats/{chatID}/memberslist/me:
+  /chats/{chatID}/members/me:
     delete:
       operationId: leaveGroup
-      summary: also works for chats
+      summary: |-
+        Can work for both chats and groups because the case 
+        where you leave a group and it remains with one member
+        creates no conflict with self private chats.
       responses:
         '204':
           description: left group
         '400': {$ref: "#/components/responses/BadRequest"}
+        '403':
+          description: user not in group/chat
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     parameters:
       - $ref: "#/components/parameters/chatID"
 
-  /chats/{chatID}/memberslist:
-    put:
+  /chats/{chatID}/members:
+    post:
       operationId: addToGroup
       requestBody:
         required: true
@@ -270,9 +281,12 @@ paths:
             schema:
               type: object
               required:
-                - userID
+                - targetusername
+                - groupID
               properties:
-                userID:
+                targetusername:
+                  type: string
+                groupID:
                   type: string
       responses:
         '200':
@@ -283,7 +297,7 @@ paths:
                 $ref: "#/components/schemas/Chat"
         '400': {$ref: "#/components/responses/BadRequest"}
         '403':
-          description: unauthorised to add other members #we'll see if it's needed
+          description: unauthorised to add other members
         "409":
           description: User is already a member of the group
         '500': {$ref: "#/components/responses/InternalServerError"}
@@ -348,6 +362,7 @@ paths:
                   $ref: "#/components/schemas/Message"
         '400': {$ref: "#/components/responses/BadRequest"}
         '500': {$ref: "#/components/responses/InternalServerError"}
+
     post:
       operationId: sendMessage
       description: sends a message containing text and/or an image
@@ -395,11 +410,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Message"
+        '400': {$ref: "#/components/responses/BadRequest"}
+        '500': {$ref: "#/components/responses/InternalServerError"}
+
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
 
-  /chats/{chatID}/messages/{messageID}:
+
     delete:
       operationId: deleteMessage
       responses:
@@ -437,15 +455,15 @@ paths:
                 reactionID: $response.body#/reactionID
                 messageID: $request.path.messageID
                 chatID: $request.path.chatID
-
         '400': {$ref: "#/components/responses/BadRequest"}
         '409':
-          description: cannot react more than once!
+          description: cannot react more than once! #worth deleting as to allow changing reaction
+        '403':
+          description: user is not in chat 
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
-
 
   /chats/{chatID}/messages/{messageID}/reactions/{reactionID}:
     delete:
@@ -616,6 +634,7 @@ components:
           enum:
             - text
             - photo
+            - text photo
         timestamp:
           type: string
           format: date-time
