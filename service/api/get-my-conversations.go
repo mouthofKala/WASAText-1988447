@@ -12,7 +12,6 @@ import (
 func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID := ctx.UserID
 	chats, err := rt.db.GetMyConversations(userID)
-
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error fetching chats")
 		http.Error(w, database.ISE, http.StatusInternalServerError) //is this right/where do bad requests go?
@@ -24,7 +23,7 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 		return
 	}
 
-	//now read chats and send them in json, error 500 if fail
+	//now read chats and send them in json
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(chats); err != nil {
 		ctx.Logger.WithError(err).Error("error encoding chats")

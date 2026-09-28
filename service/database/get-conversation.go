@@ -22,6 +22,10 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 		&convo.Chat.Photo,
 	)
 
+	if convo.Chat.ChatID == "" {
+		return Conversation{}, ErrFetchingChat
+	}
+
 	if err != nil {
 		return Conversation{}, err //generic 500
 	}

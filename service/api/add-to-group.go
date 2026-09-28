@@ -35,7 +35,7 @@ func (rt *_router) addToGroup(
 	}
 	if err == database.ErrNotaGroup {
 		ctx.Logger.WithError(err).Error("forbidden: can't add members to a private chat")
-		http.Error(w, "forbidden: can't add members to private chats", http.StatusForbidden)
+		http.Error(w, database.F, http.StatusForbidden)
 		return
 	}
 	if err == database.ErrBadReq {

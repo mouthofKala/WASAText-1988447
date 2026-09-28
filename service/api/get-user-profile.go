@@ -20,6 +20,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 			http.Error(w, database.NF, http.StatusNotFound)
 			return
 		}
+		//ADD 400 ERROR------------------------------------
 
 		ctx.Logger.WithError(err).Error("error fetching user")
 		http.Error(w, database.ISE, http.StatusInternalServerError)

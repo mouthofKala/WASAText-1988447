@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -15,8 +14,7 @@ func (rt *_router) getConversation(w http.ResponseWriter, r *http.Request, ps ht
 	chatID := ps.ByName("chatID")
 
 	convo, err := rt.db.GetConversation(userID, chatID)
-
-	if err == sql.ErrNoRows {
+	if err == database.ErrFetchingChat {
 		ctx.Logger.WithError(err).Error("chat not found or user not authorised")
 		http.Error(w, database.NF, http.StatusNotFound)
 		return

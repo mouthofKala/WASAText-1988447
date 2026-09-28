@@ -12,7 +12,24 @@ info:
   version: 1.0.0
 security:
   - BearerAuth: []
-#18---------------------------------------------------------------------------------------------------
+
+
+tags:
+  - name: login
+    description: ops related to login or account creation
+  - name: chatlvl
+    description: ops on one chat/group
+  - name: msglvl
+    description: ops on a single message
+  - name: pfl
+    description: ops on one's or someone else's profile
+  - name: user
+    description: ops on a user
+  - name: reac
+    description: op on a reaction
+  - name: General
+    description: app updates, generic info
+
 paths:
   /status:
     parameters:
@@ -51,11 +68,13 @@ paths:
           application/json:
             schema:
               type: object
+              description: request contains the userID of the requestor
               required:
                 - name
               properties:
                 name:
                   type: string
+                  description: unique alphanum username
                   example: Maria02
                   minLength: 3
                   maxLength: 16
@@ -67,9 +86,12 @@ paths:
             application/json:
               schema:
                 type: object
+                description: bearer authentication identifier
                 properties:
                   identifier:
                     type: string
+                    description: identifier of auth user
+                    pattern: '^[a-zA-Z0-9]+$'
                     example: "gugugaga555"
         '400': {$ref: "#/components/responses/BadRequest"}
         '500': {$ref: "#/components/responses/InternalServerError"}
@@ -77,12 +99,20 @@ paths:
   /users:
     get:
       operationId: searchUsers
+      summary: finds users based on search key
+      description: finds all users that contain the search key (case-sensitive), returns a list of users
+      tags: ["user"]
       parameters:
         - in: query
           name: searchkey
           required: false
+          description: part or whole username to look for
           schema:
             type: string
+            pattern: '^[a-zA-Z0-9]+$'
+            minLength: 1
+            maxLength: 16
+
       responses:
         '200':
           description: user list found
@@ -90,17 +120,19 @@ paths:
             application/json:
               schema:
                 type: array
+                description: list of users that match the search key
                 items:
                   $ref: "#/components/schemas/User"
-        '204':
-          description: 'No users found with this key'
+        '204': { $ref: "#/components/responses/NoContent"}
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}:
     get:
       operationId: getUserProfile
-      description: gets user info, including oneself
+      summary: gets user info, including oneself
+      tags: ["user"]
+      description: fetches username and profile picture, returns bad req if user is not found
       responses:
         '200':
           description: 'user info'
@@ -109,65 +141,74 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound"}
         "500": { $ref: "#/components/responses/InternalServerError" }
     parameters:
       - $ref: "#/components/parameters/userID"
 
   /profile/username:
     put:
-      tags: ["username setting"]
       operationId: setMyUserName
+      tags: ["user", "pfl"]
+      summary: change username
       description: |-
         Modifies current username to another unique alphanum string
         chosen by the user
       requestBody:
         required: true
+        description: new username for auth user
         content:
             application/json:
               schema:
                 type: object
+                description: req containing new username to apply to auth user
                 required:
                   - targetusername
                 properties:
                   targetusername:
                     type: string
+                    description: new username
                     example: Maria03
                     minLength: 3
                     maxLength: 16
                     pattern: '^[a-zA-Z0-9]+$'
       responses:
-        '204':
-          description: 'username change successful'
+        '204': { $ref: "#/components/responses/NoContent" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/Conflict" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-        "409":
-          description: username already in use
+
 
   /profile/photo:
     put:
-      tags: ["pfp setting"]
       operationId: setMyPhoto
+      tags: ["pfl"]
+      summary: changes one's profile picture
       description: |-
-        Modifies current profile photo to another. When user deletes
-        their own photo/chooses not to have one, use a black or white
-        picture
+        Modifies current profile photo to another. Optional feature: when
+        user deletes their own photo/chooses not to have one, use a black
+        or white picture
       requestBody:
         content:
             image/jpeg:
               schema:
                 type: string
+                description: the image file of the new profile picture
                 format: binary
         required: true
       responses:
-        '204':
-          description: 'photo change successful'
+        '204': { $ref: "#/components/responses/NoContent"}
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /chats:
     get:
       operationId: getMyConversations
-      description: returns all chats in reverse chronological order
+      tags: ["chatlvl"]
+      summary: gets one's conversations in a list
+      description: |-
+        returns all chats in reverse chronological order, along with the
+        latest message preview and timestamp
       responses:
         '200':
           description: list of conversations
@@ -175,26 +216,32 @@ paths:
             application/json:
               schema:
                 type: array
+                description: user's chat list 
                 items:
                   $ref: "#/components/schemas/Chat"
-        '204':
-          description: you have no chats :(
+        '204': {$ref: "#/components/responses/NoContent"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     post: 
       operationId: makeChat
-      description: makes a new chat, returns the chat
+      tags: ["chatlvl"]
+      summary: create a new chat
+      description: |- 
+        returns the chat if successful. (check that, if chat  already
+        exists, it doesn't do anything but returns that chat)
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              description: list of (2) members in the private chat to-be
               required:
                 - members
               properties:
                 chatName:
                   type: string
+                  pattern: '^[a-zA-Z0-9]+'
                 photo:
                   type: string
                   format: uri
@@ -202,6 +249,7 @@ paths:
                   type: array
                   items:
                     type: string
+                    pattern: '^[a-zA-Z0-9]+'
       responses:
         '201':
           description: made a new chat
@@ -224,15 +272,19 @@ paths:
   /chats/groups: 
     post: 
       operationId: makeGroup
+      tags: ["chatlvl"]
+      summary: create a new group
       description: |-
         makes a new group, returns a chat.
         requesting user added to members by api handler
+        CHECK: do I use addmember in this func?
       requestBody:
         required: true
         content: 
           application/json:
             schema:
               type: object
+              description: list of (2 or more) users for the group
               required:
                 - members
                 - groupname
@@ -241,8 +293,10 @@ paths:
                   type: array
                   items:
                     type: string
+                    pattern: '^[a-zA-Z0-9]+'
                 groupname:
                   type: string
+                  pattern: '^[a-zA-Z0-9]+'
       responses:
         '201':
           description: made a new group
@@ -256,16 +310,17 @@ paths:
   /chats/{chatID}/members/me:
     delete:
       operationId: leaveGroup
-      summary: |-
+      tags: ["chatlvl"]
+      summary: leave a group or chat
+      description: |-
         Can work for both chats and groups because the case 
         where you leave a group and it remains with one member
-        creates no conflict with self private chats.
+        creates no conflict with self private chats, as groups are NOT
+        unique
       responses:
-        '204':
-          description: left group
+        '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: user not in group/chat
+        '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     parameters:
@@ -274,20 +329,28 @@ paths:
   /chats/{chatID}/members:
     post:
       operationId: addToGroup
+      summary: add a member to a group
+      description: |-
+        TODO: check if I have covered multimember adding
+        adds one or multiple users to an existing group 
+      tags: ["chatlvl"]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              description: username(s) to add to groupID
               required:
                 - targetusername
                 - groupID
               properties:
                 targetusername:
                   type: string
+                  pattern: '^[a-zA-Z0-9]+'
                 groupID:
                   type: string
+                  pattern: '^[a-zA-Z0-9]+$'
       responses:
         '200':
           description: new member added
@@ -295,11 +358,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Chat"
-        '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: unauthorised to add other members
-        "409":
-          description: User is already a member of the group
+        '400': {$ref: "#/components/responses/BadRequest"} #or user already iin group
+        '403': {$ref: "#/components/responses/Forbidden"} 
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
@@ -307,6 +367,9 @@ paths:
   /chats/groups/{chatID}/photo:
     put: 
       operationId: setGroupPhoto
+      summary: modify current group photo
+      description: deletes old group photo from db and adds to db the new one
+      tags: ["chatlvl"]
       requestBody:
         required: true
         content:
@@ -315,13 +378,10 @@ paths:
               type: string
               format: binary
       responses:
-        '200':
-          description: groupchat picture updated
+        '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: only admins can change the groupchat profile picture
-        '404':
-          description: groupchat does not exist
+        '403': {$ref: "#/components/responses/Forbidden"}
+        '404': {$ref: "#/components/responses/NotFound"}
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
@@ -329,20 +389,25 @@ paths:
   /chats/groups/{chatID}/groupname:
     put: 
       operationId: setGroupName
+      summary: modifies current group name
+      description: changes db entry on group name
+      tags: ["chatlvl"]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: string
+              description: the new name for the groupname, and the groupID
+              #CORRECT STRUCTURE HERE!
+              pattern: '^[a-zA-Z0-9]+'
               minLength: 1
               maxLength: 50
       responses:
-        '200':
-          description: groupchat name updated
+        '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: only admins can change the groupchat name
+        '403': {$ref: "#/components/responses/Forbidden"}
+        '404': {$ref: "#/components/responses/NotFound"}
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
@@ -350,7 +415,9 @@ paths:
   /chats/{chatID}/messages:
     get:
       operationId: getConversation
-      description: returns all msgs in reverse chronological order
+      tags: ["chatlvl"]
+      summary: returns a single group or chat's msg list
+      description: returns all msgs in reverse chronological order (older messages are at the top)
       responses:
         '200':
           description: convo retrieved
@@ -358,6 +425,7 @@ paths:
             application/json:
               schema:
                 type: array
+                description: list of messages in chat
                 items:
                   $ref: "#/components/schemas/Message"
         '400': {$ref: "#/components/responses/BadRequest"}
@@ -365,12 +433,18 @@ paths:
 
     post:
       operationId: sendMessage
-      description: sends a message containing text and/or an image
+      tags: ["msglvl"]
+      summary: sned a message containing text, image or both
+      description: |-
+        creates a message to store both in a db entry and in memory, both
+        text and image
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
+              description: a message with text, photo or both
+              #CORRECT BELOW!!!!
               oneOf:
                 - $ref: "#/components/schemas/SendMessageReq"
                 - $ref: "#/components/schemas/SendPhotoMessageReq"
@@ -383,25 +457,46 @@ paths:
                 $ref: "#/components/schemas/Message"
 
         '400': {$ref: "#/components/responses/BadRequest"}
+        '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters: 
     - $ref: "#/components/parameters/chatID"
 
+  /chats/{chatID}/messages/{messageID}:
+    delete:
+      operationId: deleteMessage
+      summary: deletes a message for every member of a chat or group
+      description: |-
+        deletes db entry, image and message text from memory
+      tags: ["msglvl"]
+      responses:
+        '204': {$ref: "#/components/responses/NoContent"}
+        '400': {$ref: "#/components/responses/BadRequest"}
+        '403': {$ref: "#/components/responses/Forbidden"}
+        '500': {$ref: "#/components/responses/InternalServerError"}
+    parameters:
+      - $ref: "#/components/parameters/chatID"
+      - $ref: "#/components/parameters/messageID"
+
   /chats/{chatID}/messages/{messageID}/forward:
     post:
       operationId: forwardMessage
-      description: forwards messageID to destinationChatID
+      summary: message forward
+      tags: ["msglvl"]
+      description: forwards messageID to destinationChatID. allowed across all chats and groups
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              description: msg ID of the msg to be forwarded
               required:
                 - destinationChatID
               properties:
                 destinationChatID:
                   type: string
+                  pattern: '^[a-zA-Z0-9]+$'
                   description: ID of the chat the msg is being fwd to
       responses:
         '201':
@@ -410,23 +505,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Message"
-        '400': {$ref: "#/components/responses/BadRequest"}
+        '400': {$ref: "#/components/responses/BadRequest"} #target userid does not exist?
+        '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
-    parameters:
-      - $ref: "#/components/parameters/chatID"
-      - $ref: "#/components/parameters/messageID"
-
-
-    delete:
-      operationId: deleteMessage
-      responses:
-        '204':
-          description: msg deleted
-        '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: user is not the sender of this msg
-        '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
@@ -434,6 +516,9 @@ paths:
   /chats/{chatID}/messages/{messageID}/reactions:
     post:
       operationId: commentMessage
+      summary: adds a reaction to a message
+      description: one reaction per user
+      tags: ["reac"]
       requestBody:
         required: true
         content:
@@ -456,10 +541,8 @@ paths:
                 messageID: $request.path.messageID
                 chatID: $request.path.chatID
         '400': {$ref: "#/components/responses/BadRequest"}
-        '409':
-          description: cannot react more than once! #worth deleting as to allow changing reaction
-        '403':
-          description: user is not in chat 
+        #DELETED 409!
+        '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
     parameters:
       - $ref: "#/components/parameters/chatID"
@@ -468,12 +551,13 @@ paths:
   /chats/{chatID}/messages/{messageID}/reactions/{reactionID}:
     delete:
       operationId: uncommentMessage
+      summary: removes own reaction to a message
+      description: idempotent, removing again does nothing
+      tags: ["reac"]
       responses:
-        '204':
-          description: reaction removed
+        '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
-        '403':
-          description: user is not the owner of this reaction
+        '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     parameters:
@@ -486,18 +570,22 @@ components:
   schemas:
     SendMessageReq:
       type: object
+      description: the request body for sending or forwarding a message
       required:
         - content
       properties:
         content:
           type: string
+          pattern: '^[a-zA-Z0-9]+$'
           minLength: 1
           maxLength: 20000
-        replyTo:
+        replyTo: #should be a num? since it should be a userID?
           type: string
+          pattern: '^[a-zA-Z0-9]+$'
 
     SendPhotoMessageReq:
       type: object
+      description: the request body for sending or forwarding a picture message
       required:
         - photo
       properties:
@@ -506,8 +594,10 @@ components:
           format: binary
         replyTo:
           type: string
+          format: uuid
     Chat:
       type: object
+      description: the set of attributes making up a chat
       required:
         - chatID
         - groupORchat
@@ -517,6 +607,7 @@ components:
       properties:
         chatID:
           type: string
+          format: uuid
         groupORchat:
           type: string
           enum:
@@ -524,11 +615,13 @@ components:
             - group
         chatName:
           type: string
+          pattern: '^[a-zA-Z0-9]+$'
           description: username if private, groupname if group
         members:
           type: array
           items:
             type: string
+            format: uuid
         creationDate:
           type: string
           format: date-time
@@ -556,12 +649,14 @@ components:
         username:
           description: unique username, alphanumeric
           type: string
+          pattern: '^[a-zA-Z0-9]+'
           example: Maria02
           minLength: 3
           maxLength: 16
           readOnly: true
         userID:
           type: string
+          format: uuid
           example: ggfvg255
 
     Message:
@@ -581,14 +676,17 @@ components:
       properties:
         messageID:
           type: string
+          format: uuid
         senderID:
           description: userID of the msg sender
           type: string
+          format: uuid
         content:
           description: |-
             the word contents of the message, can be none if
             sending a picture
           type: string
+          pattern: '^[a-zA-Z0-9]+$'
         photo:
           type: string
           format: uri
@@ -607,6 +705,7 @@ components:
             $ref: "#/components/schemas/Reaction"
         replyTo:
           type: string
+          format: uuid
           description: |-
             must contain the msg ID you're replying to. needed
             for backend to load msg preview!
@@ -626,9 +725,11 @@ components:
       properties:
         senderID:
           type: string
+          format: uuid
         content:
           description: text of msg, absent when msg is img-only
           type: string
+          pattern: '^[a-zA-Z0-9]+$'
         contentType:
           type: string
           enum:
@@ -640,6 +741,7 @@ components:
           format: date-time
         messageID:
           type: string
+          format: uuid
 
     Reaction:
       description: |-
@@ -653,13 +755,17 @@ components:
       properties:
         userID:
           type: string
+          format: uuid
         emoji:
           type: string
+          maxLength: 1
         reactionID:
           type: string
+          format: uuid
     StatusInfo:
       title: Status Info
       type: object
+      description: state of the app, regarding updates
       properties:
         status:
           type: string
@@ -672,11 +778,46 @@ components:
         url: { type: string }
 
   responses:
-    Unauthorized:
+    Unauthorized: #401 Currently unused
       description: access token missing or expired
-    BadRequest:
-      description: request not compliant with documentation
-    InternalServerError:
+      content:
+        application/json:
+          schema:
+            type: object
+            description: error info
+            properties:
+              message:
+                type: string
+                description: 401 Unauthorised #????????????????
+
+    BadRequest: #400
+      description: request not compliant with app behaviour/needs
+      content:
+        application/json:
+          schema:
+            type: object
+            description: error info
+            properties:
+              message:
+                type: string
+                description: bad req
+
+    Forbidden:
+      description: no auth for user to commit this action
+
+    NoContent: #204
+      description: success, no content
+
+
+    NotFound: #404
+      description: requested resource not found
+
+
+    Conflict: #409
+      description: resource with same key already exists
+
+    
+    InternalServerError: #500
       description: server had an internal error. More info in server logs
 
   securitySchemes:

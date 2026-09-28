@@ -60,4 +60,6 @@ func (rt *_router) leaveGroup(
 		}
 	}
 
+	w.WriteHeader(http.StatusNoContent)
+
 }
