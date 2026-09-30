@@ -167,7 +167,7 @@ paths:
                 properties:
                   targetusername:
                     type: string
-                    description: new username
+                    description: new (unique) username
                     example: Maria03
                     minLength: 3
                     maxLength: 16
@@ -189,13 +189,14 @@ paths:
         user deletes their own photo/chooses not to have one, use a black
         or white picture
       requestBody:
+        description: (jpg?) img to use as new pfp picture
+        required: true
         content:
             image/jpeg:
               schema:
                 type: string
                 description: the image file of the new profile picture
                 format: binary
-        required: true
       responses:
         '204': { $ref: "#/components/responses/NoContent"}
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -216,7 +217,10 @@ paths:
             application/json:
               schema:
                 type: array
-                description: user's chat list 
+                description: list of chats belonging to user
+                minItems: 1
+                maxItems: 200
+                #should add a check in backend's makechat and makegroup
                 items:
                   $ref: "#/components/schemas/Chat"
         '204': {$ref: "#/components/responses/NoContent"}
@@ -231,6 +235,7 @@ paths:
         exists, it doesn't do anything but returns that chat)
       requestBody:
         required: true
+        description: members of the private chat to-be
         content:
           application/json:
             schema:
@@ -239,17 +244,20 @@ paths:
               required:
                 - members
               properties:
-                chatName:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+'
-                photo:
-                  type: string
-                  format: uri
+                #removed chatname and photo bc they will be handled by frontend!
                 members:
                   type: array
+                  description: userIDs of the chat members
+                  minItems: 2
+                  maxItems: 2
                   items:
                     type: string
-                    pattern: '^[a-zA-Z0-9]+'
+                    format: uuid
+                    minLength: 36
+                    maxLength: 36
+                    description: userID of a chat member
+                    pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+
       responses:
         '201':
           description: made a new chat
@@ -280,6 +288,7 @@ paths:
         CHECK: do I use addmember in this func?
       requestBody:
         required: true
+        description: list of new group members and group name
         content: 
           application/json:
             schema:
@@ -291,12 +300,20 @@ paths:
               properties:
                 members:
                   type: array
+                  description: list of the members
+                  minItems: 1
+                  maxItems: 250
                   items:
                     type: string
-                    pattern: '^[a-zA-Z0-9]+'
+                    format: uuid
+                    description: uderID of each group membr
+                    pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
                 groupname:
                   type: string
-                  pattern: '^[a-zA-Z0-9]+'
+                  description: name of the new group
+                  pattern: '^[a-zA-Z0-9]+$'
+                  minLength: 1
+                  maxLength: 40
       responses:
         '201':
           description: made a new group
@@ -331,11 +348,11 @@ paths:
       operationId: addToGroup
       summary: add a member to a group
       description: |-
-        TODO: check if I have covered multimember adding
         adds one or multiple users to an existing group 
       tags: ["chatlvl"]
       requestBody:
         required: true
+        description: userID(s) of the user(s) to add to the group
         content:
           application/json:
             schema:
@@ -343,14 +360,19 @@ paths:
               description: username(s) to add to groupID
               required:
                 - targetusername
-                - groupID
               properties:
                 targetusername:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+'
-                groupID:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+$'
+                  type: array
+                  description: usernames of the users to be added
+                  minItems: 1
+                  maxItems: 249
+                  items:
+                    type: string
+                    description: username of the user to be added
+                    pattern: '^[a-zA-Z0-9]+$'
+                    minLength: 3
+                    maxLength: 16
+                  #removed groupID to clear up the routing architecture
       responses:
         '200':
           description: new member added
@@ -368,15 +390,17 @@ paths:
     put: 
       operationId: setGroupPhoto
       summary: modify current group photo
-      description: deletes old group photo from db and adds to db the new one
+      description: deletes old group photo from db and mem and adds to db the new one
       tags: ["chatlvl"]
       requestBody:
         required: true
+        description: new image to set as group photo
         content:
           image/jpeg:
             schema:
               type: string
               format: binary
+              description: image file of the new group picture
       responses:
         '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
@@ -394,15 +418,16 @@ paths:
       tags: ["chatlvl"]
       requestBody:
         required: true
+        description: new (alphanum) group name
         content:
           application/json:
             schema:
               type: string
-              description: the new name for the groupname, and the groupID
-              #CORRECT STRUCTURE HERE!
-              pattern: '^[a-zA-Z0-9]+'
+              description: the new name for the groupname
+              #no need for groupID it's in addr
+              pattern: '^[a-zA-Z0-9]+$'
               minLength: 1
-              maxLength: 50
+              maxLength: 40
       responses:
         '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
@@ -426,6 +451,8 @@ paths:
               schema:
                 type: array
                 description: list of messages in chat
+                minItems: 1
+                maxItems: 1000 #might need more?
                 items:
                   $ref: "#/components/schemas/Message"
         '400': {$ref: "#/components/responses/BadRequest"}
@@ -440,14 +467,14 @@ paths:
         text and image
       requestBody:
         required: true
+        description: msg containing txt, img or both
         content:
           multipart/form-data:
             schema:
-              description: a message with text, photo or both
-              #CORRECT BELOW!!!!
               oneOf:
                 - $ref: "#/components/schemas/SendMessageReq"
                 - $ref: "#/components/schemas/SendPhotoMessageReq"
+                - $ref: "#/components/schemas/SendTxtPhotoMessageReq"
       responses:
         '201':
           description: message sent
@@ -486,17 +513,19 @@ paths:
       description: forwards messageID to destinationChatID. allowed across all chats and groups
       requestBody:
         required: true
+        description: request containing destinationchatID
         content:
           application/json:
             schema:
               type: object
-              description: msg ID of the msg to be forwarded
+              description: req containing the id of the chat to forward to
               required:
                 - destinationChatID
               properties:
                 destinationChatID:
                   type: string
-                  pattern: '^[a-zA-Z0-9]+$'
+                  format: uuid
+                  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
                   description: ID of the chat the msg is being fwd to
       responses:
         '201':
@@ -576,12 +605,16 @@ components:
       properties:
         content:
           type: string
-          pattern: '^[a-zA-Z0-9]+$'
+          pattern: '^[\s\S]+$'
           minLength: 1
           maxLength: 20000
-        replyTo: #should be a num? since it should be a userID?
+        replyTo: 
           type: string
-          pattern: '^[a-zA-Z0-9]+$'
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          description: optional ID of an id a user may be replying to
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
 
     SendPhotoMessageReq:
       type: object
@@ -592,9 +625,38 @@ components:
         photo:
           type: string
           format: binary
+          minLength: 1
+          maxLength: 10485760 
+          description:  image file to be sent
         replyTo:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+          description: (optional) msgID of the msg being replied to
+    SendTxtPhotoMessageReq:
+      type: object
+      description: req body for messages with both text and img
+      required:
+        - content
+        - photo
+      properties:
+        content:
+          type: string
+          pattern: '^[\s\S]+$'
+          minLength: 1
+          maxLength: 20000
+          description: text caption for the message
+        photo:
+          type: string
+          description: image to be sent
+          format: binary
+          minLength: 1
+          maxLength: 10485760
+
+          #--------------------------------------------------------------
+
     Chat:
       type: object
       description: the set of attributes making up a chat
@@ -608,27 +670,42 @@ components:
         chatID:
           type: string
           format: uuid
-        groupORchat:
-          type: string
-          enum:
-            - private
-            - group
+          minLength: 36
+          maxLength: 36
+          description: unique identifier of the chat
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         chatName:
           type: string
+          description: if private, not needed (frontend will display name of the other user), otherwise an alphanum representing the name of a group
+          minLength: 1
+          maxLength: 50
           pattern: '^[a-zA-Z0-9]+$'
-          description: username if private, groupname if group
         members:
           type: array
+          description: userIDs of the members belonging to a chat or group
+          minItems: 1
+          maxItems: 100
           items:
             type: string
             format: uuid
+            minLength: 36
+            maxLength: 36
+            description: userID of a member
+            pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         creationDate:
           type: string
           format: date-time
+          minLength: 1
+          maxLength: 64
+          description: date and time of chat creation
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
         photo:
-          description: the profile picture of the user you are chatting with, or an image chosen for the group
           type: string
           format: uri
+          minLength: 1
+          maxLength: 2048
+          description: pfp uri for a group, absent if private chat (frontend will show other user's pfp)
+          pattern: '^https?://.+$'
         mostrecentmsg:
           $ref: "#/components/schemas/MessagePreview"
 
@@ -636,20 +713,23 @@ components:
       title: user
       description: |-
         a generic user: can refer to oneself, or to other persons
-        perusing the app from any device.
+        perusing the app.
       type: object
       required:
         - username
         - userID
       properties:
         photo:
-          description: the profile picture of the user you are chatting with
+          description: uri of the profile picture of the user
           type: string
           format: uri
+          minLength: 1
+          maxLength: 2048
+          pattern: '^https?://.+$'
         username:
           description: unique username, alphanumeric
           type: string
-          pattern: '^[a-zA-Z0-9]+'
+          pattern: '^[a-zA-Z0-9]+$'
           example: Maria02
           minLength: 3
           maxLength: 16
@@ -657,41 +737,85 @@ components:
         userID:
           type: string
           format: uuid
-          example: ggfvg255
+          minLength: 36
+          maxLength: 36
+          description: unique id of a user
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
 
     Message:
       title: message
-      description: a single message from a user at a specific date-time
+      description: a single message from a user at a specific date-time (to a specific chat)
+      allOf:
+        - $ref: "#/components/schemas/MessageBase"
+        - oneOf:
+          - type: object
+            description: txt only message option
+            required:
+              - content
+            properties:
+              content:
+                type: string
+                description: text contents of msg
+                minLength: 1
+                maxLength: 20000
+                pattern: '^[\s\S]+$'
+          - type: object
+            description: img only msg option
+            required:
+              - photo
+            properties:
+              photo:
+                type: string
+                format: uri
+                minLength: 1
+                maxLength: 2048
+                description: uri of msg img
+                pattern: '^https?://.+$'
+          - type: object
+            description: text AND img option
+            required:
+              - content
+              - photo
+            properties:
+              content:
+                type: string
+                description: text contents of msg
+                minLength: 1
+                maxLength: 1000 #similar model to main texting apps
+                pattern: '^[\s\S]+$'
+              photo:
+                type: string
+                format: uri
+                minLength: 1
+                maxLength: 2048
+                description: uri of msg img
+                pattern: '^https?://.+$'
+    MessageBase:
       type: object
+      description: properties shared by all types of messages
       required:
         - messageID
         - senderID
         - status
         - timestamp
-      oneOf: 
-        - required:
-          - content
-        - required:
-          - photo
       properties:
         messageID:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          description: unique id of the message
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         senderID:
           description: userID of the msg sender
           type: string
           format: uuid
-        content:
-          description: |-
-            the word contents of the message, can be none if
-            sending a picture
-          type: string
-          pattern: '^[a-zA-Z0-9]+$'
-        photo:
-          type: string
-          format: uri
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         status:
           type: string
+          description: delivery status of msg, to be used by frontend to display different read receipt icons
           enum:
             - sent
             - delivered
@@ -699,23 +823,36 @@ components:
         timestamp:
           type: string
           format: date-time
+          minLength: 1
+          maxLength: 64
+          description: date and time of message being sent
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
         reactions:
           type: array
+          minItems: 0
+          maxItems: 100 
+          description: users' reaction added to the msg. maxitems=maxitems of members for a chat
           items:
             $ref: "#/components/schemas/Reaction"
         replyTo:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
           description: |-
-            must contain the msg ID you're replying to. needed
-            for backend to load msg preview!
+            must contain the msg ID you're replying to. 
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         fwdFrom:
           type: string
-          description: ID of the og msg that was fwd
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          description: ID of the user (or chat? figure it out) that was fwd 
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
     
     MessagePreview:
-      title: message
-      description: a single message from a user at a specific date-time
+      title: message preview
+      description: preview of the most recent msg in a conversation
       type: object
       required:
         - messageID
@@ -726,12 +863,19 @@ components:
         senderID:
           type: string
           format: uuid
+          description: userID of the msg sender
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         content:
           description: text of msg, absent when msg is img-only
           type: string
-          pattern: '^[a-zA-Z0-9]+$'
+          pattern: '^[\s\S]+$'
+          minLength: 1
+          maxLength: 20000 #maybe I should cut off the msg? or is it a frontend task?
         contentType:
           type: string
+          description: whether msg is text, photo or both
           enum:
             - text
             - photo
@@ -739,10 +883,17 @@ components:
         timestamp:
           type: string
           format: date-time
+          minLength: 1
+          maxLength: 64
+          description: time and date of sending the msg
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
         messageID:
           type: string
           format: uuid
-
+          minLength: 36
+          maxLength: 36
+          description: unique id of the msg
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
     Reaction:
       description: |-
         an emoticon added by a user (including oneself) at the foot of a message
@@ -756,26 +907,58 @@ components:
         userID:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          description: ID of the user owning the reaction
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         emoji:
           type: string
-          maxLength: 1
+          description: emoji used for the reaction
+          minLength: 1
+          maxLength: 8
+          pattern: '^.{1,8}$'
         reactionID:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          description: ID of the reaction
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
     StatusInfo:
       title: Status Info
       type: object
-      description: state of the app, regarding updates
+      description: state of the app, regarding updates and issues
+      required:
+        - status
+        - title
+        - message
       properties:
         status:
           type: string
+          description: severity of app status
           enum:
             - info
             - warning
             - critical
-        title: { type: string }
-        message: { type: string }
-        url: { type: string }
+        title:
+          type: string
+          description: short title of the status msg
+          minLength: 1
+          maxLength: 100
+          pattern: '^.+$'
+        message:
+          type: string
+          description: more detailed status msg
+          minLength: 1
+          maxLength: 1000
+          pattern: '^.+$'
+        url:
+          type: string
+          format: uri
+          description: optional url for more information
+          minLength: 1
+          maxLength: 2048
+          pattern: '^https://.+$'
 
   responses:
     Unauthorized: #401 Currently unused
@@ -785,11 +968,15 @@ components:
           schema:
             type: object
             description: error info
+            required:
+              - message
             properties:
               message:
                 type: string
-                description: 401 Unauthorised #????????????????
-
+                description: 401 Unauthorised + explanation
+                minLength: 1
+                maxLength: 500
+                pattern: '^.+$'
     BadRequest: #400
       description: request not compliant with app behaviour/needs
       content:
@@ -797,28 +984,87 @@ components:
           schema:
             type: object
             description: error info
+            required:
+              - message
             properties:
               message:
                 type: string
                 description: bad req
+                minLength: 1
+                maxLength: 500
+                pattern: '^.+$'
 
     Forbidden:
       description: no auth for user to commit this action
+      content:
+        application/json:
+          schema:
+            type: object
+            description: more info for the forbidden error
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                pattern: '^.+$'
+                minLength: 1
+                maxLength: 500
+                description: error message explanation
 
     NoContent: #204
       description: success, no content
 
-
     NotFound: #404
       description: requested resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            description: error information for 404
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                format: '^.+$'
+                minLength: 1
+                maxLength: 500
+                description: explanation of what resource was not found
 
 
     Conflict: #409
       description: resource with same key already exists
-
+      content:
+        application/json:
+          schema:
+            type: object
+            description: more info on error 409
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: explanation on which sources are in conflict
+                minLength: 1
+                maxLength: 500
+                pattern: '^.+$'
     
     InternalServerError: #500
       description: server had an internal error. More info in server logs
+      content:
+        applicaton/json:
+          schema:
+            type: object
+            description: error info for 500
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: more info on the cause of the 500
+                minLength: 1
+                maxLength: 500
+                pattern: '^.+$'
 
   securitySchemes:
       BearerAuth:
@@ -830,30 +1076,49 @@ components:
       name: chatID
       in: path
       required: true
+      description: unique identifier of the chat or group
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+
     messageID:
       name: messageID
       in: path
       required: true
+      description: unique identifier of a message
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+
     userID:
       name: userID
       in: path
       required: true
+      description: unique identifier of a user
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+
     reactionID:
       name: reactionID
       in: path
       required: true
+      description: unique identifier for a reaction
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
 
 
 
@@ -861,15 +1126,17 @@ components:
       schema:
         type: string
         pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
-        minLength: 1
+        minLength: 5
         maxLength: 16
-      name: WASAText version
+      name: WASAText-version
       in: header
       required: true
       description: App human readable version ("semantic version" format)
       allowEmptyValue: false
     XAppBuild:
-      schema: { type: integer }
+      schema:
+        type: integer
+        minimum: 0
       name: WASAText-Build
       in: header
       required: true
@@ -878,7 +1145,7 @@ components:
     XAppLanguage:
       schema:
         type: string
-        pattern: '^[a-z]{2}([-_][A-Z]{2})?$'
+        pattern: '^[a-z]{2}(?:[-_][A-Z]{2})?$'
         minLength: 2
         maxLength: 8
       name: WASAText-Language
