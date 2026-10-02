@@ -46,7 +46,7 @@ func (rt *_router) leaveGroup(
 		return
 	}
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return

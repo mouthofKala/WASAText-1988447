@@ -1,5 +1,7 @@
 package database
 
+import "errors"
+
 func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation, error) {
 	var convo Conversation
 
@@ -26,33 +28,33 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 		return Conversation{}, ErrFetchingChat
 	}
 
-	if err != nil {
-		return Conversation{}, err //generic 500
+	if !errors.Is(err, nil) {
+		return Conversation{}, err // generic 500
 	}
 
-	//search members and most recent msg
+	// search members and most recent msg
 	rows, err := db.c.Query(`
 			SELECT user_id
 			FROM chat_members
 			WHERE chat_id = ?
 		`, chatID)
-	if err != nil {
-		return Conversation{}, ErrFetchingMembers //500 this includes norows
+	if !errors.Is(err, nil) {
+		return Conversation{}, ErrFetchingMembers // 500 this includes norows
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var memberID string
-		if err := rows.Scan(&memberID); err != nil {
-			return Conversation{}, ErrFetchingMembers //500
+		if err := rows.Scan(&memberID); !errors.Is(err, nil) {
+			return Conversation{}, ErrFetchingMembers // 500
 		}
 		convo.Chat.Members = append(convo.Chat.Members, memberID)
 	}
-	if err := rows.Err(); err != nil {
+	if err := rows.Err(); !errors.Is(err, nil) {
 		return Conversation{}, ErrFetchingMembers // 500
 	}
 
-	//search message history
+	// search message history
 	rows, err = db.c.Query(`
 		SELECT
 			message_id,
@@ -68,7 +70,7 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 		WHERE chat_id = ?
 		ORDER BY timestamp DESC
 		LIMIT 50`, chatID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Conversation{}, ErrFetchingMessages
 	}
 	defer rows.Close()
@@ -85,25 +87,25 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 			&message.Timestamp,
 			&message.ReplyTo,
 			&message.FwdFrom,
-		); err != nil {
-			return Conversation{}, ErrFetchingMessages //500?
+		); !errors.Is(err, nil) {
+			return Conversation{}, ErrFetchingMessages // 500?
 		}
 
 		convo.Messages = append(convo.Messages, message)
 	}
-	if err := rows.Err(); err != nil {
-		return Conversation{}, ErrFetchingMessages //500
+	if err := rows.Err(); !errors.Is(err, nil) {
+		return Conversation{}, ErrFetchingMessages // 500
 	}
 
-	//depopulate reads in this chat for this user
+	// depopulate reads in this chat for this user
 	_, err = db.c.Exec(`
 		DELETE FROM msg_notreads
 		WHERE chat_id = ? AND user_id = ?`, chatID, userID)
-	if err != nil {
-		return Conversation{}, err //500
+	if !errors.Is(err, nil) {
+		return Conversation{}, err // 500
 	}
 
-	//now with the fetched messages, for each message we need to fetch rows in unreads
+	// now with the fetched messages, for each message we need to fetch rows in unreads
 	for i := range convo.Messages {
 		var gotrows bool
 		err = db.c.QueryRow(`
@@ -111,15 +113,15 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 				SELECT 1
 				FROM msg_notreads
 				WHERE message_id = ?)`, convo.Messages[i].MessageID).Scan(&gotrows)
-		if err != nil {
-			return Conversation{}, err //
+		if !errors.Is(err, nil) {
+			return Conversation{}, err
 		}
 		if !gotrows {
 			_, err = db.c.Exec(`
 				UPDATE messages
 				SET status = ?
 				WHERE message_id = ?`, "read", convo.Messages[i].MessageID)
-			if err != nil {
+			if !errors.Is(err, nil) {
 				return Conversation{}, err
 			}
 			convo.Messages[i].Status = "read"

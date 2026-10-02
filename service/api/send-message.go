@@ -22,13 +22,13 @@ func (rt *_router) sendMessage(
 	chatID := ps.ByName("chatID")
 
 	msgid, err := uuid.NewV4()
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error generating messgae ID")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	if err := r.ParseMultipartForm(5 << 20); err != nil {
+	if err := r.ParseMultipartForm(5 << 20); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error parsing multipart req")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
@@ -53,16 +53,16 @@ func (rt *_router) sendMessage(
 
 	var photouri *string
 	file, _, err := r.FormFile("photo")
-	if err == nil {
+	if errors.Is(err, nil) {
 		defer file.Close()
 		data, err := io.ReadAll(file)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			ctx.Logger.WithError(err).Error("error reading msg attachment")
 			http.Error(w, database.BR, http.StatusBadRequest)
 			return
 		}
 		uri, err := rt.storage.SaveMSGPhoto(data, msgID, chatID)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			ctx.Logger.WithError(err).Error("error storing msg attachment")
 			if errors.Is(err, database.ErrInvalidImage) {
 				http.Error(w, database.BR, http.StatusBadRequest)
@@ -104,28 +104,28 @@ func (rt *_router) sendMessage(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if errors.Is(err, database.ErrExec) {
+	if errors.Is(err, database.ErrExec) || errors.Is(err, database.ErrTX) {
 		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
-		ctx.Logger.WithError(err).Error("500: error doing a database Exec")
+		ctx.Logger.WithError(err).Error("500: error doing a database Exec or during the transaction")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	//save json
-	if err := rt.storage.SaveMSGJson(msg); err != nil {
+	// save json
+	if err := rt.storage.SaveMSGJson(msg); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error saving message JSON")
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if err = json.NewEncoder(w).Encode(msg); err != nil {
+	if err = json.NewEncoder(w).Encode(msg); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("Error encoding response")
 	}
 

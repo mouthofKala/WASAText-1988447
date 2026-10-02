@@ -21,7 +21,7 @@ func (rt *_router) forwardMessage(
 	chatID := ps.ByName("chatID")
 	fwdmessageID := ps.ByName("messageID")
 	newmsgID, err := uuid.NewV4()
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error generating messgae ID")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -32,7 +32,7 @@ func (rt *_router) forwardMessage(
 	}
 
 	err = json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error(database.ErrDecodingReq)
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -69,20 +69,15 @@ func (rt *_router) forwardMessage(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	if err := rt.storage.SaveMSGJson(msg); err != nil {
-		ctx.Logger.WithError(err).Error("error saving message JSON")
-	}
-	//ADD SAVEMSGPHOTO!!!
-
 	w.Header().Set("Content-Type", "application/json")
 
-	if err = json.NewEncoder(w).Encode(msg); err != nil {
+	if err = json.NewEncoder(w).Encode(msg); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("Error encoding response")
 	}
 

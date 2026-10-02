@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) userExists(userID string) (bool, error) {
+func (db *appdbimpl) UserExists(userID string) (bool, error) {
 	var exists bool
 	err := db.c.QueryRow(`
 		SELECT EXISTS(

@@ -10,7 +10,7 @@ type User struct {
 
 type Chat struct {
 	ChatID        string
-	GroupOrChat   string
+	GroupOrChat   bool
 	ChatName      string
 	Members       []string
 	CreationDate  time.Time
@@ -22,13 +22,13 @@ type Message struct {
 	MessageID string
 	ChatID    string
 	SenderID  string
-	Content   *string //pointer to text, can distinguish NULL and ""
-	Photo     *string //pointer to img
+	Content   *string // pointer to text, can distinguish NULL and ""
+	Photo     *string // pointer to img
 	Status    string
 	Timestamp time.Time
-	ReplyTo   *string //ptr to msgID
-	FwdFrom   *string //ptr2 chatID
-} //basically use ptrs when info is optional
+	ReplyTo   *string // ptr to msgID
+	FwdFrom   *string // ptr2 chatID
+} // basically use ptrs when info is optional
 
 type Conversation struct {
 	Chat     Chat

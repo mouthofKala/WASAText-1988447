@@ -1,14 +1,13 @@
 package storage
 
 import (
-	"encoding/json"
-	"os"
-	"path/filepath"
-
 	"bytes"
+	"encoding/json"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
+	"os"
+	"path/filepath"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 )
@@ -21,6 +20,22 @@ func New(basePath string) *Storage {
 	return &Storage{
 		BasePath: basePath,
 	}
+}
+
+func (s *Storage) ParseURI(data []byte, userID string) (string, error) {
+	_, format, err := image.DecodeConfig(bytes.NewReader(data))
+	if err != nil {
+		return "", database.ErrInvalidImage
+	}
+
+	if format != "jpeg" && format != "png" {
+		return "", database.ErrInvalidImage
+	}
+	extension := ".png"
+	if format == "jpeg" {
+		extension = ".jpg"
+	}
+	return userID + extension, nil
 }
 
 func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
@@ -37,9 +52,9 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 		return "", database.ErrInvalidImage
 	}
 
-	//SIZE CVHECK GOES HERE
+	// SIZE CVHECK GOES HERE
 
-	//img can be saved
+	// img can be saved
 	extension := ".png"
 	if format == "jpeg" {
 		extension = ".jpg"
@@ -60,7 +75,6 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 	return "/pfp/" + filename, nil
 }
 
-// ask gpt for this one
 func (s *Storage) DeletePFP(photoURI string) error {
 	if photoURI == "" {
 		return nil
@@ -92,7 +106,7 @@ func (s *Storage) SaveMSGPhoto(data []byte, messageID string, chatID string) (st
 
 	extension := "." + "png"
 	if format == "jpeg" {
-		extension = ".jpg" //ASK AGAIN
+		extension = ".jpg"
 	}
 
 	filename := messageID + extension
@@ -139,7 +153,7 @@ func (s *Storage) DeleteMSGFiles(messageID string, chatID string) error {
 		return database.ErrStorage
 	}
 
-	//if present, delete msg photo
+	// if present, delete msg photo
 	for _, extension := range []string{".jpg", ".png"} {
 		photopath := filepath.Join(s.BasePath, "msgpics", chatID, messageID+extension)
 		if err := os.Remove(photopath); err != nil && !os.IsNotExist(err) {
@@ -147,7 +161,7 @@ func (s *Storage) DeleteMSGFiles(messageID string, chatID string) error {
 		}
 
 	}
-	//delete reactions
+	// delete reactions
 	reactionsdirpath := filepath.Join(s.BasePath, "reactions", chatID, messageID)
 	if err := os.RemoveAll(reactionsdirpath); err != nil {
 		return database.ErrStorage

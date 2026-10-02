@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 )
 
 func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji rune) (Reaction, error) {
@@ -15,7 +16,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 	if !exist {
 		return Reaction{}, ErrBadReq
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Reaction{}, err
 	}
 
@@ -30,7 +31,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 	if !membership {
 		return Reaction{}, ErrForbidden
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Reaction{}, err
 	}
 
@@ -45,7 +46,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 	if !msgexists {
 		return Reaction{}, ErrBadReq
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Reaction{}, err
 	}
 
@@ -56,14 +57,14 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		FROM reactions
 		WHERE message_id = ? AND user_id = ?`,
 		msgID, userID).Scan(&reac.ReactionID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		//there is NOT a reaction already
 		_, err = db.c.Exec(`
 			INSERT INTO reactions
 			(reaction_id, message_id, chat_id, user_id, emoji)
 			VALUES (?,?,?,?,?)`,
 			reactionID, msgID, chatID, userID, string(emoji))
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return Reaction{}, ErrExec
 		}
 		return Reaction{
@@ -74,7 +75,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 			Emoji:      string(emoji),
 		}, nil
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Reaction{}, err //500
 	}
 
@@ -85,7 +86,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 			AND message_id = ?
 			AND user_id = ?
 	`, string(emoji), reac.ReactionID, msgID, userID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return Reaction{}, ErrExec
 	}
 

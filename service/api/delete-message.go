@@ -29,19 +29,24 @@ func (rt *_router) deleteMessage(
 		http.Error(w, database.F, http.StatusForbidden)
 		return
 	}
-	if errors.Is(err, database.ErrExec) {
+	if errors.Is(err, database.ErrTX) {
 		ctx.Logger.WithError(err).Error("error during a go transaction")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if err != nil {
+	if errors.Is(err, database.ErrExec) {
+		ctx.Logger.WithError(err).Error("error during an exec in the transaction")
+		http.Error(w, database.ISE, http.StatusInternalServerError)
+		return
+	}
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
 	err = rt.storage.DeleteMSGFiles(msgID, chatID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error deleting msgfiles from filesystem")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return

@@ -42,7 +42,7 @@ func (rt *_router) setGroupName(
 		return
 	}
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return

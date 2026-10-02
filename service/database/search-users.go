@@ -1,12 +1,14 @@
 package database
 
+import "errors"
+
 func (db *appdbimpl) SearchUsers(searchkey string) ([]User, error) {
 	rows, err := db.c.Query(`
 		SELECT user_id, username, photo
 		FROM users
 		WHERE username LIKE ?
 	`, "%"+searchkey+"%")
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return nil, err
 	}
 	defer rows.Close()
@@ -20,7 +22,7 @@ func (db *appdbimpl) SearchUsers(searchkey string) ([]User, error) {
 			&user.Username,
 			&user.Photo,
 		)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return nil, err
 		}
 		userlist = append(userlist, user)

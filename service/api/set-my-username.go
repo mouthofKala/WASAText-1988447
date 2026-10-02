@@ -13,13 +13,13 @@ import (
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	//read requestbody json to ckeck 400 bad request
+	// read requestbody json to ckeck 400 bad request
 	var request struct {
 		Username string `json:"targetusername"` //check why not matching
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error decoding request body")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
@@ -33,7 +33,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	err = rt.db.SetMyUsername(request.Username, ctx.UserID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		if errors.Is(err, database.ErrUsernameUnavailable) {
 			ctx.Logger.WithError(err).Error("conflict: username already in use")
 			http.Error(w, database.C, http.StatusConflict)

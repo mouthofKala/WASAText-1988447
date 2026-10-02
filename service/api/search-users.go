@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
@@ -13,7 +14,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	searchkey := r.URL.Query().Get("searchkey")
 
 	users, err := rt.db.SearchUsers(searchkey)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error fetching userlist")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -23,7 +24,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(users); err != nil {
+	if err = json.NewEncoder(w).Encode(users); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error encoding response")
 	}
 }

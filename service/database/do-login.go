@@ -16,28 +16,28 @@ func (db *appdbimpl) DoLogin(username string) (string, error) {
 		WHERE username = ?
 	`, username).Scan(&userID)
 
-	//user exists->authenticated
-	if err == nil {
+	// user exists->authenticated
+	if errors.Is(err, nil) {
 		return userID, nil
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
 		return "", err
 	}
 
-	//create a new user
-	newID, err2 := uuid.NewV4()
-	if err2 != nil {
-		return "", err2
+	// create a new user
+	newID, err := uuid.NewV4()
+	if !errors.Is(err, nil) {
+		return "", err
 	}
 	userID = newID.String()
 
-	_, err1 := db.c.Exec(`
+	_, err = db.c.Exec(`
 		INSERT INTO users (user_id, username, photo)
 		VALUES (?,?,?)`,
 		userID, username, "photouriofblackpic.jpg")
 
-	if err1 != nil {
-		return "", err1
+	if !errors.Is(err, nil) {
+		return "", err
 	}
 
 	return userID, nil

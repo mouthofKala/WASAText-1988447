@@ -1,5 +1,7 @@
 package database
 
+import "errors"
+
 func (db *appdbimpl) UncommentMessage(msgID string, chatID string, userID string, reactionID string) error {
 
 	var chatexist bool
@@ -10,8 +12,8 @@ func (db *appdbimpl) UncommentMessage(msgID string, chatID string, userID string
 			WHERE chat_id = ?)
 	`, chatID).Scan(&chatexist)
 
-	if err != nil {
-		return err //500
+	if !errors.Is(err, nil) {
+		return err // 500
 	}
 
 	var msgexist bool
@@ -22,15 +24,15 @@ func (db *appdbimpl) UncommentMessage(msgID string, chatID string, userID string
 			WHERE message_id = ?)
 	`, msgID).Scan(&msgexist)
 
-	if err != nil {
-		return err //500
+	if !errors.Is(err, nil) {
+		return err // 500
 	}
 
 	if !chatexist || !msgexist {
 		return ErrBadReq
 	}
 
-	//is userid owner of the reaction? 400
+	// is userid owner of the reaction? 400
 	var isowner bool
 	err = db.c.QueryRow(`
 		SELECT EXISTS(
@@ -38,19 +40,19 @@ func (db *appdbimpl) UncommentMessage(msgID string, chatID string, userID string
 			FROM reactions
 			WHERE reaction_id = ? AND user_id = ?)`,
 		reactionID, userID).Scan(&isowner)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return err
 	}
 	if !isowner {
 		return ErrForbidden
 	}
 
-	//remove from db
+	// remove from db
 	_, err = db.c.Exec(`
 		DELETE FROM reactions
 		WHERE reaction_id = ?`, reactionID)
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return ErrExec
 	}
 	return nil

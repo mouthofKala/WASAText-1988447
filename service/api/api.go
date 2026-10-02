@@ -96,9 +96,9 @@ func New(cfg Config) (Router, error) {
 
 type _router struct {
 	router *httprouter.Router
-	//for non-requests contexts, ex. goroutines, background tasks
-	//not started by a request. Use context logger if available
-	//(e.g., in requests) instead of this logger.
+	// for non-requests contexts, ex. goroutines, background tasks
+	// not started by a request. Use context logger if available
+	// (e.g., in requests) instead of this logger.
 	storage    *storage.Storage
 	baseLogger logrus.FieldLogger
 	db         database.AppDatabase

@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 servers:
   - url: "http://localhost:3000"
 info:
@@ -75,7 +75,7 @@ paths:
                 name:
                   type: string
                   description: unique alphanum username
-                  example: Maria02
+                  examples: ["Maria02"]
                   minLength: 3
                   maxLength: 16
                   pattern: '^[a-zA-Z0-9]+$'
@@ -92,7 +92,8 @@ paths:
                     type: string
                     description: identifier of auth user
                     pattern: '^[a-zA-Z0-9]+$'
-                    example: "gugugaga555"
+                    minLength: 1
+                    maxLength: 60
         '400': {$ref: "#/components/responses/BadRequest"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
@@ -121,6 +122,8 @@ paths:
               schema:
                 type: array
                 description: list of users that match the search key
+                minItems: 0
+                maxItems: 1000 #not really a predefined max amt of users
                 items:
                   $ref: "#/components/schemas/User"
         '204': { $ref: "#/components/responses/NoContent"}
@@ -128,7 +131,11 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}:
+    parameters:
+      - $ref: "#/components/parameters/userID"
     get:
+      parameters:
+        - $ref:
       operationId: getUserProfile
       summary: gets user info, including oneself
       tags: ["user"]
@@ -143,8 +150,6 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFound"}
         "500": { $ref: "#/components/responses/InternalServerError" }
-    parameters:
-      - $ref: "#/components/parameters/userID"
 
   /profile/username:
     put:
@@ -168,7 +173,7 @@ paths:
                   targetusername:
                     type: string
                     description: new (unique) username
-                    example: Maria03
+                    examples: ["Maria03"]
                     minLength: 3
                     maxLength: 16
                     pattern: '^[a-zA-Z0-9]+$'
@@ -189,14 +194,16 @@ paths:
         user deletes their own photo/chooses not to have one, use a black
         or white picture
       requestBody:
-        description: (jpg?) img to use as new pfp picture
+        description: jpg img to use as new pfp picture
         required: true
         content:
             image/jpeg:
               schema:
                 type: string
-                description: the image file of the new profile picture
+                description: the jpg image file of the new profile picture
                 format: binary
+                minLength: 1
+                maxLength: 10485760
       responses:
         '204': { $ref: "#/components/responses/NoContent"}
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -306,6 +313,8 @@ paths:
                   items:
                     type: string
                     format: uuid
+                    minLength: 36
+                    maxLength: 36
                     description: uderID of each group membr
                     pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
                 groupname:
@@ -323,8 +332,8 @@ paths:
         '400': {$ref: "#/components/responses/BadRequest"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
-
-  /chats/{chatID}/members/me:
+    parameters:
+      - $ref: "#/components/parameters/chatID"
     delete:
       operationId: leaveGroup
       tags: ["chatlvl"]
@@ -340,10 +349,9 @@ paths:
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
+  /chats/{chatID}/members:
     parameters:
       - $ref: "#/components/parameters/chatID"
-
-  /chats/{chatID}/members:
     post:
       operationId: addToGroup
       summary: add a member to a group
@@ -383,10 +391,10 @@ paths:
         '400': {$ref: "#/components/responses/BadRequest"} #or user already iin group
         '403': {$ref: "#/components/responses/Forbidden"} 
         '500': {$ref: "#/components/responses/InternalServerError"}
-    parameters:
-      - $ref: "#/components/parameters/chatID"
 
   /chats/groups/{chatID}/photo:
+    parameters:
+      - $ref: "#/components/parameters/chatID"
     put: 
       operationId: setGroupPhoto
       summary: modify current group photo
@@ -400,17 +408,19 @@ paths:
             schema:
               type: string
               format: binary
-              description: image file of the new group picture
+              description: jpg image file of the new group picture
+              minLength: 1
+              maxLength: 10485760
       responses:
         '204': {$ref: "#/components/responses/NoContent"}
         '400': {$ref: "#/components/responses/BadRequest"}
         '403': {$ref: "#/components/responses/Forbidden"}
         '404': {$ref: "#/components/responses/NotFound"}
         '500': {$ref: "#/components/responses/InternalServerError"}
-    parameters:
-      - $ref: "#/components/parameters/chatID"
 
   /chats/groups/{chatID}/groupname:
+    parameters:
+      - $ref: "#/components/parameters/chatID"
     put: 
       operationId: setGroupName
       summary: modifies current group name
@@ -434,10 +444,10 @@ paths:
         '403': {$ref: "#/components/responses/Forbidden"}
         '404': {$ref: "#/components/responses/NotFound"}
         '500': {$ref: "#/components/responses/InternalServerError"}
-    parameters:
-      - $ref: "#/components/parameters/chatID"
 
   /chats/{chatID}/messages:
+    parameters: 
+      - $ref: "#/components/parameters/chatID"
     get:
       operationId: getConversation
       tags: ["chatlvl"]
@@ -486,10 +496,11 @@ paths:
         '400': {$ref: "#/components/responses/BadRequest"}
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
-    parameters: 
-    - $ref: "#/components/parameters/chatID"
 
   /chats/{chatID}/messages/{messageID}:
+    parameters:
+      - $ref: "#/components/parameters/chatID"
+      - $ref: "#/components/parameters/messageID"
     delete:
       operationId: deleteMessage
       summary: deletes a message for every member of a chat or group
@@ -501,11 +512,11 @@ paths:
         '400': {$ref: "#/components/responses/BadRequest"}
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
+
+  /chats/{chatID}/messages/{messageID}/forward:
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
-
-  /chats/{chatID}/messages/{messageID}/forward:
     post:
       operationId: forwardMessage
       summary: message forward
@@ -525,6 +536,8 @@ paths:
                 destinationChatID:
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
                   pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
                   description: ID of the chat the msg is being fwd to
       responses:
@@ -538,11 +551,10 @@ paths:
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
+  /chats/{chatID}/messages/{messageID}/reactions:
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
-
-  /chats/{chatID}/messages/{messageID}/reactions:
     post:
       operationId: commentMessage
       summary: adds a reaction to a message
@@ -573,11 +585,13 @@ paths:
         #DELETED 409!
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
+
+
+  /chats/{chatID}/messages/{messageID}/reactions/{reactionID}:
     parameters:
       - $ref: "#/components/parameters/chatID"
       - $ref: "#/components/parameters/messageID"
-
-  /chats/{chatID}/messages/{messageID}/reactions/{reactionID}:
+      - $ref: "#/components/parameters/reactionID"
     delete:
       operationId: uncommentMessage
       summary: removes own reaction to a message
@@ -589,10 +603,7 @@ paths:
         '403': {$ref: "#/components/responses/Forbidden"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
-    parameters:
-      - $ref: "#/components/parameters/chatID"
-      - $ref: "#/components/parameters/messageID"
-      - $ref: "#/components/parameters/reactionID"
+
 
 
 components:
@@ -608,6 +619,7 @@ components:
           pattern: '^[\s\S]+$'
           minLength: 1
           maxLength: 20000
+          description: text contents of msg
         replyTo: 
           type: string
           format: uuid
@@ -627,7 +639,7 @@ components:
           format: binary
           minLength: 1
           maxLength: 10485760 
-          description:  image file to be sent
+          description:  jpg image file to be sent
         replyTo:
           type: string
           format: uuid
@@ -699,7 +711,7 @@ components:
           maxLength: 64
           description: date and time of chat creation
           pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
-        photo:
+        photouri:
           type: string
           format: uri
           minLength: 1
@@ -707,6 +719,7 @@ components:
           description: pfp uri for a group, absent if private chat (frontend will show other user's pfp)
           pattern: '^https?://.+$'
         mostrecentmsg:
+          description: preview of the most recent msg in the chat or group
           $ref: "#/components/schemas/MessagePreview"
 
     User:
@@ -719,7 +732,7 @@ components:
         - username
         - userID
       properties:
-        photo:
+        photouri:
           description: uri of the profile picture of the user
           type: string
           format: uri
@@ -730,7 +743,7 @@ components:
           description: unique username, alphanumeric
           type: string
           pattern: '^[a-zA-Z0-9]+$'
-          example: Maria02
+          examples: ["Maria02"]
           minLength: 3
           maxLength: 16
           readOnly: true
@@ -745,54 +758,7 @@ components:
     Message:
       title: message
       description: a single message from a user at a specific date-time (to a specific chat)
-      allOf:
-        - $ref: "#/components/schemas/MessageBase"
-        - oneOf:
-          - type: object
-            description: txt only message option
-            required:
-              - content
-            properties:
-              content:
-                type: string
-                description: text contents of msg
-                minLength: 1
-                maxLength: 20000
-                pattern: '^[\s\S]+$'
-          - type: object
-            description: img only msg option
-            required:
-              - photo
-            properties:
-              photo:
-                type: string
-                format: uri
-                minLength: 1
-                maxLength: 2048
-                description: uri of msg img
-                pattern: '^https?://.+$'
-          - type: object
-            description: text AND img option
-            required:
-              - content
-              - photo
-            properties:
-              content:
-                type: string
-                description: text contents of msg
-                minLength: 1
-                maxLength: 1000 #similar model to main texting apps
-                pattern: '^[\s\S]+$'
-              photo:
-                type: string
-                format: uri
-                minLength: 1
-                maxLength: 2048
-                description: uri of msg img
-                pattern: '^https?://.+$'
-    MessageBase:
       type: object
-      description: properties shared by all types of messages
       required:
         - messageID
         - senderID
@@ -807,48 +773,92 @@ components:
           description: unique id of the message
           pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         senderID:
-          description: userID of the msg sender
           type: string
           format: uuid
           minLength: 36
           maxLength: 36
+          description: userID of the message sender
           pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
         status:
           type: string
-          description: delivery status of msg, to be used by frontend to display different read receipt icons
+          description: delivery status of the message
           enum:
             - sent
             - delivered
             - read
+          minLength: 4
+          maxLength: 9
+          pattern: '^(sent|delivered|read)$'
         timestamp:
           type: string
           format: date-time
           minLength: 1
           maxLength: 64
-          description: date and time of message being sent
+          description: date and time when the message was sent
           pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T'
         reactions:
           type: array
+          description: reactions added to the message
           minItems: 0
-          maxItems: 100 
-          description: users' reaction added to the msg. maxitems=maxitems of members for a chat
-          items:
-            $ref: "#/components/schemas/Reaction"
+          maxItems: 100
+          items: {$ref: "#/components/schemas/Reaction"}
         replyTo:
           type: string
           format: uuid
           minLength: 36
           maxLength: 36
-          description: |-
-            must contain the msg ID you're replying to. 
+          description: ID of the message being replied to
           pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
-        fwdFrom:
+        fwdFrom: 
           type: string
           format: uuid
           minLength: 36
           maxLength: 36
-          description: ID of the user (or chat? figure it out) that was fwd 
+          description: ID of the original message or sender associated with the forwarded message
           pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+      oneOf:
+        - type: object
+          description: txt only message option
+          required:
+            - content
+          properties:
+            content:
+              type: string
+              description: text contents of msg
+              minLength: 1
+              maxLength: 20000
+              pattern: '^[\s\S]+$'
+        - type: object
+          description: img only msg option
+          required:
+            - photo
+          properties:
+            photouri:
+              type: string
+              format: uri
+              minLength: 1
+              maxLength: 2048
+              description: uri of msg img
+              pattern: '^https?://.+$'
+        - type: object
+          description: text AND img option
+          required:
+            - content
+            - photo
+          properties:
+            content:
+              type: string
+              description: text contents of msg
+              minLength: 1
+              maxLength: 1000 #similar model to main texting apps
+              pattern: '^[\s\S]+$'
+            photouri:
+              type: string
+              format: uri
+              minLength: 1
+              maxLength: 2048
+              description: uri of msg img
+              pattern: '^https?://.+$'
     
     MessagePreview:
       title: message preview
@@ -879,7 +889,10 @@ components:
           enum:
             - text
             - photo
-            - text photo
+            - text-photo
+          minLength: 4
+          maxLength: 10
+          pattern: '^(text|photo|text-photo)$'
         timestamp:
           type: string
           format: date-time
@@ -940,6 +953,9 @@ components:
             - info
             - warning
             - critical
+          minLength: 4
+          maxLength: 8
+          pattern: '^(info|warning|critical)$'
         title:
           type: string
           description: short title of the status msg
@@ -958,25 +974,25 @@ components:
           description: optional url for more information
           minLength: 1
           maxLength: 2048
-          pattern: '^https://.+$'
+          pattern: '^https?://.+$'
 
   responses:
-    Unauthorized: #401 Currently unused
-      description: access token missing or expired
-      content:
-        application/json:
-          schema:
-            type: object
-            description: error info
-            required:
-              - message
-            properties:
-              message:
-                type: string
-                description: 401 Unauthorised + explanation
-                minLength: 1
-                maxLength: 500
-                pattern: '^.+$'
+    #Unauthorized: #401 Currently unused
+    #  description: access token missing or expired
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: object
+    #        description: error info
+    #        required:
+    #          - message
+    #        properties:
+    #          message:
+    #            type: string
+    #            description: 401 Unauthorised + explanation
+    #            minLength: 1
+    #            maxLength: 500
+    #            pattern: '^.+$'
     BadRequest: #400
       description: request not compliant with app behaviour/needs
       content:
@@ -1052,7 +1068,7 @@ components:
     InternalServerError: #500
       description: server had an internal error. More info in server logs
       content:
-        applicaton/json:
+        application/json:
           schema:
             type: object
             description: error info for 500

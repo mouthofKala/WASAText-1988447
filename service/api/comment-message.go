@@ -25,7 +25,7 @@ func (rt *_router) commentMessage(
 	chatID := ps.ByName("chatID")
 	userID := ctx.UserID
 	reactionID, err := uuid.NewV4()
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error generating a reactionID")
 		return
 	}
@@ -33,7 +33,7 @@ func (rt *_router) commentMessage(
 		Emoji string `json:"emoji"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error decoding request body")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
@@ -61,20 +61,20 @@ func (rt *_router) commentMessage(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	if err = rt.storage.AddReaction(reaction, string(chatID)); err != nil {
+	if err = rt.storage.AddReaction(reaction, string(chatID)); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error saving reaction")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(reaction); err != nil {
+	if err := json.NewEncoder(w).Encode(reaction); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error encoding reaction response")
 		return
 	}

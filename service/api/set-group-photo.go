@@ -22,15 +22,15 @@ func (rt *_router) setGroupPhoto(
 
 	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
 	newphotobytes, err := io.ReadAll(r.Body)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error reading uploaded photo")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
 
-	//save newphotobytes to a uri
+	// save newphotobytes to a uri
 	photoURI, err := rt.storage.SavePFP(newphotobytes, ChatID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error storing photo")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -56,14 +56,14 @@ func (rt *_router) setGroupPhoto(
 		return
 	}
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo. rolling back...")
 		_ = rt.storage.DeletePFP(photoURI)
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	if err := rt.storage.DeletePFP(oldphotoURI); err != nil {
+	if err := rt.storage.DeletePFP(oldphotoURI); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error deleting old group photo")
 	}
 	w.WriteHeader(http.StatusNoContent)

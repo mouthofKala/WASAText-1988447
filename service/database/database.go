@@ -32,7 +32,7 @@ import (
 	"fmt"
 )
 
-const defaultGroupPhoto = "/uploads/defaults/black.jpg"
+const DefaultGroupPhoto = "storage/data/pfp/black.jpg"
 
 var ErrUserNotFound = errors.New("user not found")
 var ErrUsernameUnavailable = errors.New("username already in use")
@@ -55,6 +55,7 @@ var ErrBadReq = errors.New("resource does not exist")
 var ErrStorage = errors.New("error with deletion or addition to storage")
 var ISE = "500 Internal Server Error"
 var BR = "400 Bad Request"
+var Un = "401 Unauthorized"
 var NF = "404 Not Found"
 var C = "409 Conflict"
 var F = "403 Forbidden"
@@ -73,9 +74,9 @@ type AppDatabase interface {
 	SetMyPhoto(photouri string, userID string) (string, error)
 	DoLogin(username string) (string, error)
 	GetMyConversations(userID string) ([]Chat, error)
-	MakeGroup(chatname string, photouri string, members []string) (Chat, error)
-	MakeChat(otheruser string, creatorID string) (Chat, error)
-	AddToGroup(targetuserID string, groupID string, userID string) (Chat, error)
+	MakeChatGroup(chatID string, chatname string, photouri string, members []string, isgroup bool) (Chat, error)
+	// MakeChat(otheruser string, creatorID string) (Chat, error)
+	AddToGroup(targetuserIDs []string, groupID string, userID string) (Chat, error)
 	SetGroupPhoto(photouri string, chatID string, userID string) (string, error)
 	SetGroupName(newname string, chatID string, userID string) error
 	GetConversation(userID string, chatID string) (Conversation, error)
@@ -85,6 +86,8 @@ type AppDatabase interface {
 	CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji rune) (Reaction, error)
 	UncommentMessage(msgID string, chatID string, userID string, reactionID string) error
 	LeaveGroup(userID string, chatID string) (bool, error)
+	UserExists(userID string) (bool, error)
+	ValidateChatGroup(members []string, isgroup bool) error
 	Ping() error
 }
 
@@ -108,7 +111,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 
         CREATE TABLE IF NOT EXISTS chats (
             chat_id TEXT PRIMARY KEY,
-            group_or_chat TEXT NOT NULL,
+            group_or_chat BIT NOT NULL,
             chat_name TEXT NOT NULL,
             creation_date DATETIME NOT NULL,
             photo TEXT

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
@@ -12,9 +13,9 @@ import (
 func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID := ctx.UserID
 	chats, err := rt.db.GetMyConversations(userID)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error fetching chats")
-		http.Error(w, database.ISE, http.StatusInternalServerError) //is this right/where do bad requests go?
+		http.Error(w, database.ISE, http.StatusInternalServerError) // is this right/where do bad requests go?
 		return
 	}
 	if len(chats) == 0 {
@@ -23,9 +24,9 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 		return
 	}
 
-	//now read chats and send them in json
+	// now read chats and send them in json
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(chats); err != nil {
+	if err = json.NewEncoder(w).Encode(chats); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error encoding chats")
 		return
 	}

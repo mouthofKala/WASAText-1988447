@@ -1,8 +1,11 @@
 package database
 
-func (db *appdbimpl) GetUserProfile(userID string) (User, error) {
+import (
+	"database/sql"
+	"errors"
+)
 
-	//CHECK IF USERID IS IN LIST OF USERS, GIVE BAD REQUEST ERR
+func (db *appdbimpl) GetUserProfile(userID string) (User, error) {
 
 	var user User
 	err := db.c.QueryRow(`
@@ -15,6 +18,9 @@ func (db *appdbimpl) GetUserProfile(userID string) (User, error) {
 		&user.Photo,
 	)
 
-	//IF NO ROWS, GIVE OUT ERROR NO ROWS FOR 404
-	return user, err
+	if errors.Is(err, sql.ErrNoRows) {
+		return User{}, ErrUserNotFound // 404
+	}
+
+	return user, err // 500
 }

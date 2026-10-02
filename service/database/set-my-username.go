@@ -13,18 +13,18 @@ func (db *appdbimpl) SetMyUsername(targetusername string, userID string) error {
 		WHERE username = ?
 	`, targetusername).Scan(&usernameExists)
 
-	if err == nil {
+	if errors.Is(err, nil) {
 		return ErrUsernameUnavailable
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
 
-	_, err1 := db.c.Exec(`
+	_, err = db.c.Exec(`
 		UPDATE users
 		SET username = ?
 		WHERE user_id = ?
 	`, targetusername, userID)
 
-	return err1
+	return err
 }

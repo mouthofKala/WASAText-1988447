@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 )
 
 func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
@@ -31,8 +32,8 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 		WHERE chat_members.user_id=?
 		ORDER BY messages.timestamp DESC
 	`, userID)
-	//LEFT JOIN to return even if the chat has 0 msg
-	if err != nil {
+	// LEFT JOIN to return even if the chat has 0 msg
+	if !errors.Is(err, nil) {
 		return nil, err
 	}
 	defer rows.Close()
@@ -52,13 +53,13 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			&chat.Photo,
 			&chat.CreationDate,
 			&chat.GroupOrChat,
-			&messageID, //msg may not exist
+			&messageID, //   msg may not exist
 			&senderID,
 			&content,
 			&photo,
 			&timestamp,
 		)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return nil, err
 		}
 
@@ -72,7 +73,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 		}
 		chats = append(chats, chat)
 	}
-	if err := rows.Err(); err != nil {
+	if err := rows.Err(); !errors.Is(err, nil) {
 		return nil, err
 	}
 	return chats, nil

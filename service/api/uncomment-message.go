@@ -40,7 +40,7 @@ func (rt *_router) uncommentMessage(
 		return
 	}
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -48,9 +48,9 @@ func (rt *_router) uncommentMessage(
 
 	err = rt.storage.DeleteReaction(msgID, userID, chatID, reactionID)
 
-	if err != nil {
+	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("ERROR DELETING REACTION FROM FILESYS!")
-		//you need a function which checks every x time for any orphaned chats, messages or reactions?
+		// you need a function which checks every x time for any orphaned chats, messages or reactions?
 
 		return
 	}
