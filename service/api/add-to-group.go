@@ -44,6 +44,11 @@ func (rt *_router) addToGroup(
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
+	if errors.Is(err, database.ErrTooMany) {
+		ctx.Logger.WithError(err).Error("bad request: too many members selected for group creation")
+		http.Error(w, database.BR, http.StatusBadRequest)
+		return
+	}
 
 	if errors.Is(err, database.ErrUserAlreadyIn) {
 		ctx.Logger.WithError(err).Error("bad request: targetuser already in group")

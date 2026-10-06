@@ -4,16 +4,16 @@ export default {
 		return {
 			errormsg: null,
 			loading: false,
-			some_data: null,
+			chatlist: [],
 		}
 	},
 	methods: {
-		async refresh() {
+		async getMyConversations() {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
+				let response = await this.$axios.get("/chats");
+				this.chatlist = response.data;
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -21,36 +21,48 @@ export default {
 		},
 	},
 	mounted() {
-		this.refresh()
+		this.getMyConversations()
 	}
 }
 </script>
 
 <template>
-	<div>
-		<div
-			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Home page</h1>
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
+	<div class="home-page">
+		<div class="home-header">
+			<h1 class="h2">Conversations</h1>
+			<div class="search-bar">
+				<input type="text" class="form-control" placeholder="search users...">
 			</div>
+			<button class="menu-button">⋮</button>
+			<!--add click functions for ^v-->
+			<button class="profile-button">🧑</button>
 		</div>
-
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+		<ErrorMsg v-if="errormsg" :msg="errormsg" />
+		<LoadingSpinner v-if="loading" />
+		<div v-else-if="chatlist.length === 0">
+			<p>you have no chats :[ </p>
+		</div>
+		<div v-else class="chat-list">
+			<ChatItem
+				v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
+		</div>
 	</div>
 </template>
 
-<style>
+<style scoped>
+	.home-page{
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.home-header{
+		flex-shrink: 0;
+
+	}
+
+	.chat-list{
+		flex: 1;
+		overflow-y: auto;
+	}
 </style>

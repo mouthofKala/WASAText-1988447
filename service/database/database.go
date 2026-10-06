@@ -65,6 +65,7 @@ var ErrTXc = errors.New("error deleting chat during transaction")
 var ErrTXm = errors.New("error deleting messages during transaction")
 var ErrTXnr = errors.New("error deleting not read msgs during transaction")
 var ErrTXr = errors.New("error deleting reactions during transaction")
+var ErrTooMany = errors.New("trying to add too many members")
 
 // DATAVASE METHODS
 type AppDatabase interface {

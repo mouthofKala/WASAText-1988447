@@ -15,14 +15,15 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 	chats, err := rt.db.GetMyConversations(userID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error fetching chats")
-		http.Error(w, database.ISE, http.StatusInternalServerError) // is this right/where do bad requests go?
+		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if len(chats) == 0 {
-		ctx.Logger.WithError(err).Error("you have no chats :(")
-		w.WriteHeader(http.StatusNoContent)
-		return
-	}
+	/*
+		if len(chats) == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+	*/
 
 	// now read chats and send them in json
 	w.Header().Set("Content-Type", "application/json")

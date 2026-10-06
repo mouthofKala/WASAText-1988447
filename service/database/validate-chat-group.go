@@ -17,6 +17,10 @@ func (db *appdbimpl) ValidateChatGroup(members []string, isgroup bool) error {
 	if len(members) != 2 && !isgroup {
 		return ErrBadReq
 	}
+
+	if len(members)+1 > 100 {
+		return ErrTooMany
+	}
 	for _, memberID := range members {
 		exists, err := db.UserExists(memberID)
 		if err != nil {

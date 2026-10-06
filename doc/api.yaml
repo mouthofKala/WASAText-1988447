@@ -230,7 +230,7 @@ paths:
                 #should add a check in backend's makechat and makegroup
                 items:
                   $ref: "#/components/schemas/Chat"
-        '204': {$ref: "#/components/responses/NoContent"}
+        # '204': {$ref: "#/components/responses/NoContent"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
     post: 

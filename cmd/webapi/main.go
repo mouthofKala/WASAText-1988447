@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,7 +12,6 @@ import (
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/globaltime"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/storage"
 	"github.com/ardanlabs/conf"
 	_ "github.com/mattn/go-sqlite3"
@@ -28,8 +26,8 @@ func main() {
 }
 
 func run() error {
-	rand.Seed(globaltime.Now().UnixNano())
-	// New(NewSource(globaltime.Now().UnixNano())) //idk how it works
+	// New(NewSource(globaltime.Now().UnixNano())) for testing purposes
+
 	// Load Configuration and defaults
 	cfg, err := loadConfiguration()
 	if err != nil {
@@ -68,7 +66,7 @@ func run() error {
 	}
 
 	// start storage
-	storage := storage.New("service/storage/data/uploads")
+	storage := storage.New("service/storage/data")
 
 	// Start (main) API server
 	logger.Info("initializing API server")
@@ -128,12 +126,6 @@ func run() error {
 	case sig := <-shutdown:
 		logger.Infof("signal %v received, start shutdown", sig)
 
-		// Asking API server to shut down and load shed.
-		err := apirouter.Close()
-		if err != nil {
-			logger.WithError(err).Warning("graceful shutdown of apirouter error")
-		}
-
 		// Give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
 		defer cancel()
@@ -141,19 +133,26 @@ func run() error {
 		// Asking listener to shut down and load shed.
 		err = apiserver.Shutdown(ctx)
 		if err != nil {
-			logger.WithError(err).Warning("error during graceful shutdown of HTTP server")
+			logger.WithError(err).Warning("error during graceful shutdown of HTTP server, forcing closing of server")
 			err = apiserver.Close()
+			if closeErr := apiserver.Close(); closeErr != nil {
+				logger.WithError(closeErr).Warning("error forcing closure of HTTP server")
+			}
 		}
 
+		// Asking API server to shut down and load shed.
+		err := apirouter.Close()
+		if err != nil {
+			logger.WithError(err).Warning("error during API server shutdown")
+		}
 		// Log the status of this shutdown.
 
-		/*switch {
-		case sig == syscall.SIGSTOP:
-		//find a substitute for windows...
+		switch {
+		case sig == syscall.SIGQUIT:
 			return errors.New("integrity issue caused shutdown")
 		case err != nil:
 			return fmt.Errorf("could not stop server gracefully: %w", err)
-		}*/
+		}
 	}
 
 	return nil

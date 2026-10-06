@@ -69,6 +69,15 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			if timestamp.Valid {
 				preview.Timestamp = timestamp.Time
 			}
+			if timestamp.Valid {
+				preview.Timestamp = timestamp.Time
+			}
+			if content.Valid {
+				preview.Content = &content.String
+			}
+			if photo.Valid {
+				preview.Photo = &photo.String
+			}
 			chat.MostRecentMsg = &preview
 		}
 		chats = append(chats, chat)

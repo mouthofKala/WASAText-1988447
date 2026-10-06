@@ -4,3 +4,5 @@ package api
 func (rt *_router) Close() error {
 	return nil
 }
+
+// do NOT use for app lifecycle resources, that is done in main
