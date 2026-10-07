@@ -13,8 +13,9 @@ import (
 func (rt *_router) getConversation(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID := ctx.UserID
 	chatID := ps.ByName("chatID")
+	before := r.URL.Query().Get("before")
 
-	convo, err := rt.db.GetConversation(userID, chatID)
+	convo, err := rt.db.GetConversation(userID, chatID, before)
 	if errors.Is(err, database.ErrFetchingChat) {
 		ctx.Logger.WithError(err).Error("chat not found or user not authorised")
 		http.Error(w, database.NF, http.StatusNotFound)

@@ -22,8 +22,9 @@ type Message struct {
 	MessageID string    `json:"messageid"`
 	ChatID    string    `json:"chatid"`
 	SenderID  string    `json:"userid"`
-	Content   *string   `json:"content"` // pointer to text, can distinguish NULL and ""
-	Photo     *string   `json:"photo"`   // pointer to img
+	SenderN   string    `json:"username"`
+	Content   *string   `json:"content"`  // pointer to text, can distinguish NULL and ""
+	Photo     *string   `json:"photouri"` // link in memory to img
 	Status    string    `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
 	ReplyTo   *string   `json:"replyto"` // ptr to msgID
@@ -38,6 +39,7 @@ type Conversation struct {
 type MessagePreview struct {
 	MessageID string    `json:"messageid"`
 	SenderID  string    `json:"userid"`
+	SenderN   string    `json:"username"`
 	Timestamp time.Time `json:"timestamp"`
 	Content   *string   `json:"content"`
 	Photo     *string   `json:"photo"`

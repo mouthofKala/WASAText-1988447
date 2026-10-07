@@ -32,6 +32,7 @@ export default {
 			<h1 class="h2">Conversations</h1>
 			<div class="search-bar">
 				<input type="text" class="form-control" placeholder="search users...">
+				<!-- add behaviour-->
 			</div>
 			<button class="menu-button">⋮</button>
 			<!--add click functions for ^v-->

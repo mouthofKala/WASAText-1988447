@@ -25,7 +25,7 @@ func (db *appdbimpl) SendMessage(
 		return Message{}, err // 500
 	}
 	if !chatExists {
-		return Message{}, ErrBadReq // MODIFY IN API HANDLER
+		return Message{}, ErrBadReq
 	}
 
 	// db check: is userID a member?
@@ -52,6 +52,17 @@ func (db *appdbimpl) SendMessage(
 		return Message{}, ErrInvalidMsg // 400
 	}
 
+	// fetch username
+	var username string
+	err = db.c.QueryRow(`
+		SELECT username
+		FROM users
+		WHERE user-id = ?
+	`, userID).Scan(&username)
+	if err != nil {
+		return Message{}, ErrBadReq
+	}
+
 	timestamp := globaltime.Now()
 
 	tx, err := db.c.Begin()
@@ -68,6 +79,7 @@ func (db *appdbimpl) SendMessage(
 			message_id,
 			chat_id,
 			sender_id,
+			sender_n,
 			content,
 			photo,
 			status,

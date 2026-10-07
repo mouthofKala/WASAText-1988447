@@ -1,8 +1,10 @@
 package database
 
-import "errors"
+import (
+	"errors"
+)
 
-func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation, error) {
+func (db *appdbimpl) GetConversation(userID string, chatID string, before string) (Conversation, error) {
 	var convo Conversation
 
 	err := db.c.QueryRow(`
@@ -55,21 +57,51 @@ func (db *appdbimpl) GetConversation(userID string, chatID string) (Conversation
 	}
 
 	// search message history
-	rows, err = db.c.Query(`
-		SELECT
-			message_id,
-			chat_id,
-			sender_id,
-			content,
-			photo,
-			status,
-			timestamp,
-			reply_to,
-			fwd_from
-		FROM messages
-		WHERE chat_id = ?
-		ORDER BY timestamp DESC
-		LIMIT 50`, chatID)
+	if before == "" {
+		rows, err = db.c.Query(`
+			SELECT
+				message_id,
+				chat_id,
+				sender_id,
+				content,
+				photo,
+				status,
+				timestamp,
+				reply_to,
+				fwd_from
+			FROM (
+				SELECT *
+				FROM messages
+				WHERE chat_id = ?
+				ORDER BY timestamp DESC
+				LIMIT 50
+			)
+			ORDER BY timestamp ASC;
+			`, chatID)
+	} else {
+		rows, err = db.c.Query(`
+			SELECT
+				message_id,
+				chat_id,
+				sender_id,
+				content,
+				photo,
+				status,
+				timestamp,
+				reply_to,
+				fwd_from
+			FROM (
+				SELECT *
+				FROM messages
+				WHERE chat_id = ?
+					AND timestamp < ?
+				ORDER BY timestamp DESC
+				LIMIT 50
+			)
+			ORDER BY timestamp ASC;
+			`, chatID, before)
+	}
+
 	if !errors.Is(err, nil) {
 		return Conversation{}, ErrFetchingMessages
 	}

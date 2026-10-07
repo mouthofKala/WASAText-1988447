@@ -16,6 +16,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			chats.group_or_chat,
 			messages.message_id,
 			messages.sender_id,
+			messages.sender_n,
 			messages.content,
 			messages.photo,
 			messages.timestamp
@@ -43,6 +44,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 		var preview MessagePreview
 		var messageID sql.NullString
 		var senderID sql.NullString
+		var senderN sql.NullString
 		var content sql.NullString
 		var photo sql.NullString
 		var timestamp sql.NullTime
@@ -55,6 +57,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			&chat.GroupOrChat,
 			&messageID, //   msg may not exist
 			&senderID,
+			&senderN,
 			&content,
 			&photo,
 			&timestamp,
@@ -66,6 +69,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 		if messageID.Valid {
 			preview.MessageID = messageID.String
 			preview.SenderID = senderID.String
+			preview.SenderN = senderN.String
 			if timestamp.Valid {
 				preview.Timestamp = timestamp.Time
 			}

@@ -80,7 +80,7 @@ type AppDatabase interface {
 	AddToGroup(targetuserIDs []string, groupID string, userID string) (Chat, error)
 	SetGroupPhoto(photouri string, chatID string, userID string) (string, error)
 	SetGroupName(newname string, chatID string, userID string) error
-	GetConversation(userID string, chatID string) (Conversation, error)
+	GetConversation(userID string, chatID string, before string) (Conversation, error)
 	SendMessage(userID, chat_id string, content *string, photo *string, replyto *string, fwdfrom *string, messageID string) (Message, error)
 	DeleteMessage(msgID string, userID string, chatID string) error
 	ForwardMessage(userID, targetchat_id string, fwdmsgID string, chatID string, newmsgID string) (Message, error)
@@ -128,6 +128,7 @@ func New(db *sql.DB) (AppDatabase, error) {
             message_id TEXT PRIMARY KEY,
             chat_id TEXT NOT NULL,
             sender_id TEXT NOT NULL,
+			sender_n TEXT NOT NULL,
             content TEXT,
             photo TEXT,
             status TEXT NOT NULL,
