@@ -29,7 +29,7 @@ func (rt *_router) makeChatGroup(
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
-	members := append(request.Members, ctx.UserID)
+	request.Members = append(request.Members, ctx.UserID)
 
 	if request.Photo != nil && request.GrouporChat == false {
 		ctx.Logger.Error("bad req: requesting private chat but attaching a photo")
@@ -44,7 +44,7 @@ func (rt *_router) makeChatGroup(
 	photouri := database.DefaultGroupPhoto
 	basepath := "storage/data"
 
-	err = rt.db.ValidateChatGroup(members, request.GrouporChat)
+	err = rt.db.ValidateChatGroup(request.Members, request.GrouporChat)
 	if errors.Is(err, database.ErrUserNotFound) {
 		ctx.Logger.WithError(err).Error("bad req: one or more users not found")
 		http.Error(w, database.BR, http.StatusBadRequest)
@@ -84,7 +84,7 @@ func (rt *_router) makeChatGroup(
 		chatID.String(),
 		request.ChatName,
 		photouri,
-		members,
+		request.Members,
 		request.GrouporChat,
 	)
 

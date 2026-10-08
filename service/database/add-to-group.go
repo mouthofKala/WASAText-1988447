@@ -39,7 +39,7 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 	if !errors.Is(err, nil) {
 		return Chat{}, err // internal server error
 	}
-	if grouporchat != "group" {
+	if grouporchat != group {
 		return Chat{}, ErrNotaGroup // 403
 	}
 
@@ -85,6 +85,9 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 				WHERE chat_id = ? AND user_id = ?)
 		`, groupID, targetuserID).Scan(&alrpresent)
 
+		if err != nil {
+			return Chat{}, err
+		}
 		if alrpresent {
 			return Chat{}, ErrUserAlreadyIn // bad request
 		}

@@ -13,7 +13,7 @@ func (db *appdbimpl) SetGroupPhoto(photouri string, chatID string, userID string
 	if !errors.Is(err, nil) {
 		return "", err // 500
 	}
-	if privacy != "group" {
+	if privacy != group {
 		return "", ErrNotaGroup // 403
 	}
 

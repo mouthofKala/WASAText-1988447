@@ -1,8 +1,8 @@
 package api
 
-//TBD in api handler:
-//in filesystem create a dir storage/data/reactions
-//and each file has the msgID as the name. json containing a list of pairs: userID, unicode char
+// TBD in api handler:
+// in filesystem create a dir storage/data/reactions
+// and each file has the msgID as the name. json containing a list of pairs: userID, unicode char
 
 import (
 	"encoding/json"
@@ -67,7 +67,7 @@ func (rt *_router) commentMessage(
 		return
 	}
 
-	if err = rt.storage.AddReaction(reaction, string(chatID)); !errors.Is(err, nil) {
+	if err = rt.storage.AddReaction(reaction, chatID); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error saving reaction")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return

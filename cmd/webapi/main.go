@@ -84,7 +84,7 @@ func run() error {
 	apirouter, err := api.New(api.Config{
 		Logger:   logger,
 		Database: db,
-		Storage:  storage, //.New("service/storage/data/uploads"),
+		Storage:  storage, // .New("service/storage/data/uploads"),
 	})
 	if err != nil {
 		logger.WithError(err).Error("error creating the API server instance")
@@ -135,6 +135,9 @@ func run() error {
 		if err != nil {
 			logger.WithError(err).Warning("error during graceful shutdown of HTTP server, forcing closing of server")
 			err = apiserver.Close()
+			if err != nil {
+				// what?
+			}
 			if closeErr := apiserver.Close(); closeErr != nil {
 				logger.WithError(closeErr).Warning("error forcing closure of HTTP server")
 			}

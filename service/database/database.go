@@ -33,6 +33,7 @@ import (
 )
 
 const DefaultGroupPhoto = "storage/data/pfp/black.jpg"
+const group = "group"
 
 var ErrUserNotFound = errors.New("user not found")
 var ErrUsernameUnavailable = errors.New("username already in use")

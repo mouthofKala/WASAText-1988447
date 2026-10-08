@@ -15,7 +15,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	// read requestbody json to ckeck 400 bad request
 	var request struct {
-		Username string `json:"targetusername"` //check why not matching
+		Username string `json:"targetusername"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&request)

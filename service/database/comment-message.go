@@ -6,7 +6,7 @@ import (
 )
 
 func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji rune) (Reaction, error) {
-	//does chatID exist? 400
+	// does chatID exist? 400
 	var exist bool
 	err := db.c.QueryRow(`
 		SELECT EXISTS(
@@ -20,7 +20,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		return Reaction{}, err
 	}
 
-	//is userID in chat ID? 403
+	// is userID in chat ID? 403
 	var membership bool
 	err = db.c.QueryRow(`
 		SELECT EXISTS(
@@ -35,7 +35,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		return Reaction{}, err
 	}
 
-	//does msgID exist? 400
+	// does msgID exist? 400
 	var msgexists bool
 	err = db.c.QueryRow(`
 		SELECT EXISTS(
@@ -50,7 +50,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		return Reaction{}, err
 	}
 
-	//is there a reaction already?
+	// is there a reaction already?
 	var reac Reaction
 	err = db.c.QueryRow(`
 		SELECT reaction_id
@@ -58,7 +58,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		WHERE message_id = ? AND user_id = ?`,
 		msgID, userID).Scan(&reac.ReactionID)
 	if errors.Is(err, sql.ErrNoRows) {
-		//there is NOT a reaction already
+		// there is NOT a reaction already
 		_, err = db.c.Exec(`
 			INSERT INTO reactions
 			(reaction_id, message_id, chat_id, user_id, emoji)
@@ -76,7 +76,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		}, nil
 	}
 	if !errors.Is(err, nil) {
-		return Reaction{}, err //500
+		return Reaction{}, err // 500
 	}
 
 	_, err = db.c.Exec(`
@@ -90,7 +90,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		return Reaction{}, ErrExec
 	}
 
-	//make a reaction ID in handler
+	// make a reaction ID in handler
 
 	return Reaction{
 		ReactionID: reac.ReactionID,

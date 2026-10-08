@@ -26,14 +26,14 @@ func (rt *_router) setMyPhoto(
 	}
 
 	// save newphotobytes to a uri
-	photoURI, err := rt.storage.SavePFP(newphotobytes, string(ctx.UserID))
+	photoURI, err := rt.storage.SavePFP(newphotobytes, ctx.UserID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error storing photo")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	oldphotouri, err := rt.db.SetMyPhoto(photoURI, string(ctx.UserID))
+	oldphotouri, err := rt.db.SetMyPhoto(photoURI, ctx.UserID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo. rolling back...")
 		_ = rt.storage.DeletePFP(photoURI)

@@ -1,7 +1,9 @@
 <script>
 export default {
     data(){
-        showMenu: false
+            return{
+                showMenu: false
+            }
     },
     props: {
         message: {
@@ -15,6 +17,17 @@ export default {
         },
         actions(){
             this.showMenu = !this.showMenu
+        },
+        react(emoji) {
+            this.$emit("react", {
+                message: this.message,
+                emoji: emoji
+            })
+            this.showMenu = false
+        },
+        reply(){
+            this.$emit("reply", this.message)
+            this.showMenu = false
         }
     }
 }
@@ -23,21 +36,19 @@ export default {
 <template>
     <div class="message-item">
         <button class="msg-user" @click="openProfile">{{ message.username }}:</button>
-        <div class="all-msg" @click="showMenu">
+        <button class="all-msg" @click="actions">
             <img v-if="message.photouri" :src="message.photouri" alt="msgphoto" />
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
-        </div>
+        </button>
         <div v-if="showMenu" class="menuuu">
-            <button>❤️</button>
-            <button>👍</button>
-            <button>😂</button>
-            <button>😢</button>
-            <button>↩ Reply</button>
+            <button @click="react('❤️')">❤️</button>
+            <button @click="react('👍')">👍</button>
+            <button @click="react('😂')">😂</button>
+            <button @click="react('😢')">😢</button>
+            <button @click="reply">↩ Reply</button>
         </div>
-
-
     </div>
 </template>
 

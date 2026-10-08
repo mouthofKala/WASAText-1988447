@@ -16,6 +16,10 @@ type Storage struct {
 	BasePath string
 }
 
+const jpeg = "jpeg"
+const jpg = ".jpg"
+const png = "png"
+
 func New(basePath string) *Storage {
 	return &Storage{
 		BasePath: basePath,
@@ -28,12 +32,12 @@ func (s *Storage) ParseURI(data []byte, userID string) (string, error) {
 		return "", database.ErrInvalidImage
 	}
 
-	if format != "jpeg" && format != "png" {
+	if format != jpeg && format != png {
 		return "", database.ErrInvalidImage
 	}
-	extension := ".png"
-	if format == "jpeg" {
-		extension = ".jpg"
+	extension := "." + png
+	if format == jpeg {
+		extension = jpg
 	}
 	return userID + extension, nil
 }
@@ -48,16 +52,16 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 		return "", database.ErrInvalidImage
 	}
 
-	if format != "jpeg" && format != "png" {
+	if format != jpeg && format != png {
 		return "", database.ErrInvalidImage
 	}
 
 	// SIZE CVHECK GOES HERE
 
 	// img can be saved
-	extension := ".png"
-	if format == "jpeg" {
-		extension = ".jpg"
+	extension := "." + png
+	if format == jpeg {
+		extension = jpg
 	}
 	filename := userID + extension
 	dir := filepath.Join(s.BasePath, "pfp")
@@ -100,13 +104,13 @@ func (s *Storage) SaveMSGPhoto(data []byte, messageID string, chatID string) (st
 		return "", database.ErrInvalidImage
 	}
 
-	if format != "jpeg" && format != "png" {
+	if format != jpeg && format != png {
 		return "", database.ErrInvalidImage
 	}
 
-	extension := "." + "png"
-	if format == "jpeg" {
-		extension = ".jpg"
+	extension := "." + png
+	if format == jpeg {
+		extension = jpg
 	}
 
 	filename := messageID + extension
@@ -154,7 +158,7 @@ func (s *Storage) DeleteMSGFiles(messageID string, chatID string) error {
 	}
 
 	// if present, delete msg photo
-	for _, extension := range []string{".jpg", ".png"} {
+	for _, extension := range []string{jpg, "." + png} {
 		photopath := filepath.Join(s.BasePath, "msgpics", chatID, messageID+extension)
 		if err := os.Remove(photopath); err != nil && !os.IsNotExist(err) {
 			return database.ErrStorage

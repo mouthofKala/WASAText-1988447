@@ -51,6 +51,17 @@ export default{
             if (event.target.scrollTop===0){
                 this.loadingOlderMsg();
             }
+        },
+
+        addReaction(data){
+            console.log(data.message)
+            console.log(data.emoji)
+
+            // call backend
+        },
+        replyToMsg(message){
+            console.log(message)
+            // open or set reply UI, (added backend method)
         }
     },
     mounted(){
@@ -83,8 +94,14 @@ export default{
 
         <div v-else class="message-list" @scroll="handleScroll">
             <p v-if="msglist.length===0"></p>
-            <MessageItem v-for="message in msglist" :key="message.messageid" :message="message" />
-            <!--SORT THEM!
+            <MessageItem
+                v-for="message in msglist"
+                :key="message.messageid"
+                :message="message"
+                @react="addReaction"
+                @reply="replyToMsg"
+            />
+            <!--
             clicking open options: forward, comment and,
             if already commented, uncomment. also delete
             message if it is your own msg-->
