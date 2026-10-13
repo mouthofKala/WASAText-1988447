@@ -135,7 +135,7 @@ func New(db *sql.DB) (AppDatabase, error) {
             status TEXT NOT NULL,
             timestamp DATETIME NOT NULL,
             reply_to TEXT,
-            fwd_from TEXT
+            fwd_from TEXT,
 			CHECK (content IS NOT NULL OR photo IS NOT NULL)
         );
 

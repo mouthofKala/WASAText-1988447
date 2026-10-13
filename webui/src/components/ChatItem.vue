@@ -29,7 +29,6 @@ export default {
             </p>
             <p v-else-if="chat.mostRecentMsg.content && chat.mostRecentMsg.photo" class="msg-prev">
                 📷 {{ chat.mostRecentMsg.content }}
-                <!--to be shortened to fit device, max 2 rows of text-->
             </p>
             <p v-else>error with message preview...</p>
         </div>

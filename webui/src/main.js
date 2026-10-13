@@ -9,6 +9,12 @@ import './assets/dashboard.css'
 import './assets/main.css'
 
 const app = createApp(App)
+const userID = sessionStorage.getItem("userID");
+
+if (userID) {
+    axios.defaults.headers.common.Authorization = `Bearer ${userID}`;
+}
+
 app.config.globalProperties.$axios = axios;
 app.component("ErrorMsg", ErrorMsg);
 app.component("LoadingSpinner", LoadingSpinner);

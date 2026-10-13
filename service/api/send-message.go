@@ -28,7 +28,8 @@ func (rt *_router) sendMessage(
 		return
 	}
 
-	if err := r.ParseMultipartForm(5 << 20); !errors.Is(err, nil) {
+	r.Body = http.MaxBytesReader(w, r.Body, 10*1024*1024)
+	if err := r.ParseMultipartForm(2 * 1024 * 1024); err != nil {
 		ctx.Logger.WithError(err).Error("error parsing multipart req")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
@@ -52,6 +53,8 @@ func (rt *_router) sendMessage(
 	msgID := msgid.String()
 
 	var photouri *string
+
+	defer r.MultipartForm.RemoveAll()
 	file, _, err := r.FormFile("photo")
 	if errors.Is(err, nil) {
 		defer file.Close()

@@ -65,6 +65,7 @@ func (rt *_router) wrapAuth(fn httpRouterHandler, public bool) func(http.Respons
 			if !exists {
 				ctx.Logger.WithError(err).Error("this user does not exist in the db")
 				http.Error(w, database.Un, http.StatusUnauthorized)
+				return
 			}
 
 			// if public, do nothing else

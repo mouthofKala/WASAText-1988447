@@ -32,7 +32,7 @@ func (db *appdbimpl) MakeChatGroup(chatID string, chatname string, photouri stri
 			creation_date,
 			photo)
 		VALUES (?,?,?,?,?)
-	`, chatID, grouporchat, chatname, creationdate, "storage/data"+photouri)
+	`, chatID, grouporchat, chatname, creationdate, photouri)
 
 	if !(errors.Is(err, nil)) {
 		return Chat{}, ErrExec

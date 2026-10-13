@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -20,7 +21,7 @@ func (rt *_router) setGroupPhoto(
 	ChatID := ps.ByName("chatID")
 	userID := ctx.UserID
 
-	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, 10*1024*1024)
 	newphotobytes, err := io.ReadAll(r.Body)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error reading uploaded photo")
@@ -66,5 +67,9 @@ func (rt *_router) setGroupPhoto(
 	if err := rt.storage.DeletePFP(oldphotoURI); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error deleting old group photo")
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
+		ctx.Logger.WithError(err).Error("error encoding new group photouri")
+	}
 }

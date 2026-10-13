@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -16,8 +17,7 @@ func (rt *_router) setMyPhoto(
 	ps httprouter.Params,
 	ctx reqcontext.RequestContext) {
 
-	// FOR THIS TO WORK THE FRONTEND HAS TO HAVE AN IMG REQUESTBODY
-	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, 10*1024*1024)
 	newphotobytes, err := io.ReadAll(r.Body)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error reading uploaded photo")
@@ -44,5 +44,8 @@ func (rt *_router) setMyPhoto(
 		ctx.Logger.WithError(err).Error("error deleting old pfp")
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
+		ctx.Logger.WithError(err).Error("Error encoding new photouri")
+	}
 }

@@ -1,24 +1,28 @@
 
 <script>
 export default {
-    data: function(){ // state
+    data: function(){
         return {
             username: "",
             errormsg: null,
-            loading: false, // waiting for backend
+            loading: false,
         }
     },
     methods: {
         async doLogin() {
             this.loading = true;
             this.errormsg = null;
+
         
             try {
-                let response = await this.$axios.post("/session", {
-                    username: this.username
+                const response = await this.$axios.post("/session", {
+                    name: username
                 });
+                const userID = response.data.identifier;
+                sessionStorage.setItem("userID", userID);
+                this.$axios.defaults.headers.common.Authorization = `Bearer ${userID}`;
                 console.log("login success", response.data);
-                // ?
+                this.$router.push(`/chats`)
             }catch(e){
                 this.errormsg = e.toString();
             }

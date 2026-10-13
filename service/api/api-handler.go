@@ -7,17 +7,17 @@ import (
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
 	// Register routes
-	rt.router.GET("/context", rt.wrap(rt.getContextReply))
-	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile))
 	rt.router.GET("/users", rt.wrap(rt.searchUsers))
-	rt.router.PUT("/profile/username", rt.wrap(rt.setMyUsername))
-	rt.router.PUT("/profile/photo", rt.wrap(rt.setMyPhoto))
+	rt.router.GET("/users/me", rt.wrap(rt.getMyProfile))
+	rt.router.PUT("/users/me/username", rt.wrap(rt.setMyUsername))
+	rt.router.PUT("/users/me/photo", rt.wrap(rt.setMyPhoto))
+	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile))
 	rt.router.POST("/session", rt.wrapPublic(rt.doLogin))
 	rt.router.GET("/chats", rt.wrap(rt.getMyConversations))
 	rt.router.POST("/chats", rt.wrap(rt.makeChatGroup))
 	rt.router.POST("/chats/:chatID/members", rt.wrap(rt.addToGroup))
-	rt.router.PUT("/profile/:chatID/photo", rt.wrap(rt.setGroupPhoto))
-	rt.router.PUT("/profile/:chatID/groupname", rt.wrap(rt.setGroupName))
+	rt.router.PUT("/chats/:chatID/photo", rt.wrap(rt.setGroupPhoto))
+	rt.router.PUT("/chats/:chatID/groupname", rt.wrap(rt.setGroupName))
 	rt.router.GET("/chats/:chatID/messages", rt.wrap(rt.getConversation))
 	rt.router.POST("/chats/:chatID/messages", rt.wrap(rt.sendMessage))
 	rt.router.DELETE("/chats/:chatID/messages/:messageID", rt.wrap(rt.deleteMessage))

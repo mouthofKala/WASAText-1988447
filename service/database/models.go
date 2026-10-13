@@ -3,9 +3,9 @@ package database
 import "time"
 
 type User struct {
-	UserID   string
-	Username string
-	Photo    string
+	UserID   string `json:"userid"`
+	Username string `json:"username"`
+	Photo    string `json:"photo"`
 }
 
 type Chat struct {
@@ -19,16 +19,17 @@ type Chat struct {
 }
 
 type Message struct {
-	MessageID string    `json:"messageid"`
-	ChatID    string    `json:"chatid"`
-	SenderID  string    `json:"userid"`
-	SenderN   string    `json:"username"`
-	Content   *string   `json:"content"`  // pointer to text, can distinguish NULL and ""
-	Photo     *string   `json:"photouri"` // link in memory to img
-	Status    string    `json:"status"`
-	Timestamp time.Time `json:"timestamp"`
-	ReplyTo   *string   `json:"replyto"` // ptr to msgID
-	FwdFrom   *string   `json:"fwdfrom"` // ptr2 chatID
+	MessageID string     `json:"messageid"`
+	ChatID    string     `json:"chatid"`
+	SenderID  string     `json:"userid"`
+	SenderN   string     `json:"username"`
+	Content   *string    `json:"content"`  // pointer to text, can distinguish NULL and ""
+	Photo     *string    `json:"photouri"` // link in memory to img
+	Status    string     `json:"status"`
+	Timestamp time.Time  `json:"timestamp"`
+	ReplyTo   *string    `json:"replyto"` // ptr to msgID
+	FwdFrom   *string    `json:"fwdfrom"` // ptr2 chatID
+	Reacts    []Reaction `json:"reactions"`
 } // basically use ptrs when info is optional
 
 type Conversation struct {

@@ -14,6 +14,7 @@ func (db *appdbimpl) SendMessage(
 	replyto *string,
 	fwdfrom *string,
 	messageID string) (Message, error) {
+
 	// db check: does target chat exist?
 	var chatExists bool
 	err := db.c.QueryRow(`
@@ -46,6 +47,18 @@ func (db *appdbimpl) SendMessage(
 	// target chat existing is implied if you assume there are no
 	// "illegal" actions on the db which leave with a deleted chat
 	// but no deleted membership, so it's best to check both dbs
+
+	// check: is replyto valid (the msgID of replyto exists and belongs to the same chat as the request)
+	var replytoexist bool
+	err = db.c.QueryRow(`
+		SELECT EXISTS(
+			SELECT 1
+			FROM messages
+			WHERE message_id = ? AND chat_id = ?)`,
+		replyto, chat_id).Scan(&replytoexist)
+	if !replytoexist {
+		return Message{}, ErrInvalidMsg
+	}
 
 	// is message VALID (must have at least text or img)
 	if (content == nil || *content == "") && photo == nil {
@@ -85,9 +98,9 @@ func (db *appdbimpl) SendMessage(
 			status,
 			timestamp,
 			reply_to,
-			fwd_from)
-		VALUES (?,?,?,?,?,?,?,?,?)`,
-		messageID, chat_id, userID, content, photo, "sent", timestamp, replyto, fwdfrom)
+			fwd_from, reacts)
+		VALUES (?,?,?,?,?,?,?,?,?,?)`,
+		messageID, chat_id, userID, content, photo, "sent", timestamp, replyto, fwdfrom, []Reaction{})
 	if !errors.Is(err, nil) {
 		return Message{}, ErrExec //  gneeric 500 bc uniquely identifiable
 	}
@@ -133,5 +146,6 @@ func (db *appdbimpl) SendMessage(
 		Timestamp: timestamp,
 		ReplyTo:   replyto,
 		FwdFrom:   fwdfrom,
+		Reacts:    []Reaction{},
 	}, nil
 }

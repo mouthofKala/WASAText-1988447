@@ -56,7 +56,7 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 		return "", database.ErrInvalidImage
 	}
 
-	// SIZE CVHECK GOES HERE
+	// SIZE CVHECK GOES HERE ??
 
 	// img can be saved
 	extension := "." + png
@@ -112,6 +112,8 @@ func (s *Storage) SaveMSGPhoto(data []byte, messageID string, chatID string) (st
 	if format == jpeg {
 		extension = jpg
 	}
+
+	// SIZE CHECK?
 
 	filename := messageID + extension
 	dir := filepath.Join(s.BasePath, "msgpics", chatID)

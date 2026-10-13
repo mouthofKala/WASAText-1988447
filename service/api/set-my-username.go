@@ -44,5 +44,9 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(request.Username); !errors.Is(err, nil) {
+		ctx.Logger.WithError(err).Error("error encoding new username")
+	}
+	// kinda useless to return new username but whatevs
 }

@@ -57,6 +57,14 @@ func (db *appdbimpl) DeleteMessage(msgID string, userID string, chatID string) e
 	if !errors.Is(err, nil) {
 		return ErrExec
 	}
+
+	_, err = tx.Exec(`
+		DELETE FROM reactions
+		WHERE message_id = ?
+	`, msgID)
+	if !errors.Is(err, nil) {
+		return ErrExec
+	}
 	if err = tx.Commit(); !errors.Is(err, nil) {
 		return ErrTX
 	}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -47,5 +48,10 @@ func (rt *_router) setGroupName(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+	w.Header().Set("Content-Type", "application/json")
+
+	if err = json.NewEncoder(w).Encode(request.NewName); !errors.Is(err, nil) {
+		ctx.Logger.WithError(err).Error("Error encoding response")
+	}
+	// same
 }

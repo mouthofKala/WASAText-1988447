@@ -935,7 +935,7 @@ components:
           type: string
           pattern: '^[\s\S]+$'
           minLength: 1
-          maxLength: 20000 #maybe I should cut off the msg? or is it a frontend task?
+          maxLength: 20000
         contentType:
           type: string
           description: whether msg is text, photo or both

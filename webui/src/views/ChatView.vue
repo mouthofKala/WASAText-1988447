@@ -1,50 +1,66 @@
+
 <script>
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 export default{
     data: function(){
         return{
+            userID: sessionStorage.getItem("userID"),
             errormsg:null,
             loading:false,
             loadingOlder:false,
             convo: null,
             msglist:[],
-        }
+            showbuttns: false,
+            replyingto: null,
+            msgtext:"",
+            otherUser: null,
+            imgFile: null,
+            imgPrev:null,
+            moremsg:true,
+        };
     },
     methods:{
         async getConversation(){
             this.loading = true;
             this.errormsg = null;
             try{
-                let response = await this.$axios.get( `/chats/${this.$route.params.chatid}`)
+                let response = await this.$axios.get( `/chats/${this.$route.params.chatid}/messages`)
                 this.convo=response.data;
-                this.msglist = response.data.Messages;
+                this.msglist = response.data.messages || [];
+                const chat = this.convo.chat;
+                if (!chat.grouporchat && chat.members){
+                    const otherID = chat.members.find(id=>id!==this.userID);
+                    if (otherID){
+                        const uresponse=await this.$axios.get(`/users/${otherID}`);
+                        this.otherUser=uresponse.data;
+                    }
+                }
             } catch(e){
                 this.errormsg=e.toString();
+            } finally {
+                this.loading=false;
             }
-            this.loading=false;
         },
         async loadingOlderMsg(){
-            if (this.loadingOlder || this.msglist.length ===0){
+            if (this.loadingOlder || !this.moremsg || this.msglist.length === 0){
                 return;
             }
             this.loadingOlder = true;
             try {
                 const oldest = this.msglist[0];
-                let response = await this.$axios.get(`/chats/${this.$route.params.chatid}`,
-                    {
-                        params: {
-                            before: oldest.timestamp
-                        }
-                    }
-                );
-                const oldermsgs= response.data.Messages;
-                this.msglist=[
-                    ...oldermsgs,
-                    ...this.msglist
-                ];
-            } catch (e){
+                const response = await this.$axios.get(`/chats/${this.$route.params.chatid}/messages`,
+                    {params: {before: oldest.timestamp}});
+                const oldermsgs= response.data.messages||[];
+                if (oldermsgs.length===0){this.moremsg=false;}
+                else {
+                    this.msglist=[
+                        ...oldermsgs,
+                        ...this.msglist
+                    ];
+                }
+            } catch (e) {
                 this.errormsg = e.toString();
-            }
-            this.loadingOlder=false;
+            } finally {this.loadingOlder=false;}
         },
 
         handleScroll(event){
@@ -52,41 +68,193 @@ export default{
                 this.loadingOlderMsg();
             }
         },
+        async openChatProfile(){
+            if (!this.convo) return;
+            const chat = this.convo.chat;
+            if (chat.grouporchat){
+                this.$router.push(`/chats/${chat.chatid}/settings`);
+            } else {
+                const otherID = chat.Members.find(id=>id!==this.userID);
+                if (otherID){
+                    this.$router.push(`users/${otherID}`);
+                }
+            }
+        },
 
-        addReaction(data){
-            console.log(data.message)
-            console.log(data.emoji)
+        addMembers(){
+            this.$router.push(`/chats/${this.$route.params.chatid}/members`);
+        },
 
-            // call backend
+        async addReaction({msg, emoji}){
+            try{
+                const response = await this.$axios.post(
+                    `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions`, {emoji}
+                );
+                if (!msg.reactions){
+                    msg.reactions=[];
+                }
+                msg.reactions.push(response.data);
+            } catch(e){
+                this.errormsg=e.toString();
+            }
         },
         replyToMsg(message){
-            console.log(message)
-            // open or set reply UI, (added backend method)
-        }
+            this.replyingto=message;
+        },
+        cancel(){this.replyingto=null;},
+
+        chooseImg(){
+            this.$refs.imageInput.click();
+        },
+
+        selectImg(event){
+            const file = event.target.files?.[0];
+            if(!file) return;
+            if(!file.type.startsWith('image/')) {
+                this.errormsg='must select an img file';
+                event.target.value='';
+                return;
+            }
+            if (file.size > 10*1024*1024){
+                this.errormsg='img max size must be 10MB'
+                event.target.value='';
+                return;
+            }
+            this.errormsg=null;
+            this.imgFile=file;
+            if (this.imgPrev){
+                URL.revokeObjectURL(this.imgPrev);
+            }
+            this.imgPrev=URL.createObjectURL(file);
+        },
+
+        removeImg(){
+            if (this.imgPrev){
+                URL.revokeObjectURL(this.imgPrev);
+            }
+            this.imgFile=null;
+            this.imgPrev=null;
+            if (this.$refs.imageInput){
+                this.$refs.imageInput.value='';
+            }
+        },
+
+        async sendMessage(){
+            const content = this.msgtext.trim();
+            if (!content &&!this.imgFile) return;
+            if (content.length>20000){
+                this.errormsg = 'max length (20000 chars) exceeded';
+                return;
+            }
+            const formData=new FormData();
+            if (content){
+                formData.append('content', content);
+            }
+            if (this.imgFile){
+                formData.append('photo', this.imgFile);
+            }
+            if (this.replyingto){
+                formData.append("replyto", this.replyingto.messageid);
+            }
+            try{
+                const response = await this.$axios.post(
+                    `/chats/${this.$route.params.chatid}/messages`, formData);
+                const newmsg={
+                    ...response.data,
+                    username:response.data.username || 'me',
+                    userid: response.data.userid||this.userID,
+                    reactions: response.data.reactions||[],
+                };
+                this.msglist.push(newmsg);
+                this.msgtext="";
+                this.replyingto=null;
+                this.removeImg();
+            } catch(e){
+                this.errormsg=e.toString();
+            }
+        },
+        async delReaction({msg, reac}){
+            try{
+                await this.$axios.delete(
+                    `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions/${reac.reactionid}`);
+                msg.reactions=(msg.reactions||[]).filter(r=>r.ReactionID!==reac.reactionid);
+            }catch(e){
+                this.errormsg=e.toString();
+            }
+        },
+
+        async delMsg(msg){
+            try {
+                await this.$axios.delete(
+                    `/chats/${this.$route.params.chatid}/messages/${msg.messageid}`);
+                this.msglist=this.msglist.filter(m=>m.messageid!==msg.messageid);
+            } catch(e){
+                this.errormsg=e.toString();
+            }
+        },
+
+		togglebuttns(){
+			this.showbuttns = !this.showbuttns;
+		},
+		async leave(){
+            try{
+                await this.$axios.delete(`/chats/${this.$route.params.chatid}/members/me`);
+            this.$router.push("/");
+            }catch(e){
+            this.errormsg=e.toString();
+            }
+        },
     },
     mounted(){
         this.getConversation()
+    },
+    beforeUnmount(){
+        if (this.imgPrev){
+            URL.revokeObjectURL(this.imgPrev);
+        }
     }
-}
+};
+
 </script>
 
 <template>
     <div class="chat-page">
         <div class="chat-header">
-            <button class="chat-profile-pic">😀</button>
-            <!--pfp which is response data if group,
-            otherwise it is the other user's pfp
-            if you click it and it is a group, you can
-            modify it (opens a popup on screen. if you
-            click outside of it, it disappears)-->
+            <button @click="this.$router.back()">↩</button>
+            <button v-if="convo" class="chat-title" @click="openChatProfile">
+                <img 
+                    v-if="convo.chat.grouporchat && convo.chat.photo"
+                    :src="convo.chat.photo"
+                    alt="group pic"
+                    class="chat-profile-pic" 
+                />
 
-            <h1 v-if="convo">{{ convo.Chat.chatname }}</h1>
-            <!--if you click it and it is a groupchat name,
-            you can change it. same as above-->
+                <img v-else-if="otherUser && otherUser.photo"
+                    :src="otherUser.photo"
+                    alt="user pic"
+                    class="chat-profile-pic"/>
+                <span v-else class="chat-profile-pic">😀</span>
 
-            <button class="settings-button">⋮</button>
-            <!--three dot menu, if click ou get a small menu
-            with addtogroup button and leave button.-->
+                <span v-if="convo.chat.grouporchat">
+                    {{ convo.chat.chatname }}
+                </span>
+                <span v-else-if="otherUser">
+                    {{ otherUser.username }}
+                </span>
+                <span v-else>profile</span>
+            </button>
+
+            <button class="settings-button" @click="togglebuttns">⋮</button>
+
+            <div v-if="showbuttns" class="menuuu">
+                <template v-if="convo?.chat.grouporchat">
+                    <button @click="addMembers">Add users</button>
+                    <button @click="leave" class="leavebttn">Leave</button>
+                </template>
+                <template v-else>
+                    <button @click="leave"class="leavebttn">Leave</button>
+                </template>
+            </div>
         </div>
 
         <ErrorMsg v-if="errormsg" :msg="errormsg" />
@@ -98,31 +266,146 @@ export default{
                 v-for="message in msglist"
                 :key="message.messageid"
                 :message="message"
+                :userID="userID"
                 @react="addReaction"
                 @reply="replyToMsg"
+                @unreact="delReaction"
+                @delete="delMsg"
             />
-            <!--
-            clicking open options: forward, comment and,
-            if already commented, uncomment. also delete
-            message if it is your own msg-->
         </div>
+
+        <div v-if="replyingto" class="reply-prev">
+            <!--in case msg is deleted/not found-->
+            <strong> Replying to {{ replyingto.username }} || 'message'</strong>
+            <p>{{ replyingto.Content }}</p>
+            <button type="button" @click="cancel">✕</button>
+        </div>
+
+        <div v-if="imgPrev" class="img-prev">
+            <img :src="imgPrev" alt="msgphoto" />
+            <button type="button" @click="removeImg">✕</button>
+        </div>
+        <form class="msg-composer" @submit.prevent="sendMessage">
+            <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
+            <button type="button" @click="chooseImg" aria-label="attach img">📷</button>
+            <input v-model="msgtext" type="text" placeholder="write a message..." maxlength="20000"/>
+            <button type="submit" Ldisabled="!msgtext.trim() && !imgFile" aria-label="send msg">➤</button>
+            <!--disable if msg has img and length exceeds ... chars TBD-->
+        </form>
         
     </div>
 </template>
 
 <style scoped>
-    .chat-page{
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
-    .chat-header{
-        flex-shrink: 0;
-    }
-    .message-list{
-        flex: 1;
-        overflow-y: auto;
-    }
+.chat-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+.chat-page{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.chat-header{
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 8px;
+}
+.chat-profile-pic
+.message-list{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border-bottom-style: solid gainsboro
+}
+.chat-profile-pic{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.msg-composer{
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+}
+.msg-composer input{
+    flex: 1;
+}
 
+.settings-button{
+    background-color: blueviolet;
+    text-decoration-color:white;
+}
+
+.menuuu{
+    position:absolute;
+    top:100%;
+    right:8px;
+    z-index:10;
+    display: flex;
+    border: 1px solid grey;
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    flex-direction: column;
+}
+
+.reply-prev{
+    border-left: 3px solid gray;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+}
+.reply-prev img{
+    padding: 8px 12px;
+}
+.reply-prev p {
+    margin: 4px 0 0;
+}
+
+.chat-title{
+    background: transparent;
+}
+
+
+.img-prev{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+}
+.img-prev img{
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain
+    border-radius=8px;
+}
+
+.msg-composer button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fallback-pic{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.leavebttn{
+    background: red;
+    text-decoration-color: white;
+}
 
 </style>
