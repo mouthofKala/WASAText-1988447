@@ -1,5 +1,6 @@
 <script>
 import LoadingSpinner from '../components/LoadingSpinner.vue';
+import ErrorMsg from '../components/ErrorMsg.vue';
 export default{
     data() {
         return{
@@ -12,7 +13,6 @@ export default{
             newPhoto: null,
             imgPrev: null,
             savingPhoto: false,
-            // isn't it better to just init with the original one?
         };
     },
     methods:{

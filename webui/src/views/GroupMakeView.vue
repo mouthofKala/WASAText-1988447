@@ -1,7 +1,6 @@
 <script>
 import Searchbar from '../components/Searchbar.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
 
 export default {
     components: {Searchbar, ErrorMsg},
