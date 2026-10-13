@@ -13,7 +13,7 @@ const router = createRouter({
 		{path:'/chats/newgroup', component: GroupMakeView},	
 		{path:'/chats/:chatid/settings', component: ProfileView},	
 		{path: '/users', component: HomeView},
-		{path: '/users/me', component: ProfileView},
+		{path: '/profile', component: ProfileView},
 		{path: '/users/:userid', component: ProfileView},
 		{path: '/session', component: LoginView},
 

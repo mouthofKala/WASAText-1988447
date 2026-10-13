@@ -8,7 +8,7 @@
         methods: {
             async getMyProfile(){
                 try{
-                    const response = await this.$axios.get("/users/me");
+                    const response = await this.$axios.get("/profile");
                     this.photo=response.data.photo;
                 } catch(e){
 
@@ -16,7 +16,7 @@
                 }
             },
             goToProfile(){
-                this.$router.push(`/users/me`)
+                this.$router.push(`/profile`)
             }
         },
         mounted(){

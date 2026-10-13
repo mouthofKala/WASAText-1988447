@@ -8,9 +8,9 @@ import (
 func (rt *_router) Handler() http.Handler {
 	// Register routes
 	rt.router.GET("/users", rt.wrap(rt.searchUsers))
-	rt.router.GET("/users/me", rt.wrap(rt.getMyProfile))
-	rt.router.PUT("/users/me/username", rt.wrap(rt.setMyUsername))
-	rt.router.PUT("/users/me/photo", rt.wrap(rt.setMyPhoto))
+	rt.router.GET("/profile", rt.wrap(rt.getMyProfile))
+	rt.router.PUT("/profile/username", rt.wrap(rt.setMyUsername))
+	rt.router.PUT("/profile/photo", rt.wrap(rt.setMyPhoto))
 	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile))
 	rt.router.POST("/session", rt.wrapPublic(rt.doLogin))
 	rt.router.GET("/chats", rt.wrap(rt.getMyConversations))

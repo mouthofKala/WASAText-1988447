@@ -21,9 +21,9 @@ export default{
             this.errormsg = null;
 
             try{
-                if (this.$route.path ==="/users/me"){
+                if (this.$route.path ==="/profile"){
                     this.profileType="mine";
-                    const response = await this.$axios.get("/users/me");
+                    const response = await this.$axios.get("/profile");
                     this.profile = response.data;
                     this.newName = this.profile.username;
 
