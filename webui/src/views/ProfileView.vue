@@ -1,6 +1,7 @@
 <script>
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
+import ErrorMsg from '../components/ErrorMsg.vue';
 export default{
     data() {
         return{
@@ -137,43 +138,48 @@ export default{
 }
 </script>
 
-<ErrorMsg v-if="errormsg" :msg="errormsg" />
-<template v-else>
-    <div class="profile-page">
-        <button @click="this.$router.back()">↩</button>
 
-        <ErrorMsg v-if="errormsg" :msg="errormsg" />
-        <LoadingSpinner v-if="loading" />
+<template>
+    <template v-if="errormsg">
+        <ErrorMsg :msg="errormsg"></ErrorMsg>
+    </template>
+    <template v-else>
+        <div class="profile-page">
+            <button @click="this.$router.back()">↩</button>
 
-        <div v-else-if="profile">
-            <img
-                v-if="profile.photo || imgPrev"
-                :src="profile.photo || imgPrev"
-                alt="pfp"
-                class="profile-pic" />
-            <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
-            <template v-if="profileType==='mine'||profileType==='group'">
-                <button type="button" @click="$refs.photoInput.click()">choose photo</button>
-                <button type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
-                    {{ savingPhoto ? 'saving...' : 'save photo' }}
-                </button>
-            </template>
+            <ErrorMsg v-if="errormsg" :msg="errormsg" />
+            <LoadingSpinner v-if="loading" />
 
-            <h2 v-if="profileType==='mine' || profileType==='user'">
-                {{ profile.Username }}
-            </h2>
-            <h2 v-else-if="profileType==='group'">
-                {{ profile.ChatName }}
-            </h2>
-            <template v-if="profileType==='mine'||profileType==='group'">
-                <input v-model="newName" />
-                <button @click="newNameSave">update username</button>
-                <button @click="newPhotoSave">update photo</button>
-            </template>
+            <div v-else-if="profile">
+                <img
+                    v-if="profile.photo || imgPrev"
+                    :src="profile.photo || imgPrev"
+                    alt="pfp"
+                    class="profile-pic" />
+                <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
+                <template v-if="profileType==='mine'||profileType==='group'">
+                    <button type="button" @click="$refs.photoInput.click()">choose photo</button>
+                    <button type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
+                        {{ savingPhoto ? 'saving...' : 'save photo' }}
+                    </button>
+                </template>
+
+                <h2 v-if="profileType==='mine' || profileType==='user'">
+                    {{ profile.Username }}
+                </h2>
+                <h2 v-else-if="profileType==='group'">
+                    {{ profile.ChatName }}
+                </h2>
+                <template v-if="profileType==='mine'||profileType==='group'">
+                    <input v-model="newName" />
+                    <button @click="newNameSave">update username</button>
+                    <button @click="newPhotoSave">update photo</button>
+                </template>
+
+            </div>
 
         </div>
-
-    </div>
+    </template>
 </template>
 
 <style scoped>

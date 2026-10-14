@@ -3,6 +3,7 @@ import ProfileButton from '../components/ProfileButton.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import Searchbar from '../components/Searchbar.vue';
+import ErrorMsg from '../components/ErrorMsg.vue';
 
 export default {
 	components: {Searchbar},
@@ -69,8 +70,6 @@ export default {
 		logout(){
 			localStorage.removeItem("userID")
 			delete this.$axios.defaults.headers.common.Authorization;
-			// I think I should go back from /chats too.
-			this.$router.back();
 			this.$router.push("/session");
 		}
 	},
@@ -82,42 +81,46 @@ export default {
 }
 </script>
 
-<ErrorMsg v-if="errormsg" :msg="errormsg" />
-<template v-else>
-	<div class="home-page">
-		<div class="home-header">
-			<h1 class="h2">Conversations</h1>
-			<Searchbar />
-			<div class="search-bar">
-				<input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
-				<div v-if="searchkey.trim()" class="search-list">
-					<button v-for="user in searchlist" :key="user.userID" class="search-res" @click="$router.push(`/users/${user.userID}`)">
-						{{ user.username }}
-					</button>
+<template>
+	<template v-if="errormsg">
+		<ErrorMsg :msg="errormsg"></ErrorMsg>
+	</template>
+	<template v-else>
+		<div class="home-page">
+			<div class="home-header">
+				<h1 class="h2">Conversations</h1>
+				<Searchbar />
+				<div class="search-bar">
+					<input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
+					<div v-if="searchkey.trim()" class="search-list">
+						<button v-for="user in searchlist" :key="user.userID" class="search-res" @click="$router.push(`/users/${user.userID}`)">
+							{{ user.username }}
+						</button>
+					</div>
+					<p v-if="!searchin && searchlist.length===0">
+						No users found. Try another search key...
+					</p>
+					<!--...small defect: this setup does not search groups. will see later how to fix-->
 				</div>
-				<p v-if="!searchin && searchlist.length===0">
-					No users found. Try another search key...
-				</p>
-				<!--...small defect: this setup does not search groups. will see later how to fix-->
-			</div>
-			<button class="menu-button" @click="togglebuttns">⋮</button>
-				<div v-if="showbuttns" class="smolmenu">
-					<button @click="gomakegroupview">New group</button>
-					<button @click="logout" class="logout-buttn">Log out</button>
-				</div>
+				<button class="menu-button" @click="togglebuttns">⋮</button>
+					<div v-if="showbuttns" class="smolmenu">
+						<button @click="gomakegroupview">New group</button>
+						<button @click="logout" class="logout-buttn">Log out</button>
+					</div>
 
-			<ProfileButton />
+				<ProfileButton />
+			</div>
+			<ErrorMsg v-if="errormsg" :msg="errormsg" />
+			<LoadingSpinner v-if="loading" />
+			<div v-else-if="chatlist.length === 0">
+				<p>you have no chats :[ </p>
+			</div>
+			<div v-else class="chat-list">
+				<ChatItem
+					v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
+			</div>
 		</div>
-		<ErrorMsg v-if="errormsg" :msg="errormsg" />
-		<LoadingSpinner v-if="loading" />
-		<div v-else-if="chatlist.length === 0">
-			<p>you have no chats :[ </p>
-		</div>
-		<div v-else class="chat-list">
-			<ChatItem
-				v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
-		</div>
-	</div>
+	</template>
 </template>
 
 <style scoped>

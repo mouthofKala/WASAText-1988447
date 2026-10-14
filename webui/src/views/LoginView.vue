@@ -18,14 +18,13 @@ export default {
         
             try {
                 const response = await this.$axios.post("/session", {
-                    name: username
+                    name: this.username
 
                 });
                 const userID = response.data.identifier;
                 sessionStorage.setItem("userID", userID);
                 this.$axios.defaults.headers.common.Authorization = `Bearer ${userID}`;
                 console.log("login success", response.data);
-                this.$router.back();
                 this.$router.push(`/chats`);
             }catch(e){
                 this.errormsg = e.toString();
@@ -36,41 +35,46 @@ export default {
 }
 </script>
 
-<ErrorMsg v-if="errormsg" :msg="errormsg" />
-<template v-else>
-    <div class="login-page">
-        <div class = "login-box">
-            <h1> WASAText</h1>
-            <p>Welcome! Please enter your (new or current) username to log in.</p>
-            <form @submit.prevent="doLogin">
-                <div class="mb-3">
-                    <label for="username" class="form-label"> username</label>
-                    <input
-                        id="username"
-                        type="text"
-                        class="form-control"
-                        v-model="username"
-                        placeholder="enter your username..."
-                        :disabled="loading"
-                </div>
-                <button
-                    type="submit"
-                    class="btn btn-primary w-100"
-                    :disabled="loading||!username"
-                >
-                {{ loading ? "logging in..." : "login"}}
-                </button>
-            </form>
+<template>
+    <template v-if="errormsg">
+        <ErrorMsg :msg="errormsg" />
+    </template>
+    <template v-else>
+        
+        <div class="login-page">
+            <div class = "login-box">
+                <h1> WASAText</h1>
+                <p>Welcome! Please enter your (new or current) username to log in.</p>
+                <form @submit.prevent="doLogin">
+                    <div class="mb-3">
+                        <label for="username" class="form-label"> username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            class="form-control"
+                            v-model="username"
+                            placeholder="enter your username..."
+                            :disabled="loading" />
+                    </div>
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                        :disabled="loading||!username"
+                    >
+                    {{ loading ? "logging in..." : "login"}}
+                    </button>
+                </form>
 
-            <ErrorMsg
-                v-if="errormsg"
-                :msg="errormsg"
-            ></ErrorMsg>
-        </div>
-        <div class = "version">
-            version 1.0.0
-        </div>
-    </div>    
+                <ErrorMsg
+                    v-if="errormsg"
+                    :msg="errormsg"
+                ></ErrorMsg>
+            </div>
+            <div class = "version">
+                version 1.0.0
+            </div>
+        </div>    
+    </template>
 </template>
 
 <style scoped>

@@ -217,86 +217,89 @@ export default{
 };
 
 </script>
-<ErrorMsg v-if="errormsg" :msg="errormsg" />
-<template v-else>
-    <div class="chat-page">
-        <div class="chat-header">
-            <button @click="this.$router.back()">↩</button>
-            <button v-if="convo" class="chat-title" @click="openChatProfile">
-                <img 
-                    v-if="convo.chat.grouporchat && convo.chat.photo"
-                    :src="convo.chat.photo"
-                    alt="group pic"
-                    class="chat-profile-pic" 
-                />
+<template>
+    <template v-if="errormsg">
+        <ErrorMsg :msg="errormsg" />
+    </template>
+    <template v-else>
+        <div class="chat-page">
+            <div class="chat-header">
+                <button @click="this.$router.back()">↩</button>
+                <button v-if="convo" class="chat-title" @click="openChatProfile">
+                    <img 
+                        v-if="convo.chat.grouporchat && convo.chat.photo"
+                        :src="convo.chat.photo"
+                        alt="group pic"
+                        class="chat-profile-pic" 
+                    />
 
-                <img v-else-if="otherUser && otherUser.photo"
-                    :src="otherUser.photo"
-                    alt="user pic"
-                    class="chat-profile-pic"/>
-                <span v-else class="chat-profile-pic">😀</span>
+                    <img v-else-if="otherUser && otherUser.photo"
+                        :src="otherUser.photo"
+                        alt="user pic"
+                        class="chat-profile-pic"/>
+                    <span v-else class="chat-profile-pic">😀</span>
 
-                <span v-if="convo.chat.grouporchat">
-                    {{ convo.chat.chatname }}
-                </span>
-                <span v-else-if="otherUser">
-                    {{ otherUser.username }}
-                </span>
-                <span v-else>profile</span>
-            </button>
+                    <span v-if="convo.chat.grouporchat">
+                        {{ convo.chat.chatname }}
+                    </span>
+                    <span v-else-if="otherUser">
+                        {{ otherUser.username }}
+                    </span>
+                    <span v-else>profile</span>
+                </button>
 
-            <button class="settings-button" @click="togglebuttns">⋮</button>
+                <button class="settings-button" @click="togglebuttns">⋮</button>
 
-            <div v-if="showbuttns" class="menuuu">
-                <template v-if="convo?.chat.grouporchat">
-                    <button @click="addMembers">Add users</button>
-                    <button @click="leave" class="leavebttn">Leave</button>
-                </template>
-                <template v-else>
-                    <button @click="leave"class="leavebttn">Leave</button>
-                </template>
+                <div v-if="showbuttns" class="menuuu">
+                    <template v-if="convo?.chat.grouporchat">
+                        <button @click="addMembers">Add users</button>
+                        <button @click="leave" class="leavebttn">Leave</button>
+                    </template>
+                    <template v-else>
+                        <button @click="leave"class="leavebttn">Leave</button>
+                    </template>
+                </div>
             </div>
-        </div>
 
-        <ErrorMsg v-if="errormsg" :msg="errormsg" />
-        <LoadingSpinner v-if="loading" />
+            <ErrorMsg v-if="errormsg" :msg="errormsg" />
+            <LoadingSpinner v-if="loading" />
 
-        <div v-else class="message-list" @scroll="handleScroll">
-            <p v-if="msglist.length===0"></p>
-            <MessageItem
-                v-for="message in msglist"
-                :key="message.messageid"
-                :message="message"
-                :userID="userID"
-                @react="addReaction"
-                @reply="replyToMsg"
-                @unreact="delReaction"
-                @delete="delMsg"
-            />
-        </div>
+            <div v-else class="message-list" @scroll="handleScroll">
+                <p v-if="msglist.length===0"></p>
+                <MessageItem
+                    v-for="message in msglist"
+                    :key="message.messageid"
+                    :message="message"
+                    :userID="userID"
+                    @react="addReaction"
+                    @reply="replyToMsg"
+                    @unreact="delReaction"
+                    @delete="delMsg"
+                />
+            </div>
 
-        <div v-if="replyingto" class="reply-prev">
-            <!--in case msg is deleted/not found-->
-            <strong> Replying to {{ replyingto.username }} || 'message'</strong>
-            <p>{{ replyingto.Content }}</p>
-            <button type="button" @click="cancel">✕</button>
-        </div>
+            <div v-if="replyingto" class="reply-prev">
+                <!--in case msg is deleted/not found-->
+                <strong> Replying to {{ replyingto.username }} || 'message'</strong>
+                <p>{{ replyingto.Content }}</p>
+                <button type="button" @click="cancel">✕</button>
+            </div>
 
-        <div v-if="imgPrev" class="img-prev">
-            <img :src="imgPrev" alt="msgphoto" />
-            <button type="button" @click="removeImg">✕</button>
+            <div v-if="imgPrev" class="img-prev">
+                <img :src="imgPrev" alt="msgphoto" />
+                <button type="button" @click="removeImg">✕</button>
+            </div>
+            <form class="msg-composer" @submit.prevent="sendMessage">
+                <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
+                <button type="button" @click="chooseImg" aria-label="attach img">📷</button>
+                <input v-model="msgtext" type="text" placeholder="write a message..." maxlength="20000"/>
+                <button type="submit" Ldisabled="!msgtext.trim() && !imgFile" aria-label="send msg">➤</button>
+                <!--disable if msg has img and length exceeds ... chars TBD-->
+            </form>
+            
         </div>
-        <form class="msg-composer" @submit.prevent="sendMessage">
-            <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
-            <button type="button" @click="chooseImg" aria-label="attach img">📷</button>
-            <input v-model="msgtext" type="text" placeholder="write a message..." maxlength="20000"/>
-            <button type="submit" Ldisabled="!msgtext.trim() && !imgFile" aria-label="send msg">➤</button>
-            <!--disable if msg has img and length exceeds ... chars TBD-->
-        </form>
-        
-    </div>
+    </template>
 </template>
-
 <style scoped>
 .chat-title{
     display: flex;

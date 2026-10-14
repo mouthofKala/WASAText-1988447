@@ -1,6 +1,7 @@
 <script>
 import Searchbar from '../components/Searchbar.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
+import ErrorMsg from '../components/ErrorMsg.vue';
 
 export default {
     components: {Searchbar, ErrorMsg},
@@ -97,7 +98,6 @@ export default {
                     await this.$router.push(`/chats/${chatID}`)
                 } else{
                     await this.$router.back();
-                    await this.$router.push(`/chats`)
                 }
             }catch(e){
                 this.errorMsg=error.response?.data || "couldn't create group :(";
@@ -119,55 +119,59 @@ export default {
 };
 </script>
 
-<ErrorMsg v-if="errormsg" :msg="errormsg" />
-<template v-else>
-    <div class="group-make-page">
-        <div class="group-info">
-            <button @click="this.$router.back()">↩</button>
-            <label class="photo-picker">
-                <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
-                <span v-else>＋</span>
-                <input type="file" accept="image/*" hidden @change="selectPhoto"/>
-            </label>
-            
-            <input v-model="groupName" class="group-name" placeholder="group name..." maxlength="40"/>
-            <button class="create-button" :disabled="loading" @click="makeChatGroup" aria-label="create group">➜</button>
+<template>
+    <template v-if="errorMsg">
+        <ErrorMsg :msg="errorMsg" />
+    </template>
+    <template v-else>
+        <div class="group-make-page">
+            <div class="group-info">
+                <button @click="this.$router.back()">↩</button>
+                <label class="photo-picker">
+                    <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
+                    <span v-else>＋</span>
+                    <input type="file" accept="image/*" hidden @change="selectPhoto"/>
+                </label>
+                
+                <input v-model="groupName" class="group-name" placeholder="group name..." maxlength="40"/>
+                <button class="create-button" :disabled="loading" @click="makeChatGroup" aria-label="create group">➜</button>
+            </div>
+
+            <div class="search-bar">
+                <Searchbar :select-mode="true" @select-user="toggleUser"/> <!-- modify inner (user) buttons-->
+            </div>
+
+            <ErrorMsg v-if="errorMsg"/>
+
+            <div class="members-n-added">
+                <section class="listofusers">
+                    <h3>select users...</h3>
+                    <button v-for="user in filteredUsers" :key="getUserID(user)" class="member-item" @click="toggleUser(user)">
+                        <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
+                        <span v-else class="pfp-placeholder"> </span>
+
+                        <span class="username">{{ getUsername(user) }}</span>
+                        <span class="circle-select"> </span>
+                    </button>
+                    <!--member item: pfp and username. possibly sorted by most recent msg
+                    the item has a circle button which, if you press on the item in general
+                    gets coloured in and moves the item to listofselected-->
+                </section>
+                <section class="listofselected">
+                    <h3>Selected:</h3>
+                    <button v-for="user in selectedUsers" :key="getUserID(user)" class="member-item selected" @click="toggleUser(user)">
+                        <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
+                        <span v-else class="pfp-placeholder"> </span>
+
+                        <span class="username">{{ getUsername(user) }}</span>
+                        <span class="circle-select"> </span>
+                    </button>
+                    <!-- list of members selected from listofusers, if you click on it
+                    they get deselected so they go back to the list on the left -->
+                </section>
+            </div>
         </div>
-
-        <div class="search-bar">
-            <Searchbar :select-mode="true" @select-user="toggleUser"/> <!-- modify inner (user) buttons-->
-        </div>
-
-        <ErrorMsg v-if="errorMsg"/>
-
-        <div class="members-n-added">
-            <section class="listofusers">
-                <h3>select users...</h3>
-                <button v-for="user in filteredUsers" :key="getUserID(user)" class="member-item" @click="toggleUser(user)">
-                    <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
-                    <span v-else class="pfp-placeholder"> </span>
-
-                    <span class="username">{{ getUsername(user) }}</span>
-                    <span class="circle-select"> </span>
-                </button>
-                <!--member item: pfp and username. possibly sorted by most recent msg
-                the item has a circle button which, if you press on the item in general
-                gets coloured in and moves the item to listofselected-->
-            </section>
-            <section class="listofselected">
-                <h3>Selected:</h3>
-                <button v-for="user in selectedUsers" :key="getUserID(user)" class="member-item selected" @click="toggleUser(user)">
-                    <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
-                    <span v-else class="pfp-placeholder"> </span>
-
-                    <span class="username">{{ getUsername(user) }}</span>
-                    <span class="circle-select"> </span>
-                </button>
-                <!-- list of members selected from listofusers, if you click on it
-                 they get deselected so they go back to the list on the left -->
-            </section>
-        </div>
-    </div>
+    </template>
 </template>
 
 
