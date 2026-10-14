@@ -137,7 +137,8 @@ export default{
 }
 </script>
 
-<template>
+<ErrorMsg v-if="errormsg" :msg="errormsg" />
+<template v-else>
     <div class="profile-page">
         <button @click="this.$router.back()">↩</button>
 

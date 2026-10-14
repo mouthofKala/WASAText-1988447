@@ -7,6 +7,7 @@ export default {
             username: "",
             errormsg: null,
             loading: false,
+            userID: "",
         }
     },
     methods: {
@@ -18,12 +19,14 @@ export default {
             try {
                 const response = await this.$axios.post("/session", {
                     name: username
+
                 });
                 const userID = response.data.identifier;
                 sessionStorage.setItem("userID", userID);
                 this.$axios.defaults.headers.common.Authorization = `Bearer ${userID}`;
                 console.log("login success", response.data);
-                this.$router.push(`/chats`)
+                this.$router.back();
+                this.$router.push(`/chats`);
             }catch(e){
                 this.errormsg = e.toString();
             }
@@ -33,7 +36,8 @@ export default {
 }
 </script>
 
-<template>
+<ErrorMsg v-if="errormsg" :msg="errormsg" />
+<template v-else>
     <div class="login-page">
         <div class = "login-box">
             <h1> WASAText</h1>
@@ -89,7 +93,7 @@ export default {
     position: absolute;
     bottom: 1rem;
     font-size: 0.8rem;
-    color: --bs-gray-500
+    color: lightgrey
 }
 
 

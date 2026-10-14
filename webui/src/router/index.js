@@ -10,7 +10,7 @@ const router = createRouter({
 	routes: [
 		{path: '/chats', component: HomeView},
 		{path: '/chats/:chatid', component: ChatView},
-		{path:'/chats/newgroup', component: GroupMakeView},	
+		{path:'/newgroup', component: GroupMakeView},	
 		{path:'/chats/:chatid/settings', component: ProfileView},	
 		{path: '/users', component: HomeView},
 		{path: '/profile', component: ProfileView},

@@ -97,6 +97,7 @@ export default {
                     await this.$router.push(`/chats/${chatID}`)
                 } else{
                     await this.$router.back();
+                    await this.$router.push(`/chats`)
                 }
             }catch(e){
                 this.errorMsg=error.response?.data || "couldn't create group :(";
@@ -118,7 +119,8 @@ export default {
 };
 </script>
 
-<template>
+<ErrorMsg v-if="errormsg" :msg="errormsg" />
+<template v-else>
     <div class="group-make-page">
         <div class="group-info">
             <button @click="this.$router.back()">↩</button>
@@ -220,7 +222,7 @@ occupies max 1/5 of the screen vertically
     width: 42px;
     height:42px;
 }
-.search-bar{}
+
 .members-n-added{
     display: grid;
     grid-template-columns: 1fr 1fr;

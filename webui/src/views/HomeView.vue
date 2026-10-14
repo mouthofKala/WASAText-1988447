@@ -42,7 +42,10 @@ export default {
 			this.showbuttns = !this.showbuttns;
 		},
 		gomakegroupview(){
-			this.$router.push("/newgroup"); // when I make a group I can pop this off and push the new chatid
+			// might collide with chatid!! so, will go back and then push newgroup
+			this.$router.back();
+			this.$router.push("/newgroup"); 
+			
 		},
 		async searchUsers(){
 			const query = this.searchkey.trim();
@@ -79,7 +82,8 @@ export default {
 }
 </script>
 
-<template>
+<ErrorMsg v-if="errormsg" :msg="errormsg" />
+<template v-else>
 	<div class="home-page">
 		<div class="home-header">
 			<h1 class="h2">Conversations</h1>

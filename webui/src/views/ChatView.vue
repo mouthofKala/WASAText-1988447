@@ -217,8 +217,8 @@ export default{
 };
 
 </script>
-
-<template>
+<ErrorMsg v-if="errormsg" :msg="errormsg" />
+<template v-else>
     <div class="chat-page">
         <div class="chat-header">
             <button @click="this.$router.back()">↩</button>
