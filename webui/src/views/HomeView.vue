@@ -3,7 +3,6 @@ import ProfileButton from '../components/ProfileButton.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import Searchbar from '../components/Searchbar.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
 
 export default {
 	components: {Searchbar},
