@@ -53,7 +53,7 @@ func (rt *_router) leaveGroup(
 	}
 
 	if lastmember {
-		err = rt.storage.DeleteChatGroup(chatID)
+		err := rt.storage.DeleteChatGroup(chatID)
 		if errors.Is(err, database.ErrStorage) {
 			ctx.Logger.WithError(err).Error("error deleting group or chat items from filesys")
 			return

@@ -23,7 +23,7 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 	}
 
 	// 2. checking the chat is actually a group
-	var grouporchat string
+	var grouporchat int
 	var chatname string
 	var creationdate time.Time
 	var photo string

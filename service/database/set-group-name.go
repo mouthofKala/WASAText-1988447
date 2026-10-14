@@ -3,7 +3,7 @@ package database
 import "errors"
 
 func (db *appdbimpl) SetGroupName(newname string, chatID string, userID string) error {
-	var privacy string
+	var privacy int
 	err := db.c.QueryRow(`
 		SELECT group_or_chat
 		FROM chats

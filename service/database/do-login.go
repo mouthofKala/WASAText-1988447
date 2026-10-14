@@ -34,7 +34,7 @@ func (db *appdbimpl) DoLogin(username string) (string, error) {
 	_, err = db.c.Exec(`
 		INSERT INTO users (user_id, username, photo)
 		VALUES (?,?,?)`,
-		userID, username, "photouriofblackpic.jpg")
+		userID, username, DefaultGroupPhoto)
 
 	if !errors.Is(err, nil) {
 		return "", err

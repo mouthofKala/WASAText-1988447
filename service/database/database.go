@@ -32,8 +32,8 @@ import (
 	"fmt"
 )
 
-const DefaultGroupPhoto = "storage/data/pfp/black.jpg"
-const group = "group"
+const DefaultGroupPhoto = "storage/data/pfp/black.png"
+const group = 1
 
 var ErrUserNotFound = errors.New("user not found")
 var ErrUsernameUnavailable = errors.New("username already in use")

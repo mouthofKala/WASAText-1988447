@@ -54,7 +54,11 @@ func (rt *_router) sendMessage(
 
 	var photouri *string
 
-	defer r.MultipartForm.RemoveAll()
+	defer func() {
+		if err := r.MultipartForm.RemoveAll(); err != nil {
+			ctx.Logger.WithError(err).Error("error removing multipartform files")
+		}
+	}()
 	file, _, err := r.FormFile("photo")
 	if errors.Is(err, nil) {
 		defer file.Close()
@@ -84,37 +88,61 @@ func (rt *_router) sendMessage(
 	msg, err := rt.db.SendMessage(userID, chatID, content, photouri, replyto, fwdfrom, msgID)
 	if errors.Is(err, database.ErrBadReq) {
 
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to 'bad request: sending to inexistent chat?'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("bad request: sending to inexistent chat?")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
 	if errors.Is(err, database.ErrNotaGroupMember) {
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: '403: not a group member'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("403: not a group member")
 		http.Error(w, database.F, http.StatusForbidden)
 		return
 	}
 	if errors.Is(err, database.ErrInvalidMsg) {
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: '400: messag empty or invalid'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("400: message empty or invalid")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
 	if errors.Is(err, database.ErrGeneratingID) {
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: '500: error generating ID'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("500: error gneerating ID")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 	if errors.Is(err, database.ErrExec) || errors.Is(err, database.ErrTX) {
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: '500: error doing a database Exec or during the transaction'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("500: error doing a database Exec or during the transaction")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 	if !errors.Is(err, nil) {
-		_ = rt.storage.DeleteMSGFiles(msgID, chatID)
+		if err := rt.storage.DeleteMSGFiles(msgID, chatID); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: 'generic 500'")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		ctx.Logger.WithError(err).Error("generic 500")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
@@ -128,7 +156,7 @@ func (rt *_router) sendMessage(
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if err = json.NewEncoder(w).Encode(msg); !errors.Is(err, nil) {
+	if err := json.NewEncoder(w).Encode(msg); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("Error encoding response")
 	}
 

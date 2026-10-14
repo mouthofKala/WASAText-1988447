@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"strings"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/globaltime"
 )
@@ -24,6 +25,9 @@ func (db *appdbimpl) MakeChatGroup(chatID string, chatname string, photouri stri
 		_ = tx.Rollback()
 	}()
 
+	if !strings.HasPrefix(photouri, "/storage/data/pfp") {
+		photouri = DefaultGroupPhoto
+	}
 	_, err = tx.Exec(`
 		INSERT INTO chats (
 			chat_id,

@@ -59,7 +59,11 @@ func (rt *_router) setGroupPhoto(
 
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo. rolling back...")
-		_ = rt.storage.DeletePFP(photoURI)
+		if err := rt.storage.DeletePFP(oldphotoURI); err != nil {
+			ctx.Logger.WithError(err).Error("storage error during reaction to: setting photo 500 err")
+			http.Error(w, database.ISE, http.StatusInternalServerError)
+			return
+		}
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
@@ -69,7 +73,7 @@ func (rt *_router) setGroupPhoto(
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
+	if err := json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error encoding new group photouri")
 	}
 }

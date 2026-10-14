@@ -132,9 +132,5 @@ func (db *appdbimpl) LeaveGroup(userID string, chatID string) (bool, error) {
 
 		return true, nil
 	}
-
-	// in whatsapp,it is possible to keep the group you have left
-	// but that's likely because server has deleted chat whereas
-	// you keep a copy of it locally
 	return false, nil
 }

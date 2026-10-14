@@ -40,12 +40,12 @@ func (rt *_router) setMyPhoto(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
-	if err = rt.storage.DeletePFP(oldphotouri); !errors.Is(err, nil) {
+	if err := rt.storage.DeletePFP(oldphotouri); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error deleting old pfp")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
+	if err := json.NewEncoder(w).Encode(photoURI); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("Error encoding new photouri")
 	}
 }

@@ -50,7 +50,7 @@ func (rt *_router) setGroupName(
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	if err = json.NewEncoder(w).Encode(request.NewName); !errors.Is(err, nil) {
+	if err := json.NewEncoder(w).Encode(request.NewName); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("Error encoding response")
 	}
 	// same

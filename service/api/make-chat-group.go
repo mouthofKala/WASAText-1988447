@@ -70,6 +70,7 @@ func (rt *_router) makeChatGroup(
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
+
 	if request.Photo != nil {
 		p, err := rt.storage.ParseURI(request.Photo, chatID.String())
 		if err != nil {

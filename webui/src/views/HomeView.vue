@@ -88,19 +88,7 @@ export default {
 		<div class="home-page">
 			<div class="home-header">
 				<h1 class="h2">Conversations</h1>
-				<Searchbar />
-				<div class="search-bar">
-					<input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
-					<div v-if="searchkey.trim()" class="search-list">
-						<button v-for="user in searchlist" :key="user.userID" class="search-res" @click="$router.push(`/users/${user.userID}`)">
-							{{ user.username }}
-						</button>
-					</div>
-					<p v-if="!searchin && searchlist.length===0">
-						No users found. Try another search key...
-					</p>
-					<!--...small defect: this setup does not search groups. will see later how to fix-->
-				</div>
+				<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
 				<button class="menu-button" @click="togglebuttns">⋮</button>
 					<div v-if="showbuttns" class="smolmenu">
 						<button @click="gomakegroupview">New group</button>

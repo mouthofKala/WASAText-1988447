@@ -1,9 +1,15 @@
 package database
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 func (db *appdbimpl) SetMyPhoto(photouri string, userID string) (string, error) {
 
+	if !strings.HasPrefix(photouri, "storage/data/pfp") {
+		photouri = DefaultGroupPhoto
+	}
 	// get old pfp
 	var oldPhoto string
 	err := db.c.QueryRow(`

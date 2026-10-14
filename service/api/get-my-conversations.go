@@ -27,7 +27,7 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 
 	// now read chats and send them in json
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(chats); !errors.Is(err, nil) {
+	if err := json.NewEncoder(w).Encode(chats); !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error encoding chats")
 		return
 	}
