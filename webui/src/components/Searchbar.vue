@@ -47,7 +47,7 @@ export default{
 			if (this.selectmode){
 				this.$emit('select-user', user);
 			} else{
-				this.$router.push(`/users/${user.userID}`);
+				this.$router.push(`/users/${user.userid}`);
 			}
 			this.searchkey='';
 			this.searchlist=[];
@@ -62,7 +62,7 @@ export default{
     <div class="search-bar">
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
-            <button v-for="user in searchlist" :key="user.userID" class="search-res" @click="selectuser(user)">
+            <button v-for="user in searchlist" :key="user.userid" class="search-res" @click="selectuser(user)">
                 {{ user.username }}
             </button>
         </div>

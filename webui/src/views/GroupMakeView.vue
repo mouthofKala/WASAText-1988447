@@ -3,7 +3,6 @@ import Searchbar from '../components/Searchbar.vue';
 import ErrorMsg from '../components/ErrorMsg.vue';
 
 export default {
-    components: {Searchbar, ErrorMsg},
     data: function(){
         return {
             groupName:'',
@@ -31,6 +30,7 @@ export default {
         async getUsers(){
             try{
                 const response = await this.$axios.get('/users');
+                console.log("getusers:\n",response.data)
                 this.users=response.data;
             } catch(e){this.errorMsg = "couldn't load users...";}
         },
@@ -91,6 +91,7 @@ export default {
                     members: this.selectedUsers.map(user=>this.getUserID(user)),
                     grouporchat: true,
                 });
+                console.log("makechatgroup:\n", response.data)
                 const chatID=response.data.chatid ?? response.data.chat?.chatid;
                 if (chatID){
                     await this.$router.back();
@@ -99,7 +100,7 @@ export default {
                     await this.$router.back();
                 }
             }catch(e){
-                this.errorMsg=error.response?.data || "couldn't create group :(";
+                this.errorMsg=e.response?.data || "couldn't create group :(";
             } finally{
                 this.loading=false;
             }

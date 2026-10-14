@@ -1,14 +1,17 @@
-import {createApp, reactive} from 'vue'
-import App from './App.vue'
-import router from './router'
+import {createApp, reactive} from 'vue';
+import App from './App.vue';
+import router from './router';
 import axios from './services/axios.js';
-import ErrorMsg from './components/ErrorMsg.vue'
-import LoadingSpinner from './components/LoadingSpinner.vue'
+import ErrorMsg from './components/ErrorMsg.vue';
+import LoadingSpinner from './components/LoadingSpinner.vue';
+import ChatItem from './components/ChatItem.vue';
+import MessageItem from './components/MessageItem.vue';
+import './assets/dashboard.css';
+import './assets/main.css';
+import ProfileButton from './components/ProfileButton.vue';
+import Searchbar from './components/Searchbar.vue';
 
-import './assets/dashboard.css'
-import './assets/main.css'
-
-const app = createApp(App)
+const app = createApp(App);
 const userID = sessionStorage.getItem("userID");
 
 if (userID) {
@@ -18,5 +21,9 @@ if (userID) {
 app.config.globalProperties.$axios = axios;
 app.component("ErrorMsg", ErrorMsg);
 app.component("LoadingSpinner", LoadingSpinner);
-app.use(router)
-app.mount('#app')
+app.component("ChatItem",ChatItem);
+app.component("MessageItem",MessageItem);
+app.component("ProfileButton",ProfileButton);
+app.component("Searchbar",Searchbar);
+app.use(router);
+app.mount('#app');

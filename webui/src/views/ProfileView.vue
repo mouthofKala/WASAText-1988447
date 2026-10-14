@@ -24,6 +24,7 @@ export default{
                 if (this.$route.path ==="/profile"){
                     this.profileType="mine";
                     const response = await this.$axios.get("/profile");
+                    console.log("getMYuserprofile:\n", response.data)
                     this.profile = response.data;
                     this.newName = this.profile.username;
 
@@ -32,6 +33,7 @@ export default{
                     this.profileType="user";
                     const response = await this.$axios.get(`
                     /users/${this.$route.params.userID}`);
+                    console.log("getuserprofile:\n", response.data)
                     this.profile = response.data.chat;
 
 
@@ -39,6 +41,7 @@ export default{
                     this.profileType = "group";
                     const response = await this.$axios.get(`
                     /chats/${this.$route.params.chatid}/messages`);
+                    console.log("getgroupprofile:\n", response.data)
                     this.profile = response.data.chat;
                     this.newName = this.profile.chatname;
 
@@ -54,12 +57,14 @@ export default{
                     await this.$axios.put("users/me/username",{
                         username: this.newName,
                     });
+                    console.log("setmyusername:\n", response.data)
                     this.profile.username = this.editedName;
                 } else if (this.profileType === "group"){
                     await this.$axios.put(`
                     /chats/${this.$route.params.chatid}/groupname`,
                 {groupname: this.newName})
                 };
+                console.log("gsetgroupusername:\n", response.data)
             } catch(e){
                 this.errormsg=e.toString();
             }
@@ -83,6 +88,7 @@ export default{
                         headers: {'Content-Type': this.newPhoto.type,},
                     }
                 );
+                console.log("setnewphoto:\n", response.data)
                 const photoURI = response.data;
                 if (this.profileType==='mine'){
                     this.profile.photo=photoURI;

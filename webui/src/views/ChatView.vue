@@ -26,6 +26,7 @@ export default{
             this.errormsg = null;
             try{
                 let response = await this.$axios.get( `/chats/${this.$route.params.chatid}/messages`)
+                console.log("gtconversation:\n", response.data)
                 this.convo=response.data;
                 this.msglist = response.data.messages || [];
                 const chat = this.convo.chat;
@@ -33,6 +34,7 @@ export default{
                     const otherID = chat.members.find(id=>id!==this.userID);
                     if (otherID){
                         const uresponse=await this.$axios.get(`/users/${otherID}`);
+                        console.log("getuser:\n",response.data)
                         this.otherUser=uresponse.data;
                     }
                 }
@@ -51,6 +53,7 @@ export default{
                 const oldest = this.msglist[0];
                 const response = await this.$axios.get(`/chats/${this.$route.params.chatid}/messages`,
                     {params: {before: oldest.timestamp}});
+                console.log("getmsgs older:\n", response.data)
                 const oldermsgs= response.data.messages||[];
                 if (oldermsgs.length===0){this.moremsg=false;}
                 else {
@@ -91,6 +94,7 @@ export default{
                 const response = await this.$axios.post(
                     `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions`, {emoji}
                 );
+                console.log("addcomment:\n",response.data)
                 if (!msg.reactions){
                     msg.reactions=[];
                 }
@@ -160,6 +164,7 @@ export default{
             try{
                 const response = await this.$axios.post(
                     `/chats/${this.$route.params.chatid}/messages`, formData);
+                console.log("sendmessage",response.data)
                 const newmsg={
                     ...response.data,
                     username:response.data.username || 'me',
@@ -178,6 +183,7 @@ export default{
             try{
                 await this.$axios.delete(
                     `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions/${reac.reactionid}`);
+                console.log("uncommentmsg:\n", response.data)
                 msg.reactions=(msg.reactions||[]).filter(r=>r.ReactionID!==reac.reactionid);
             }catch(e){
                 this.errormsg=e.toString();
@@ -188,6 +194,7 @@ export default{
             try {
                 await this.$axios.delete(
                     `/chats/${this.$route.params.chatid}/messages/${msg.messageid}`);
+                console.log("deletemsg:\n", response.data)
                 this.msglist=this.msglist.filter(m=>m.messageid!==msg.messageid);
             } catch(e){
                 this.errormsg=e.toString();
@@ -200,6 +207,7 @@ export default{
 		async leave(){
             try{
                 await this.$axios.delete(`/chats/${this.$route.params.chatid}/members/me`);
+                console.log("leavechatgroup:\n", response.data)
             this.$router.push("/");
             }catch(e){
             this.errormsg=e.toString();
@@ -218,7 +226,7 @@ export default{
 
 </script>
 <template>
-    <template v-if="errormsg"> <!--if errormsg has 401-->
+    <template v-if="errormsg">
         <ErrorMsg :msg="errormsg" />
     </template>
     <template v-else>

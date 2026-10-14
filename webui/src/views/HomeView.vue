@@ -5,7 +5,6 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 import Searchbar from '../components/Searchbar.vue';
 
 export default {
-	components: {Searchbar},
 	data: function() {
 		return {
 			errormsg: null,
@@ -32,6 +31,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get("/chats");
+				console.log("getmyconversations: \n",response.data)
 				this.chatlist = response.data;
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -59,6 +59,7 @@ export default {
 			this.errormsg=null;
 			try{
 				const response = await this.$axios.get("/users", {params: {searchkey: query}});
+				console.log("searchusers:\n", response.data)
 				this.searchlist=response.data || [];
 			} catch(e){
 				this.errormsg=e.toString();
@@ -118,8 +119,12 @@ export default {
 	}
 
 	.home-header{
-		flex-shrink: 0;
-
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		position: relative;
+		padding: 0,75rem 1rem;
 	}
 
 	.chat-list{
@@ -131,6 +136,15 @@ export default {
 		position: relative;
 	}
 
+	.menu-button{
+		flex-shrink: 0;
+	}
+	.smolmenu{
+		position: absolute;
+		top: 100%;
+		right: 1rem;
+		z-index:100;
+	}
 	.search-list{
 		position: absolute;
 		top: 100%;

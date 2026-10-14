@@ -21,6 +21,7 @@ export default {
                     name: this.username
 
                 });
+                console.log("dologin:\n", response.data)
                 const userID = response.data.identifier;
                 sessionStorage.setItem("userID", userID);
                 this.$axios.defaults.headers.common.Authorization = `Bearer ${userID}`;
