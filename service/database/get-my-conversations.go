@@ -6,7 +6,7 @@ import (
 )
 
 func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
-	var chats []Chat
+	chats := []Chat{}
 	rows, err := db.c.Query(`
 		SELECT
 			chats.chat_name,

@@ -94,9 +94,10 @@ export default {
                 const chatID=response.data.chatid ?? response.data.chat?.chatid;
                 if (chatID){
                     await this.$router.back();
-                    await this.$router.push(`/chats/${chatID}`)
+                    await this.$router.push(`/chats/${chatID}`);
                 } else{
                     await this.$router.back();
+                    await this.$router.push(`/chats/`);
                 }
             }catch(e){
                 console.error("failed to make group: ", e);

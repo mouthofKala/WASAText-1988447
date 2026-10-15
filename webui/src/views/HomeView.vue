@@ -68,7 +68,7 @@ export default {
 		logout(){
 			sessionStorage.removeItem("userID")
 			delete this.$axios.defaults.headers.common.Authorization;
-			this.$router.push("/session");
+			this.$router.push("/");
 		}
 	},
 

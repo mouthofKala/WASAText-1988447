@@ -16,7 +16,7 @@ export default {
 
         
             try {
-                const response = await this.$axios.post("/session", {
+                const response = await this.$axios.post("/", {
                     name: this.username
                 });
                 console.log("dologin:\n", response.data)

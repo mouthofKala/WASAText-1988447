@@ -6,7 +6,7 @@ import (
 )
 
 func (db *appdbimpl) SetMyUsername(targetusername string, userID string) error {
-	var usernameExists string
+	usernameExists := ""
 	err := db.c.QueryRow(`
 		SELECT username
 		FROM users

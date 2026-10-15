@@ -11,7 +11,7 @@ func (db *appdbimpl) SetMyPhoto(photouri string, userID string) (string, error) 
 		photouri = DefaultGroupPhoto
 	}
 	// get old pfp
-	var oldPhoto string
+	oldPhoto := ""
 	err := db.c.QueryRow(`
 		SLEECT photo
 		FROM users

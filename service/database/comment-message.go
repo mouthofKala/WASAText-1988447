@@ -51,7 +51,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 	}
 
 	// is there a reaction already?
-	var reac Reaction
+	reac := Reaction{}
 	err = db.c.QueryRow(`
 		SELECT reaction_id
 		FROM reactions

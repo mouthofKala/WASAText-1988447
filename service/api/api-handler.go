@@ -12,7 +12,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profile/username", rt.wrap(rt.setMyUserName))
 	rt.router.PUT("/profile/photo", rt.wrap(rt.setMyPhoto))
 	rt.router.GET("/users/:userID", rt.wrap(rt.getUserProfile))
-	rt.router.POST("/session", rt.wrapPublic(rt.doLogin))
+	rt.router.POST("/", rt.wrapPublic(rt.doLogin))
 	rt.router.GET("/chats", rt.wrap(rt.getMyConversations))
 	rt.router.POST("/chats", rt.wrap(rt.makeChatGroup))
 	rt.router.POST("/chats/:chatID/members", rt.wrap(rt.addToGroup))

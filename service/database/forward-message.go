@@ -32,7 +32,7 @@ func (db *appdbimpl) ForwardMessage(userID, targetchat_id string, fwdmsgID strin
 	}
 
 	// check that the msg exists, otherwise 400
-	var fwdmsg Message
+	fwdmsg := Message{}
 	err = db.c.QueryRow(`
 		SELECT user_id, content, photo, timestamp
 		FROM messages

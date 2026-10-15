@@ -24,9 +24,9 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 
 	// 2. checking the chat is actually a group
 	var grouporchat int
-	var chatname string
+	chatname := ""
 	var creationdate time.Time
-	var photo string
+	photo := ""
 	err = db.c.QueryRow(`
 		SELECT group_or_chat, chat_name, creation_date, photo
 		FROM chats

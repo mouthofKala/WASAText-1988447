@@ -4,7 +4,7 @@ import "errors"
 
 func (db *appdbimpl) SetGroupPhoto(photouri string, chatID string, userID string) (string, error) {
 	var privacy int
-	var oldPhoto string
+	oldPhoto := ""
 	err := db.c.QueryRow(`
 		SELECT group_or_chat,photo
 		FROM chats

@@ -7,7 +7,7 @@ import (
 
 func (db *appdbimpl) GetUserProfile(userID string) (User, error) {
 
-	var user User
+	user := User{}
 	err := db.c.QueryRow(`
 		SELECT user_id, username, photo
 		FROM users

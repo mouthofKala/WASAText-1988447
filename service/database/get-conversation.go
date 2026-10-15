@@ -5,7 +5,7 @@ import (
 )
 
 func (db *appdbimpl) GetConversation(userID string, chatID string, before string) (Conversation, error) {
-	var convo Conversation
+	convo := Conversation{}
 
 	err := db.c.QueryRow(`
 		SELECT

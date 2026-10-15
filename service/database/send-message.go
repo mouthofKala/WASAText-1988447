@@ -66,7 +66,7 @@ func (db *appdbimpl) SendMessage(
 	}
 
 	// fetch username
-	var username string
+	username := ""
 	err = db.c.QueryRow(`
 		SELECT username
 		FROM users
