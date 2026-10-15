@@ -16,6 +16,7 @@ export default {
 
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
+        <!--add chat pfp-->
         <h5>{{ chat.chatName }}</h5>
         <div v-if="chat.mostRecentMsg">
             <p class="mb-1">
@@ -42,7 +43,7 @@ export default {
 
     }
     .msg-prev{
-        display: -webkit-box;
+        display: block;
         -webkit-line-clamp: 2;
         line-clamp: 2;
         -webkit-box-orient: vertical;

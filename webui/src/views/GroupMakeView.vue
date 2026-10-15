@@ -93,8 +93,10 @@ export default {
                 console.log("makechatgroup:\n", response.data)
                 const chatID=response.data.chatid ?? response.data.chat?.chatid;
                 if (chatID){
+                    this.$router.pop();
                     await this.$router.push(`/chats/${chatID}`);
                 } else{
+                    this.$router.pop();
                     await this.$router.push(`/chats/`);
                 }
             }catch(e){
