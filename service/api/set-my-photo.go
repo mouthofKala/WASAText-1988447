@@ -36,7 +36,9 @@ func (rt *_router) setMyPhoto(
 	oldphotouri, err := rt.db.SetMyPhoto(photoURI, ctx.UserID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo. rolling back...")
-		_ = rt.storage.DeletePFP(photoURI)
+		if err := rt.storage.DeletePFP(photoURI); !errors.Is(err, nil) {
+			ctx.Logger.WithError(err).Error("error rolling back pfp")
+		}
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}

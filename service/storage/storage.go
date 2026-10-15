@@ -76,7 +76,7 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 		return "", database.ErrStorage
 	}
 
-	return "/pfp/" + filename, nil
+	return "storage/data/pfp/" + filename, nil
 }
 
 func (s *Storage) DeletePFP(photoURI string) error {
@@ -127,7 +127,7 @@ func (s *Storage) SaveMSGPhoto(data []byte, messageID string, chatID string) (st
 		return "", database.ErrStorage
 	}
 
-	return "/msgpics/" + chatID + "/" + filename, nil
+	return "storage/data/msgpics/" + chatID + "/" + filename, nil
 }
 
 func (s *Storage) SaveMSGJson(message database.Message) error {
