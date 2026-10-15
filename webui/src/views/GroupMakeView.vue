@@ -93,10 +93,8 @@ export default {
                 console.log("makechatgroup:\n", response.data)
                 const chatID=response.data.chatid ?? response.data.chat?.chatid;
                 if (chatID){
-                    await this.$router.back();
                     await this.$router.push(`/chats/${chatID}`);
                 } else{
-                    await this.$router.back();
                     await this.$router.push(`/chats/`);
                 }
             }catch(e){
@@ -121,58 +119,52 @@ export default {
 </script>
 
 <template>
-    <template v-if="errorMsg">
-        <ErrorMsg v-if="errorMsg" :msg="errorMsg" />
-    </template>
-    <template v-else>
-        <div class="group-make-page">
-            <div class="group-info">
-                <button @click="this.$router.back()">↩</button>
-                <label class="photo-picker">
-                    <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
-                    <span v-else>＋</span>
-                    <input type="file" accept="image/*" hidden @change="selectPhoto"/>
-                </label>
-                
-                <input v-model="groupName" class="group-name" placeholder="group name..." maxlength="40"/>
-                <button class="create-button" :disabled="loading" @click="makeChatGroup" aria-label="create group">➜</button>
-            </div>
-
-            <div class="search-bar">
-                <Searchbar :select-mode="true" @select-user="toggleUser"/> <!-- modify inner (user) buttons-->
-            </div>
-
-            <ErrorMsg v-if="errorMsg"/>
-
-            <div class="members-n-added">
-                <section class="listofusers">
-                    <h3>select users...</h3>
-                    <button v-for="user in filteredUsers" :key="getUserID(user)" class="member-item" @click="toggleUser(user)">
-                        <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
-                        <span v-else class="pfp-placeholder"> </span>
-
-                        <span class="username">{{ getUsername(user) }}</span>
-                        <span class="circle-select"> </span>
-                    </button>
-                    <!--member item: pfp and username. possibly sorted by most recent msg
-                    the item has a circle button which, if you press on the item in general
-                    gets coloured in and moves the item to listofselected-->
-                </section>
-                <section class="listofselected">
-                    <h3>Selected:</h3>
-                    <button v-for="user in selectedUsers" :key="getUserID(user)" class="member-item selected" @click="toggleUser(user)">
-                        <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
-                        <span v-else class="pfp-placeholder"> </span>
-
-                        <span class="username">{{ getUsername(user) }}</span>
-                        <span class="circle-select"> </span>
-                    </button>
-                    <!-- list of members selected from listofusers, if you click on it
-                    they get deselected so they go back to the list on the left -->
-                </section>
-            </div>
+    <div class="group-make-page">
+        <div class="group-info">
+            <button @click="this.$router.back()">↩</button>
+            <label class="photo-picker">
+                <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
+                <span v-else>＋</span>
+                <input type="file" accept="image/*" hidden @change="selectPhoto"/>
+            </label>
+            
+            <input v-model="groupName" class="group-name" placeholder="group name..." maxlength="40"/>
+            <button class="create-button" :disabled="loading" @click="makeChatGroup" aria-label="create group">➜</button>
         </div>
-    </template>
+
+        <div class="search-bar">
+            <Searchbar :select-mode="true" @select-user="toggleUser"/> <!-- modify inner (user) buttons-->
+        </div>
+        <ErrorMsg v-if="errorMsg"/>
+
+        <div class="members-n-added">
+            <section class="listofusers">
+                <h3>select users...</h3>
+                <button v-for="user in filteredUsers" :key="getUserID(user)" class="member-item" @click="toggleUser(user)">
+                    <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
+                    <span v-else class="pfp-placeholder"> </span>
+
+                    <span class="username">{{ getUsername(user) }}</span>
+                    <span class="circle-select"> </span>
+                </button>
+                <!--member item: pfp and username. possibly sorted by most recent msg
+                the item has a circle button which, if you press on the item in general
+                gets coloured in and moves the item to listofselected-->
+            </section>
+            <section class="listofselected">
+                <h3>Selected:</h3>
+                <button v-for="user in selectedUsers" :key="getUserID(user)" class="member-item selected" @click="toggleUser(user)">
+                    <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
+                    <span v-else class="pfp-placeholder"> </span>
+
+                    <span class="username">{{ getUsername(user) }}</span>
+                    <span class="circle-select"> </span>
+                </button>
+                <!-- list of members selected from listofusers, if you click on it
+                they get deselected so they go back to the list on the left -->
+            </section>
+        </div>
+    </div>
 </template>
 
 
@@ -196,8 +188,8 @@ occupies max 1/5 of the screen vertically
 }
 .photo-picker{
     border-radius:50%;
-    width:64px;
-    height:64px;
+    width:100%;
+    height:100%;
     overflow:hidden;
     display:grid;
     place-items:center;
@@ -251,7 +243,7 @@ occupies max 1/5 of the screen vertically
     width: 100%;
     padding: 0.6rem;
 }
-.member-item.selected, member-item:hover{
+.member-item.selected, .member-item:hover{
     background:aliceblue;
 }
 .pfp-placeholder, .member-item img{

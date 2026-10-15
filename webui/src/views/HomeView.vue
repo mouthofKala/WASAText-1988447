@@ -80,33 +80,28 @@ export default {
 </script>
 
 <template>
-	<template v-if="errormsg">
-		<ErrorMsg :msg="errormsg"></ErrorMsg>
-	</template>
-	<template v-else>
-		<div class="home-page">
-			<div class="home-header">
-				<h1 class="h2">Conversations</h1>
-				<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
-				<button class="menu-button" @click="togglebuttns">⋮</button>
-					<div v-if="showbuttns" class="smolmenu">
-						<button @click="gomakegroupview">New group</button>
-						<button @click="logout" class="logout-buttn">Log out</button>
-					</div>
+	<div class="home-page">
+		<div class="home-header">
+			<h1 class="h2">Conversations</h1>
+			<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
+			<button class="menu-button" @click="togglebuttns">⋮</button>
+				<div v-if="showbuttns" class="smolmenu">
+					<button @click="gomakegroupview">New group</button>
+					<button @click="logout" class="logout-buttn">Log out</button>
+				</div>
 
-				<ProfileButton />
-			</div>
-			<ErrorMsg v-if="errormsg" :msg="errormsg" />
-			<LoadingSpinner v-if="loading" />
-			<div v-else-if="chatlist.length === 0">
-				<p>you have no chats :[ </p>
-			</div>
-			<div v-else class="chat-list">
-				<ChatItem
-					v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
-			</div>
+			<ProfileButton />
 		</div>
-	</template>
+		<ErrorMsg v-if="errormsg" :msg="errormsg" />
+		<LoadingSpinner v-if="loading" />
+		<div v-else-if="chatlist.length === 0">
+			<p>you have no chats :[ </p>
+		</div>
+		<div v-else class="chat-list">
+			<ChatItem
+				v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
+		</div>
+	</div>
 </template>
 
 <style scoped>

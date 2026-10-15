@@ -152,45 +152,40 @@ export default{
 
 
 <template>
-    <template v-if="errormsg">
-        <ErrorMsg :msg="errormsg"></ErrorMsg>
-    </template>
-    <template v-else>
-        <div class="profile-page">
-            <button @click="this.$router.back()">↩</button>
+    <div class="profile-page">
+        <button @click="this.$router.back()">↩</button>
 
-            <ErrorMsg v-if="errormsg" :msg="errormsg" />
-            <LoadingSpinner v-if="loading" />
+        <ErrorMsg v-if="errormsg" :msg="errormsg" />
+        <LoadingSpinner v-if="loading" />
 
-            <div v-else-if="profile">
-                <img
-                    v-if="imgPrev || profile.photo"
-                    :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null)"
-                    alt="pfp"
-                    class="profile-pic" />
-                <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
-                <template v-if="profileType==='mine'||profileType==='group'">
-                    <button type="button" @click="$refs.photoInput.click()">choose photo</button>
-                    <button type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
-                        {{ savingPhoto ? 'saving...' : 'save photo' }}
-                    </button>
-                </template>
+        <div v-else-if="profile">
+            <img
+                v-if="imgPrev || profile.photo"
+                :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null)"
+                alt="pfp"
+                class="profile-pic" />
+            <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
+            <template v-if="profileType==='mine'||profileType==='group'">
+                <button type="button" @click="$refs.photoInput.click()">choose photo</button>
+                <button type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
+                    {{ savingPhoto ? 'saving...' : 'save photo' }}
+                </button>
+            </template>
 
-                <h2 v-if="profileType==='mine' || profileType==='user'">
-                    {{ profile.Username }}
-                </h2>
-                <h2 v-else-if="profileType==='group'">
-                    {{ profile.ChatName }}
-                </h2>
-                <template v-if="profileType==='mine'||profileType==='group'">
-                    <input v-model="newName" />
-                    <button @click="newNameSave">update username</button>
-                </template>
-
-            </div>
+            <h2 v-if="profileType==='mine' || profileType==='user'">
+                {{ profile.Username }}
+            </h2>
+            <h2 v-else-if="profileType==='group'">
+                {{ profile.ChatName }}
+            </h2>
+            <template v-if="profileType==='mine'||profileType==='group'">
+                <input v-model="newName" />
+                <button @click="newNameSave">update username</button>
+            </template>
 
         </div>
-    </template>
+
+    </div>
 </template>
 
 <style scoped>
@@ -198,8 +193,8 @@ export default{
     padding: 20px;
 }
 .profile-pic{
-    width: 50vw;
-    height: auto;
+    width: 250px;
+    height: 250px;
     border-radius:50%;
     object-fit: cover;
     display: block;
