@@ -85,7 +85,7 @@ func New(cfg Config) (Router, error) {
 	router := httprouter.New()
 	router.RedirectTrailingSlash = false
 	router.RedirectFixedPath = false
-	router.ServeFiles("/storage/data/*filepath", http.Dir("./storage/data"))
+	router.ServeFiles("/storage/data/*filepath", http.Dir("../../service/storage/data"))
 
 	return &_router{
 		router:     router,
