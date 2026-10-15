@@ -11,9 +11,10 @@ import (
 )
 
 func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	userID := ctx.UserID
 	searchkey := r.URL.Query().Get("searchkey")
 
-	users, err := rt.db.SearchUsers(searchkey)
+	users, err := rt.db.SearchUsers(searchkey, userID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error fetching userlist")
 		http.Error(w, database.ISE, http.StatusInternalServerError)

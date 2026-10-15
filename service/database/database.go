@@ -71,7 +71,7 @@ var ErrTooMany = errors.New("trying to add too many members")
 // DATAVASE METHODS
 type AppDatabase interface {
 	GetUserProfile(userID string) (User, error)
-	SearchUsers(searchkey string) ([]User, error)
+	SearchUsers(searchkey string, userID string) ([]User, error)
 	SetMyUsername(targetusername string, userID string) error
 	SetMyPhoto(photouri string, userID string) (string, error)
 	DoLogin(username string) (string, error)

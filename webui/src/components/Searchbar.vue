@@ -63,7 +63,7 @@ export default{
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
             <button v-for="user in searchlist" :key="user.userid" class="search-res" @click="selectuser(user)">
-				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="" @error="$event.target.style.display='none'" />
+				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="" @error="$event.target.style.display='none'"  class="searchpic"/>
                 {{ user.username }}
             </button>
         </div>
@@ -87,6 +87,14 @@ export default{
 	background: white;
 	border: 1px solid whitesmoke;
 	z-index: 10;
+}
+
+.searchpic{
+	width:55px;
+	height:55px;
+    border-radius:50%;
+    object-fit: cover;
+    display: block;
 }
 
 .search-res{

@@ -48,26 +48,31 @@ export default{
             }catch(e){
                 this.errormsg=e.toString();
                 this.profile="";
-                this.newname="";
+                this.newName="";
             } finally {this.loading=false;}
         },
         async newNameSave(){
             try{
                 if (this.profileType==="mine"){
+                    const newUsername=this.newName.trim();
                     const response = await this.$axios.put("profile/username",{
-                        username: this.newName,
+                        username: newUsername,
                     });
                     console.log("setmyusername:\n", response.data)
-                    this.profile.username = this.newName;
+                    this.profile.username = newUsername;
                 } else if (this.profileType === "group"){
-                    await this.$axios.put(`
-                    /chats/${this.$route.params.chatid}/groupname`,
-                {groupname: this.newName})
+                    const newUsername=this.newName.trim();
+                    const response = await this.$axios.put(`
+                        /chats/${this.$route.params.chatid}/groupname`,
+                            {groupname: newUsername,});
+                    console.log("setgroupusername:\n", response.data);
+                    this.profile.username = newUsername;
+
                 };
-                console.log("setgroupusername:\n", response.data)
+                
             } catch(e){
                 this.errormsg=e.toString();
-                this.newname=this.profile.username;
+                this.newName=this.profile.username;
             }
         },
 
@@ -159,8 +164,8 @@ export default{
 
             <div v-else-if="profile">
                 <img
-                    v-if="profile.photo || imgPrev"
-                    :src="(profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null) || imgPrev"
+                    v-if="imgPrev || profile.photo"
+                    :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null)"
                     alt="pfp"
                     class="profile-pic" />
                 <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
@@ -194,7 +199,7 @@ export default{
 }
 .profile-pic{
     width: 50vw;
-    height: 50vh;
+    height: auto;
     border-radius:50%;
     object-fit: cover;
     display: block;

@@ -80,7 +80,7 @@ func (s *Storage) SavePFP(data []byte, userID string) (string, error) {
 }
 
 func (s *Storage) DeletePFP(photoURI string) error {
-	if photoURI == "" {
+	if photoURI == "" || filepath.Base(photoURI) == "black.png" {
 		return nil
 	}
 
