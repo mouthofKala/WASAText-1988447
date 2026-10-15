@@ -54,11 +54,11 @@ export default{
         async newNameSave(){
             try{
                 if (this.profileType==="mine"){
-                    await this.$axios.put("profile/username",{
+                    const response = await this.$axios.put("profile/username",{
                         username: this.newName,
                     });
                     console.log("setmyusername:\n", response.data)
-                    this.profile.username = this.editedName;
+                    this.profile.username = this.newName;
                 } else if (this.profileType === "group"){
                     await this.$axios.put(`
                     /chats/${this.$route.params.chatid}/groupname`,
