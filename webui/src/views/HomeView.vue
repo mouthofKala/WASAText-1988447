@@ -40,7 +40,6 @@ export default {
 		},
 		gomakegroupview(){
 			// might collide with chatid!! so, will go back and then push newgroup
-			this.$router.back();
 			this.$router.push("/newgroup"); 
 			
 		},

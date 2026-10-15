@@ -121,7 +121,7 @@ export default {
 <template>
     <div class="group-make-page">
         <div class="group-info">
-            <button @click="this.$router.back()">↩</button>
+            <button @click="this.$router.push('/chats')">↩</button>
             <label class="photo-picker">
                 <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
                 <span v-else>＋</span>
@@ -188,17 +188,16 @@ occupies max 1/5 of the screen vertically
 }
 .photo-picker{
     border-radius:50%;
-    width:100%;
-    height:100%;
+    width:250px;
+    height:250px;
     overflow:hidden;
     display:grid;
     place-items:center;
     background: gainsboro;
     cursor:pointer;
     font-size: 1.8rem;
-    flex-shrink:0;
 }
-.photo-picker img, member-item img{
+.photo-picker img{
     width: 100%;
     height: 100%;
     object-fit: cover;
