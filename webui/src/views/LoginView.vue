@@ -1,6 +1,5 @@
 
 <script>
-import ErrorMsg from '../components/ErrorMsg.vue';
 export default {
     data: function(){
         return {
@@ -19,7 +18,6 @@ export default {
             try {
                 const response = await this.$axios.post("/session", {
                     name: this.username
-
                 });
                 console.log("dologin:\n", response.data)
                 const userID = response.data.identifier;

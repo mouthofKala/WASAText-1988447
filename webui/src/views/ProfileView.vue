@@ -1,6 +1,4 @@
 <script>
-import LoadingSpinner from '../components/LoadingSpinner.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
 export default{
     data() {
         return{
@@ -29,7 +27,7 @@ export default{
                     this.newName = this.profile.username;
 
 
-                } else if(thisl.$route.params.userID){
+                } else if(this.$route.params.userID){
                     this.profileType="user";
                     const response = await this.$axios.get(`
                     /users/${this.$route.params.userID}`);
@@ -49,12 +47,14 @@ export default{
                 }
             }catch(e){
                 this.errormsg=e.toString();
+                this.profile="";
+                this.newname="";
             } finally {this.loading=false;}
         },
         async newNameSave(){
             try{
                 if (this.profileType==="mine"){
-                    await this.$axios.put("users/me/username",{
+                    await this.$axios.put("profile/username",{
                         username: this.newName,
                     });
                     console.log("setmyusername:\n", response.data)
@@ -64,9 +64,10 @@ export default{
                     /chats/${this.$route.params.chatid}/groupname`,
                 {groupname: this.newName})
                 };
-                console.log("gsetgroupusername:\n", response.data)
+                console.log("setgroupusername:\n", response.data)
             } catch(e){
                 this.errormsg=e.toString();
+                this.newname=this.profile.username;
             }
         },
 
@@ -77,7 +78,7 @@ export default{
             try{
                 let url;
                 if (this.profileType==="mine"){
-                    url='/user/me/photo';
+                    url='/profile/photo';
                 } else if (this.profileType==="group"){
                     url=`/chats/${this.$route.params.chatid}/photo`;
                 } else {
@@ -103,6 +104,7 @@ export default{
                 }
             } catch(e){
                 this.errormsg=e.toString();
+                this.newPhoto=this.profile.photo;
             } finally {
                 this.savingPhoto=false;
             }
@@ -158,7 +160,7 @@ export default{
             <div v-else-if="profile">
                 <img
                     v-if="profile.photo || imgPrev"
-                    :src="profile.photo || imgPrev"
+                    :src="(profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null) || imgPrev"
                     alt="pfp"
                     class="profile-pic" />
                 <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
@@ -178,7 +180,6 @@ export default{
                 <template v-if="profileType==='mine'||profileType==='group'">
                     <input v-model="newName" />
                     <button @click="newNameSave">update username</button>
-                    <button @click="newPhotoSave">update photo</button>
                 </template>
 
             </div>
@@ -192,9 +193,10 @@ export default{
     padding: 20px;
 }
 .profile-pic{
-    width: 160px;
-    height: 160px;
+    width: 50vw;
+    height: 50vh;
     border-radius:50%;
     object-fit: cover;
+    display: block;
 }
 </style>

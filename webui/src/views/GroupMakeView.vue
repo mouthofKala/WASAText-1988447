@@ -1,7 +1,4 @@
 <script>
-import Searchbar from '../components/Searchbar.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
-
 export default {
     data: function(){
         return {
@@ -32,7 +29,9 @@ export default {
                 const response = await this.$axios.get('/users');
                 console.log("getusers:\n",response.data)
                 this.users=response.data;
-            } catch(e){this.errorMsg = "couldn't load users...";}
+            } catch(e){
+                this.errorMsg = "couldn't load users...";
+            this.users=[]}
         },
         async selectPhoto(event){
             const file = event.target.files?.[0];
@@ -100,7 +99,8 @@ export default {
                     await this.$router.back();
                 }
             }catch(e){
-                this.errorMsg=e.response?.data || "couldn't create group :(";
+                console.error("failed to make group: ", e);
+                this.errorMsg=e.response?.data?.error || e.response?.data || "couldn't create group :(";
             } finally{
                 this.loading=false;
             }
@@ -121,7 +121,7 @@ export default {
 
 <template>
     <template v-if="errorMsg">
-        <ErrorMsg :msg="errorMsg" />
+        <ErrorMsg v-if="errorMsg" :msg="errorMsg" />
     </template>
     <template v-else>
         <div class="group-make-page">
@@ -147,7 +147,7 @@ export default {
                 <section class="listofusers">
                     <h3>select users...</h3>
                     <button v-for="user in filteredUsers" :key="getUserID(user)" class="member-item" @click="toggleUser(user)">
-                        <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
+                        <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
                         <span v-else class="pfp-placeholder"> </span>
 
                         <span class="username">{{ getUsername(user) }}</span>
@@ -160,7 +160,7 @@ export default {
                 <section class="listofselected">
                     <h3>Selected:</h3>
                     <button v-for="user in selectedUsers" :key="getUserID(user)" class="member-item selected" @click="toggleUser(user)">
-                        <img v-if="getPhoto(user)" :src="getPhoto(user)" alt="" />
+                        <img v-if="getPhoto(user)" :src="`${$axios.defaults.baseURL}/${getPhoto(user)}`" alt="" @error="$event.target.style.display='none'"/>
                         <span v-else class="pfp-placeholder"> </span>
 
                         <span class="username">{{ getUsername(user) }}</span>

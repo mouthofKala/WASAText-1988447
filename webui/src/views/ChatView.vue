@@ -1,7 +1,5 @@
 
 <script>
-import LoadingSpinner from '../components/LoadingSpinner.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
 export default{
     data: function(){
         return{
@@ -25,7 +23,7 @@ export default{
             this.loading = true;
             this.errormsg = null;
             try{
-                let response = await this.$axios.get( `/chats/${this.$route.params.chatid}/messages`)
+                const response = await this.$axios.get( `/chats/${this.$route.params.chatid}/messages`)
                 console.log("gtconversation:\n", response.data)
                 this.convo=response.data;
                 this.msglist = response.data.messages || [];
@@ -38,11 +36,12 @@ export default{
                         this.otherUser=uresponse.data;
                     }
                 }
-            } catch(e){
-                this.errormsg=e.toString();
-            } finally {
-                this.loading=false;
-            }
+            } catch (e) {
+				this.errormsg = e.response?.data?.error || e.message || "could not load chat..";
+				this.msglist=[];
+			} finally {
+				this.loading = false;
+			}
         },
         async loadingOlderMsg(){
             if (this.loadingOlder || !this.moremsg || this.msglist.length === 0){
@@ -177,11 +176,13 @@ export default{
                 this.removeImg();
             } catch(e){
                 this.errormsg=e.toString();
+                this.msgtext="";
+                this.replyingto=null;  
             }
         },
         async delReaction({msg, reac}){
             try{
-                await this.$axios.delete(
+                const response = await this.$axios.delete(
                     `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions/${reac.reactionid}`);
                 console.log("uncommentmsg:\n", response.data)
                 msg.reactions=(msg.reactions||[]).filter(r=>r.ReactionID!==reac.reactionid);
@@ -192,7 +193,7 @@ export default{
 
         async delMsg(msg){
             try {
-                await this.$axios.delete(
+                const response = await this.$axios.delete(
                     `/chats/${this.$route.params.chatid}/messages/${msg.messageid}`);
                 console.log("deletemsg:\n", response.data)
                 this.msglist=this.msglist.filter(m=>m.messageid!==msg.messageid);
@@ -206,11 +207,11 @@ export default{
 		},
 		async leave(){
             try{
-                await this.$axios.delete(`/chats/${this.$route.params.chatid}/members/me`);
+                const response = await this.$axios.delete(`/chats/${this.$route.params.chatid}/members/me`);
                 console.log("leavechatgroup:\n", response.data)
-            this.$router.push("/");
+                this.$router.back();
             }catch(e){
-            this.errormsg=e.toString();
+                this.errormsg=e.toString();
             }
         },
     },

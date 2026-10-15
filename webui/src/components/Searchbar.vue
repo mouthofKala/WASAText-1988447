@@ -63,6 +63,7 @@ export default{
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
             <button v-for="user in searchlist" :key="user.userid" class="search-res" @click="selectuser(user)">
+				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="" @error="$event.target.style.display='none'" />
                 {{ user.username }}
             </button>
         </div>

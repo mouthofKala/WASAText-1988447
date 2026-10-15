@@ -1,9 +1,4 @@
 <script>
-import ProfileButton from '../components/ProfileButton.vue';
-import ErrorMsg from '../components/ErrorMsg.vue';
-import LoadingSpinner from '../components/LoadingSpinner.vue';
-import Searchbar from '../components/Searchbar.vue';
-
 export default {
 	data: function() {
 		return {
@@ -30,13 +25,15 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get("/chats");
+				const response = await this.$axios.get("/chats");
 				console.log("getmyconversations: \n",response.data)
-				this.chatlist = response.data;
+				this.chatlist = Array.isArray(response.data) ? response.data : [];
 			} catch (e) {
-				this.errormsg = e.toString();
+				this.errormsg = e.response?.data?.error || e.message || "could not load chats..";
+				this.chatlist=[];
+			} finally {
+				this.loading = false;
 			}
-			this.loading = false;
 		},
 		togglebuttns(){
 			this.showbuttns = !this.showbuttns;
@@ -61,14 +58,15 @@ export default {
 				const response = await this.$axios.get("/users", {params: {searchkey: query}});
 				console.log("searchusers:\n", response.data)
 				this.searchlist=response.data || [];
-			} catch(e){
-				this.errormsg=e.toString();
+			} catch (e) {
+				this.errormsg = e.response?.data?.error || e.message || "could not load users...";
+				this.searchlist=[];
 			} finally {
-				this.searchin=false;
+				this.searchin = false;
 			}
 		},
 		logout(){
-			localStorage.removeItem("userID")
+			sessionStorage.removeItem("userID")
 			delete this.$axios.defaults.headers.common.Authorization;
 			this.$router.push("/session");
 		}
