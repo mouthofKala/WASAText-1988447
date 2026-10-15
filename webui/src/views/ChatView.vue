@@ -77,7 +77,7 @@ export default{
             if (chat.grouporchat){
                 this.$router.push(`/chats/${chat.chatid}/settings`);
             } else {
-                const otherID = chat.Members.find(id=>id!==this.userID);
+                const otherID = chat.members.find(id=>id!==this.userID);
                 if (otherID){
                     this.$router.push(`users/${otherID}`);
                 }

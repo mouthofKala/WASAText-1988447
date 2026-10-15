@@ -17,6 +17,7 @@ export default {
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
         <!--add chat pfp-->
+        <img v-if="chat.photo" alt="chat pfp" :src="`${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`" class="item-photo"/>
         <h5>{{ chat.chatName }}</h5>
         <div v-if="chat.mostRecentMsg">
             <p class="mb-1">
