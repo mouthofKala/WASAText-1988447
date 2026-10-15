@@ -13,7 +13,7 @@ func (db *appdbimpl) SetMyPhoto(photouri string, userID string) (string, error) 
 	// get old pfp
 	oldPhoto := ""
 	err := db.c.QueryRow(`
-		SLEECT photo
+		SELECT photo
 		FROM users
 		WHERE user_id = ?	
 	`, userID).Scan(&oldPhoto)
