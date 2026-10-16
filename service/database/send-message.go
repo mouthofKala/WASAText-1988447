@@ -108,7 +108,7 @@ func (db *appdbimpl) SendMessage(
 			timestamp,
 			reply_to,
 			fwd_from,
-			reactions)
+			)
 		VALUES (?,?,?,?,?,?,?,?,?,?)`,
 		messageID, chat_id, userID, username, content, photo, "sent", timestamp, replyto, fwdfrom)
 	if !errors.Is(err, nil) {
