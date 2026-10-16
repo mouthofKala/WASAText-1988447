@@ -229,17 +229,17 @@ export default{
 <template>
     <div class="chat-page">
         <div class="chat-header">
-            <button @click="this.$router.back()">↩</button>
+            <button @click="this.$router.replace('/chats')">↩</button>
             <button v-if="convo" class="chat-title" @click="openChatProfile">
                 <img 
                     v-if="convo.chat.grouporchat && convo.chat.photo"
-                    :src="convo.chat.photo"
+                    :src="(convo.chat.photo ? `${$axios.defaults.baseURL}/${convo.chat.photo.replace(/^\/+/,'')}` : null)"
                     alt="group pic"
                     class="chat-profile-pic" 
                 />
 
                 <img v-else-if="otherUser && otherUser.photo"
-                    :src="otherUser.photo"
+                    :src="(otherUser.photo ? `${$axios.defaults.baseURL}/${otherUser.photo.replace(/^\/+/,'')}` : null)"
                     alt="user pic"
                     class="chat-profile-pic"/>
                 <span v-else class="chat-profile-pic">😀</span>

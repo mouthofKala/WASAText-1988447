@@ -12,9 +12,6 @@
                 return `${this.$axios.defaults.baseURL}/${path}`;
             },
         },
-        watch:{
-            '$route.path'(){this.getMyProfile();}
-        },
         methods: {
             async getMyProfile(){
                 try{
@@ -30,6 +27,9 @@
             }
         },
         mounted(){
+            this.getMyProfile();
+        },
+        updated(){
             this.getMyProfile();
         }
 

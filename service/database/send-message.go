@@ -49,15 +49,20 @@ func (db *appdbimpl) SendMessage(
 	// but no deleted membership, so it's best to check both dbs
 
 	// check: is replyto valid (the msgID of replyto exists and belongs to the same chat as the request)
-	var replytoexist bool
-	err = db.c.QueryRow(`
-		SELECT EXISTS(
-			SELECT 1
-			FROM messages
-			WHERE message_id = ? AND chat_id = ?)`,
-		replyto, chat_id).Scan(&replytoexist)
-	if !replytoexist {
-		return Message{}, ErrInvalidMsg
+	if replyto != nil {
+		var replytoexist bool
+		err := db.c.QueryRow(`
+			SELECT EXISTS(
+				SELECT 1
+				FROM messages
+				WHERE message_id = ? AND chat_id = ?)`,
+			replyto, chat_id).Scan(&replytoexist)
+		if err != nil {
+			return Message{}, err
+		}
+		if !replytoexist {
+			return Message{}, ErrInvalidMsg
+		}
 	}
 
 	// is message VALID (must have at least text or img)
@@ -70,10 +75,10 @@ func (db *appdbimpl) SendMessage(
 	err = db.c.QueryRow(`
 		SELECT username
 		FROM users
-		WHERE user-id = ?
+		WHERE user_id = ?
 	`, userID).Scan(&username)
 	if err != nil {
-		return Message{}, ErrBadReq
+		return Message{}, err
 	}
 
 	timestamp := globaltime.Now()
@@ -98,9 +103,10 @@ func (db *appdbimpl) SendMessage(
 			status,
 			timestamp,
 			reply_to,
-			fwd_from, reacts)
-		VALUES (?,?,?,?,?,?,?,?,?,?)`,
-		messageID, chat_id, userID, content, photo, "sent", timestamp, replyto, fwdfrom, []Reaction{})
+			fwd_from,
+			reacts)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+		messageID, chat_id, userID, username, content, photo, "sent", timestamp, replyto, fwdfrom, []Reaction{})
 	if !errors.Is(err, nil) {
 		return Message{}, ErrExec //  gneeric 500 bc uniquely identifiable
 	}
