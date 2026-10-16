@@ -84,6 +84,29 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			}
 			chat.MostRecentMsg = &preview
 		}
+		if chat.GroupOrChat != groupchat {
+			chat.Photo = ""
+		}
+
+		membrows, err := db.c.Query(`
+			SELECT user_id FROM chat_members WHERE chat_id = ?
+		`, chat.ChatID)
+		if err != nil {
+			return nil, err
+		}
+
+		for membrows.Next() {
+			var member string
+			if err := membrows.Scan(&member); err != nil {
+				membrows.Close()
+				return nil, err
+			}
+			chat.Members = append(chat.Members, member)
+		}
+		if err := membrows.Err(); err != nil {
+			return nil, err
+		}
+
 		chats = append(chats, chat)
 	}
 	if err := rows.Err(); !errors.Is(err, nil) {

@@ -79,7 +79,7 @@ export default{
             } else {
                 const otherID = chat.members.find(id=>id!==this.userID);
                 if (otherID){
-                    this.$router.push(`users/${otherID}`);
+                    this.$router.push(`/users/${otherID}`);
                 }
             }
         },

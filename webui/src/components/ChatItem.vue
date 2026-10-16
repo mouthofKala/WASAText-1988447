@@ -6,18 +6,33 @@ export default {
             required: true
         }
     },
+    data(){
+        return{
+            userID: sessionStorage.getItem("userID"),
+            otheruser:null,
+        };
+    },
     methods: {
         getConversation(){
             this.$router.push(`/chats/${this.chat.chatid}/messages`)
-        }
-    }
+        },
+        async getOtherUser(){
+            if (this.chat.grouporchat || this.chat.members.find(id=>id!==this.userID))return;
+            const otherID= this.chat.members.find(id=>id!==this.userID);
+            if (!otherID) return;
+            try{const response = await this.$axios.get(`/users/${otherID}`);
+                this.otheruser=response.data;
+            } catch(e){console.error("failed to dfind otheruser:",e);}
+        } 
+    },
 }
 </script>
 
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
-        <img v-if="chat.photo" alt="chat pfp" :src="`${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`" class="item-photo" @error="console.error('error loaging: ', chat.photo)" />
-        <h5>{{ chat.chatname }}</h5>
+        <img alt="chat pfp" :src="chat.photo ? `${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`:`${$axios.defaults.baseURL}/storage/data/pfp/black.png`" class="item-photo" @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+        <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
+        <h5 v-else>{{ otheruser?.username || 'chat' }}</h5>
         <div v-if="chat.mostRecentMsg">
             <p class="mb-1">
                 {{ chat.mostRecentMsg.username }}:

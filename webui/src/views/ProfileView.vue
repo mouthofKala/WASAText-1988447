@@ -27,18 +27,16 @@ export default{
                     this.newName = this.profile.username;
 
 
-                } else if(this.$route.params.userID){
+                } else if(this.$route.params.userid){
                     this.profileType="user";
-                    const response = await this.$axios.get(`
-                    /users/${this.$route.params.userID}`);
+                    const response = await this.$axios.get(`/users/${this.$route.params.userID}`);
                     console.log("getuserprofile:\n", response.data)
-                    this.profile = response.data.chat;
+                    this.profile = response.data;
 
 
                 } else if (this.$route.params.chatid){
                     this.profileType = "group";
-                    const response = await this.$axios.get(`
-                    /chats/${this.$route.params.chatid}/messages`);
+                    const response = await this.$axios.get(`/chats/${this.$route.params.chatid}/messages`);
                     console.log("getgroupprofile:\n", response.data)
                     this.profile = response.data.chat;
                     this.newName = this.profile.chatname;
@@ -62,11 +60,10 @@ export default{
                     this.profile.username = newUsername;
                 } else if (this.profileType === "group"){
                     const newUsername=this.newName.trim();
-                    const response = await this.$axios.put(`
-                        /chats/${this.$route.params.chatid}/groupname`,
+                    const response = await this.$axios.put(`/chats/${this.$route.params.chatid}/groupname`,
                             {groupname: newUsername,});
                     console.log("setgroupusername:\n", response.data);
-                    this.profile.username = newUsername;
+                    this.profile.chatname = newUsername;
 
                 };
                 
@@ -173,10 +170,10 @@ export default{
             </template>
 
             <h2 v-if="profileType==='mine' || profileType==='user'">
-                {{ profile.Username }}
+                {{ profile.username }}
             </h2>
             <h2 v-else-if="profileType==='group'">
-                {{ profile.ChatName }}
+                {{ profile.chatname }}
             </h2>
             <template v-if="profileType==='mine'||profileType==='group'">
                 <input v-model="newName" />
