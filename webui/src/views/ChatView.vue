@@ -31,9 +31,9 @@ export default{
                 if (!chat.grouporchat && chat.members){
                     const otherID = chat.members.find(id=>id!==this.userID);
                     if (otherID){
-                        const uresponse=await this.$axios.get(`/users/${otherID}`);
+                        const response=await this.$axios.get(`/users/${otherID}`);
                         console.log("getuser:\n",response.data)
-                        this.otherUser=uresponse.data;
+                        this.otherUser=response.data;
                     }
                 }
             } catch (e) {

@@ -10,6 +10,7 @@ export default{
             searchin: false,
             searchTimeout:null,
 			errormsg: null,
+			userID: sessionStorage.getItem("userID"),
 
         }
     },
@@ -43,11 +44,40 @@ export default{
 			}
 		},
 
-		selectuser(user){
+		async makeChat(user){
+			this.errormsg=null;
+			try{
+				const response= await this.$axios.post('/chats',{
+					chatname: "",
+					photo: null,
+					members: [user.userid],
+					grouporchat: false,
+				});
+				console.log("makechat:\n", response.data);
+				const chatID=response.data.chatid ?? response.data.ChatID;
+				if (!chatID){
+					this.errormsg="server did not return chat ID";
+					return;
+				} else{
+					this.searchkey="";
+					this.searchlist=[];
+					await this.$router.replace(`/chats/${chatID}`);
+				}
+				}catch(e){
+					if (e.response?.status===409){
+						await this.$router.replace(`/chats/${chatID}`);
+					
+            		} else{
+						console.error("failed to make group: ", e);
+						this.errorMsg=e.response?.data?.error || e.response?.data || "couldn't create group :(";	
+					}
+				}
+		},
+		async selectuser(user){
 			if (this.selectmode){
 				this.$emit('select-user', user);
 			} else{
-				this.$router.push(`/users/${user.userid}`);
+				await this.makeChat(user);
 			}
 			this.searchkey='';
 			this.searchlist=[];
@@ -63,13 +93,14 @@ export default{
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
             <button v-for="user in searchlist" :key="user.userid" class="search-res" @click="selectuser(user)">
-				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="" @error="$event.target.style.display='none'"  class="searchpic"/>
+				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="pfp" @error="$event.target.style.display='none'"  class="searchpic"/>
                 {{ user.username }}
             </button>
         </div>
         <p v-if="!searchin && searchkey.trim() && searchlist.length===0">
             No users found. Try another searchkey...
         </p>
+		<p v-if="errormsg">{{ errormsg }}</p>
     </div>
 </template>
 

@@ -27,8 +27,8 @@ tags:
     description: ops on a user
   - name: reac
     description: op on a reaction
-  - name: General
-    description: app updates, generic info
+  # - name: General
+  #  description: app updates, generic info
 
 paths:
   /session: 
@@ -301,7 +301,7 @@ paths:
               parameters:
                 chatId: $response.body#/chatId
         '400': {$ref: "#/components/responses/BadRequest"}
-        '409': {$ref: "#/components/responses/Conflict"}
+        # '409': {$ref: "#/components/responses/Conflict"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
   /chats/{chatId}:

@@ -44,7 +44,7 @@ func (rt *_router) makeChatGroup(
 	photouri := database.DefaultGroupPhoto
 	basepath := "storage/data/pfp"
 
-	err = rt.db.ValidateChatGroup(request.Members, request.GrouporChat)
+	err, chatid := rt.db.ValidateChatGroup(request.Members, request.GrouporChat, chatID.String())
 	if errors.Is(err, database.ErrUserNotFound) {
 		ctx.Logger.WithError(err).Error("bad req: one or more users not found")
 		http.Error(w, database.BR, http.StatusBadRequest)
@@ -61,9 +61,8 @@ func (rt *_router) makeChatGroup(
 		return
 	}
 	if errors.Is(err, database.ErrChatAlreadyExists) {
-		ctx.Logger.WithError(err).Error("chat already exists")
-		http.Error(w, database.C, http.StatusConflict)
-		return
+		// just run getconversation!
+		rt.db.GetConversation(string(ctx.UserID), chatid, "")
 	}
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error validating request for group or chat")

@@ -10,24 +10,24 @@ const (
 	groupchat   = true
 )
 
-func (db *appdbimpl) ValidateChatGroup(members []string, isgroup bool) error {
+func (db *appdbimpl) ValidateChatGroup(members []string, isgroup bool, chatID string) (error, string) {
 	if len(members) == 0 {
-		return ErrNoMembersSelected
+		return ErrNoMembersSelected, chatID
 	}
 	if len(members) != 2 && !isgroup {
-		return ErrBadReq
+		return ErrBadReq, chatID
 	}
 
 	if len(members)+1 > 100 {
-		return ErrTooMany
+		return ErrTooMany, chatID
 	}
 	for _, memberID := range members {
 		exists, err := db.UserExists(memberID)
 		if err != nil {
-			return err
+			return err, chatID
 		}
 		if !exists {
-			return ErrUserNotFound
+			return ErrUserNotFound, chatID
 		}
 
 	}
@@ -50,16 +50,17 @@ func (db *appdbimpl) ValidateChatGroup(members []string, isgroup bool) error {
 		`, members[0], members[1]).Scan(&existingChatID)
 
 		if err == nil {
-			return ErrChatAlreadyExists // 409
+			return ErrChatAlreadyExists, chatID // 200
 		}
+
 		if !errors.Is(err, sql.ErrNoRows) {
-			return err
+			return err, chatID
 		}
 		if !(errors.Is(err, nil)) {
-			return err // 500
+			return err, chatID // 500
 		}
 
 	}
-	return nil
+	return nil, chatID
 
 }

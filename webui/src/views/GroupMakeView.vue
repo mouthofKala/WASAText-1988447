@@ -90,7 +90,7 @@ export default {
                     members: this.selectedUsers.map(user=>this.getUserID(user)),
                     grouporchat: true,
                 });
-                console.log("makechatgroup:\n", response.data)
+                console.log("makegroup:\n", response.data)
                 const chatID=response.data.chatid ?? response.data.chat?.chatid;
                 if (chatID){
                     await this.$router.replace(`/chats/${chatID}`);

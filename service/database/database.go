@@ -89,7 +89,7 @@ type AppDatabase interface {
 	UncommentMessage(msgID string, chatID string, userID string, reactionID string) error
 	LeaveGroup(userID string, chatID string) (bool, error)
 	UserExists(userID string) (bool, error)
-	ValidateChatGroup(members []string, isgroup bool) error
+	ValidateChatGroup(members []string, isgroup bool, chatID string) (error, string)
 	Ping() error
 }
 
