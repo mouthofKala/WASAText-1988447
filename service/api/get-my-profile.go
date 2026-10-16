@@ -23,6 +23,7 @@ func (rt *_router) getMyProfile(
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(user); err != nil {
 		ctx.Logger.WithError(err).Error("error encoding profile")
+		return
 	}
 
 }
