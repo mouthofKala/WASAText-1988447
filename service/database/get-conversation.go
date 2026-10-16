@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"log"
 )
 
 func (db *appdbimpl) GetConversation(userID string, chatID string, before string) (Conversation, error) {
@@ -121,6 +122,38 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 		); !errors.Is(err, nil) {
 			return Conversation{}, ErrFetchingMessages // 500?
 		}
+
+		// FETCH REACTIONS FOR THAT MESSAGE AND APPEND TO ITS ATTRIBUTE
+		message.Reacts = []Reaction{}
+		reacrows, err := db.c.Query(`
+			SELECT reaction_id, message_id, chat_id, user_id, emoji
+			FROM reactions
+			WHERE chat_id = ? AND message_id = ?
+		`, chatID, message.MessageID)
+
+		if err != nil {
+			log.Printf("error fetching reactions for msg: %v", err)
+			return Conversation{}, err
+		}
+		defer reacrows.Close()
+		for reacrows.Next() {
+			var reaction Reaction
+			if err := rows.Scan(
+				&reaction.ReactionID,
+				&reaction.MessageID,
+				&reaction.ChatID,
+				&reaction.UserID,
+				&reaction.Emoji,
+			); err != nil {
+				return Conversation{}, err
+			}
+			message.Reacts = append(message.Reacts, reaction)
+		}
+		if err := reacrows.Err(); err != nil {
+			reacrows.Close()
+			return Conversation{}, err
+		}
+		reacrows.Close()
 
 		convo.Messages = append(convo.Messages, message)
 	}

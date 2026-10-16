@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"log"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/globaltime"
 )
@@ -23,9 +24,11 @@ func (db *appdbimpl) SendMessage(
 			FROM chats
 			WHERE chat_id = ?)`, chat_id).Scan(&chatExists)
 	if !errors.Is(err, nil) {
+		log.Printf("error checking chat existence: %v", err)
 		return Message{}, err // 500
 	}
 	if !chatExists {
+		log.Printf("chat may not exist in DB: %v", err)
 		return Message{}, ErrBadReq
 	}
 
@@ -38,17 +41,14 @@ func (db *appdbimpl) SendMessage(
 			WHERE chat_id = ? AND user_id = ?)`,
 		chat_id, userID).Scan(&membership)
 	if !errors.Is(err, nil) {
+		log.Printf("error fetching user membership in db: %v", err)
 		return Message{}, err // 500
 	}
 	if !membership {
+		log.Printf("user may not be a member in DB: %v", err)
 		return Message{}, ErrNotaGroupMember // 403
 	}
 
-	// target chat existing is implied if you assume there are no
-	// "illegal" actions on the db which leave with a deleted chat
-	// but no deleted membership, so it's best to check both dbs
-
-	// check: is replyto valid (the msgID of replyto exists and belongs to the same chat as the request)
 	if replyto != nil {
 		var replytoexist bool
 		err := db.c.QueryRow(`
@@ -58,15 +58,18 @@ func (db *appdbimpl) SendMessage(
 				WHERE message_id = ? AND chat_id = ?)`,
 			replyto, chat_id).Scan(&replytoexist)
 		if err != nil {
+			log.Printf("error fetching msg user is replying to: %v", err)
 			return Message{}, err
 		}
 		if !replytoexist {
+			log.Printf("msg reply to refers to does not exist: %v", err)
 			return Message{}, ErrInvalidMsg
 		}
 	}
 
 	// is message VALID (must have at least text or img)
 	if (content == nil || *content == "") && photo == nil {
+		log.Printf("msg is empty!!!: %v", err)
 		return Message{}, ErrInvalidMsg // 400
 	}
 
@@ -78,6 +81,7 @@ func (db *appdbimpl) SendMessage(
 		WHERE user_id = ?
 	`, userID).Scan(&username)
 	if err != nil {
+		log.Printf("this user has no registered username??: %v", err)
 		return Message{}, err
 	}
 
@@ -104,10 +108,11 @@ func (db *appdbimpl) SendMessage(
 			timestamp,
 			reply_to,
 			fwd_from,
-			reacts)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
-		messageID, chat_id, userID, username, content, photo, "sent", timestamp, replyto, fwdfrom, []Reaction{})
+			reactions)
+		VALUES (?,?,?,?,?,?,?,?,?,?)`,
+		messageID, chat_id, userID, username, content, photo, "sent", timestamp, replyto, fwdfrom)
 	if !errors.Is(err, nil) {
+		log.Printf("error inserting msg in db: %v", err)
 		return Message{}, ErrExec //  gneeric 500 bc uniquely identifiable
 	}
 
@@ -118,6 +123,7 @@ func (db *appdbimpl) SendMessage(
 		FROM chat_members
 		WHERE chat_id = ? AND user_id != ?`, chat_id, userID)
 	if !errors.Is(err, nil) {
+		log.Printf("error fetching users for unreads: %v", err)
 		return Message{}, err //  500
 	}
 	defer rows.Close()
@@ -132,10 +138,12 @@ func (db *appdbimpl) SendMessage(
 			VALUES (?,?,?)`, messageID, chat_id, memberID)
 
 		if !errors.Is(err, nil) {
+			log.Printf("error adding msg unreads to db: %v", err)
 			return Message{}, ErrExec // 500
 		}
 	}
 	if err := rows.Err(); !errors.Is(err, nil) {
+		log.Printf("error during transaction: %v", err)
 		return Message{}, ErrTX // 500
 	}
 	if err := tx.Commit(); !errors.Is(err, nil) {
@@ -146,6 +154,7 @@ func (db *appdbimpl) SendMessage(
 		MessageID: messageID,
 		ChatID:    chat_id,
 		SenderID:  userID,
+		SenderN:   username,
 		Content:   content,
 		Photo:     photo,
 		Status:    "sent",
