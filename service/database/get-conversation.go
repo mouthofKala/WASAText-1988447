@@ -26,12 +26,11 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 		&convo.Chat.Photo,
 	)
 
-	if convo.Chat.ChatID == "" {
-		return Conversation{}, ErrFetchingChat
-	}
-
 	if !errors.Is(err, nil) {
 		return Conversation{}, err // generic 500
+	}
+	if convo.Chat.ChatID == "" {
+		return Conversation{}, ErrFetchingChat
 	}
 
 	// search members and most recent msg
