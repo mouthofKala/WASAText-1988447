@@ -8,6 +8,10 @@
         computed:{
             photoUrl(){
                 if (!this.photo) return null;
+            if (this.photo.startsWith("http://") ||
+                this.photo.startsWith("https://")) {
+                return this.photo;
+            }
                 const path = this.photo.replace(/^\/+/,"");
                 return `${this.$axios.defaults.baseURL}/${path}`;
             },
@@ -29,9 +33,6 @@
         mounted(){
             this.getMyProfile();
         },
-        updated(){
-            this.getMyProfile();
-        }
 
     }
 </script>

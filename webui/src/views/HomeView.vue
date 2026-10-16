@@ -99,7 +99,7 @@ export default {
 		</div>
 		<div v-else class="chat-list">
 			<ChatItem
-				v-for="chat in chatlist" :key="chat.chatid" :chat="chat" />
+				v-for="chat in chatlist" :key="chat.chatid" :chat="chat"></ChatItem>
 		</div>
 	</div>
 </template>

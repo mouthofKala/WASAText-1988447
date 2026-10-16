@@ -16,8 +16,8 @@ export default {
 
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
-        <img v-if="chat.photo" alt="chat pfp" :src="`${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`" class="item-photo"/>
-        <h5>{{ chat.chatName }}</h5>
+        <img v-if="chat.photo" alt="chat pfp" :src="`${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`" class="item-photo" @error="console.error('error loaging: ', chat.photo)" />
+        <h5>{{ chat.chatname }}</h5>
         <div v-if="chat.mostRecentMsg">
             <p class="mb-1">
                 {{ chat.mostRecentMsg.username }}:
