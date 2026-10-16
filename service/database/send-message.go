@@ -107,7 +107,7 @@ func (db *appdbimpl) SendMessage(
 			status,
 			timestamp,
 			reply_to,
-			fwd_from,
+			fwd_from
 			)
 		VALUES (?,?,?,?,?,?,?,?,?,?)`,
 		messageID, chat_id, userID, username, content, photo, "sent", timestamp, replyto, fwdfrom)
