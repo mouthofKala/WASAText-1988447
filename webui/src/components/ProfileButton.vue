@@ -13,7 +13,7 @@
             },
         },
         watch:{
-            '$route.path'(){this.getProfile();}
+            '$route.path'(){this.getMyProfile();}
         },
         methods: {
             async getMyProfile(){

@@ -61,8 +61,9 @@ func (rt *_router) makeChatGroup(
 		return
 	}
 	if errors.Is(err, database.ErrChatAlreadyExists) {
-		// just run getconversation!
-		rt.db.GetConversation(string(ctx.UserID), chatid, "")
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]string{"chatid": chatid})
+		return
 	}
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error validating request for group or chat")
@@ -147,9 +148,5 @@ func (rt *_router) makeChatGroup(
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-
-	if err = json.NewEncoder(w).Encode(chat); !errors.Is(err, nil) {
-		ctx.Logger.WithError(err).Error("error encoding created group")
-		return
-	}
+	_ = json.NewEncoder(w).Encode(map[string]string{"chatid": chat.ChatID})
 }

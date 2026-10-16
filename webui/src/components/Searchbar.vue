@@ -54,23 +54,18 @@ export default{
 					grouporchat: false,
 				});
 				console.log("makechat:\n", response.data);
-				const chatID=response.data.chatid ?? response.data.ChatID;
+				const chatID=response.data.chatid;
 				if (!chatID){
 					this.errormsg="server did not return chat ID";
 					return;
 				} else{
 					this.searchkey="";
 					this.searchlist=[];
-					await this.$router.replace(`/chats/${chatID}`);
+					await this.$router.replace(`/chats/${chatID}/messages`);
 				}
 				}catch(e){
-					if (e.response?.status===409){
-						await this.$router.replace(`/chats/${chatID}`);
-					
-            		} else{
-						console.error("failed to make group: ", e);
-						this.errorMsg=e.response?.data?.error || e.response?.data || "couldn't create group :(";	
-					}
+					console.error("failed to make or open chat: ", e);
+					this.errorMsg=e.response?.data?.error || e.response?.data || "couldn't create/open chat :(";	
 				}
 		},
 		async selectuser(user){

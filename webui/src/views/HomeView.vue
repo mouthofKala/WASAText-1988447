@@ -18,7 +18,8 @@ export default {
 			this.searchTimeout=setTimeout(()=>{
 				this.searchUsers();
 			},300); // wrapped searchUsers with a timeout
-		}
+		},
+		'$route.path'(newpath){if (newpath==='/chats'){this.getMyProfile();}},
 	},
 	methods: {
 		async getMyConversations() {
