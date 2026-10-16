@@ -50,14 +50,11 @@ func (db *appdbimpl) ValidateChatGroup(members []string, isgroup bool, chatID st
 		`, members[0], members[1]).Scan(&existingChatID)
 
 		if err == nil {
-			return ErrChatAlreadyExists, chatID // 200
+			return ErrChatAlreadyExists, existingChatID // 200
 		}
 
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err, chatID
-		}
-		if !(errors.Is(err, nil)) {
-			return err, chatID // 500
 		}
 
 	}
