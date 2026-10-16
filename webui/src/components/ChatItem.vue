@@ -8,7 +8,7 @@ export default {
     },
     methods: {
         getConversation(){
-            this.$router.push(`/chats/${this.chat.chatid}`)
+            this.$router.push(`/chats/${this.chat.chatid}/messages`)
         }
     }
 }
@@ -48,5 +48,14 @@ export default {
         line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+    .item-photo{
+        height:55px;
+        width:55px;
+        border-radius:50%;
+        overflow: hidden;
+        border:none;
+        padding:0;
+
     }
 </style>
