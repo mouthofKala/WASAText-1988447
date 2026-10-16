@@ -161,7 +161,7 @@ export default{
         <div v-else-if="profile">
             <img
                 v-if="imgPrev || profile.photo"
-                :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo}` : null)"
+                :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo.replace(/^\/+/,'')}` : null)"
                 alt="pfp"
                 class="profile-pic" />
             <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>

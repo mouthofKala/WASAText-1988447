@@ -12,6 +12,9 @@
                 return `${this.$axios.defaults.baseURL}/${path}`;
             },
         },
+        watch:{
+            '$route.path'(){this.getMyProfile();}
+        },
         methods: {
             async getMyProfile(){
                 try{

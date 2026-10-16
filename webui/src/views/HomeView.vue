@@ -83,12 +83,12 @@ export default {
 		<div class="home-header">
 			<h1 class="h2">Conversations</h1>
 			<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
-			<button class="menu-button" @click="togglebuttns">⋮</button>
+			<button class="menu-button" @click="togglebuttns">⋮
 				<div v-if="showbuttns" class="smolmenu">
 					<button @click="gomakegroupview">New group</button>
 					<button @click="logout" class="logout-buttn">Log out</button>
 				</div>
-
+			</button>
 			<ProfileButton />
 		</div>
 		<ErrorMsg v-if="errormsg" :msg="errormsg" />
