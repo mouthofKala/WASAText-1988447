@@ -13,10 +13,10 @@ export default {
     },
     computed:{
         myReac()   {
-            return (this.message.Reactions||[]).find(reaction=>reaction.UserID===this.userID);
+            return (this.message.reactions||[]).find(reaction=>reaction.userid===this.userID);
         },
         isMyMsg(){
-            return this.message.SenderID===this.UserID;
+            return this.message.SenderID===this.userID;
         }
     },
     methods: {
@@ -36,6 +36,10 @@ export default {
         reply(){
             this.$emit("reply", this.message)
             this.showMenu = false
+        },
+        forward(){
+            this.$emit("forward", this.message)
+            this.showMenu=false
         },
         unreact(){
             if (!this.myReac) return;
@@ -57,14 +61,15 @@ export default {
     <div class="message-item">
         <button class="msg-user" @click="openProfile">{{ message.username }}:</button>
         <button class="all-msg" @click="actions">
+            <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
             <img v-if="message.photouri" :src="message.photouri" alt="msgphoto" />
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
         </button>
         <!--already present reactions on msg-->
-        <div v-if="message.Reactions?.length" class="reacs">
-            <span v-for="reac in message.Reactions" :key="reac.ReactionID">{{ reaction.Emoji }}</span>
+        <div v-if="message.reactions?.length" class="reacs">
+            <span v-for="reac in message.reactions" :key="reac.reactionid">{{ reac.emoji }}</span>
         </div>
         <div v-if="showMenu" class="menuuu">
             <template v-if="!myReac">
@@ -77,9 +82,8 @@ export default {
                 remove comment
             </button>
             <button @click="reply">↩ Reply</button>
-            <button v-if="isMyMsg" @click="delmsg">
-                delete
-            </button>
+            <button @click="forward">forward</button>
+            <button v-if="isMyMsg" @click="delmsg">delete</button>
         </div>
     </div>
 </template>

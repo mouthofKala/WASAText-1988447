@@ -16,6 +16,10 @@ export default{
             imgFile: null,
             imgPrev:null,
             moremsg:true,
+            fwdmsg: null,
+            targetchatid: "",
+            myChats:[],
+            fwding: false,
         };
     },
     methods:{
@@ -88,18 +92,20 @@ export default{
             this.$router.push(`/chats/${this.$route.params.chatid}/members`);
         },
 
-        async addReaction({msg, emoji}){
+        async addReaction({message, emoji}){
             try{
                 const response = await this.$axios.post(
-                    `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions`, {emoji}
+                    `/chats/${this.$route.params.chatid}/messages/${message.messageid}/reactions`, {emoji}
                 );
                 console.log("addcomment:\n",response.data)
-                if (!msg.reactions){
-                    msg.reactions=[];
+                if (!message.reactions){
+                    message.reactions=[];
                 }
-                msg.reactions.push(response.data);
+                const idx=message.reactions.findIndex(r=>r.userid===this.userID);
+                if (idx!==-1){message.reactions.splice(idx,1,response.data);}
+                // message.reactions.push(response.data);
             } catch(e){
-                this.errormsg=e.toString();
+                this.errormsg=e.response?.data?.error||e.message;
             }
         },
         replyToMsg(message){
@@ -160,9 +166,6 @@ export default{
             if (this.replyingto){
                 formData.append("replyto", this.replyingto.messageid);
             }
-            if (this.forward){
-                formData.append("")
-            }
             try{
                 const response = await this.$axios.post(
                     `/chats/${this.$route.params.chatid}/messages`, formData);
@@ -183,14 +186,43 @@ export default{
                 this.replyingto=null;  
             }
         },
-        async delReaction({msg, reac}){
+        async startFwd(message){
+            this.fwdmsg=message;
+            this.targetchatid="";
+            try{
+				const response = await this.$axios.get("/chats");
+				console.log("getting convs for forwarding: \n",response.data)
+				this.myChats = Array.isArray(response.data) ? response.data : [];
+            } catch(e){
+                this.errormsg=e.response?.data?.error || e.message;
+                this.fwdmsg=null;
+            }
+        },
+        cancelFwd(){
+            this.fwdmsg=null;
+            this.targetchatid="";
+        },
+        async forward(){
+            if (!this.fwdmsg || !this.targetchatid) return;
+            this.fwding=true;
+            this.errormsg=null;
+            try{
+                await this.$axios.post(`/chats/${this.$route.params.chatid}/messages/${this.fwdmsg.messageid}/forward`,
+                    {targetchat_id: this.targetchatid});
+                this.cancelFwd();
+                
+            } catch(e){
+                this.errormsg=e.response?.data?.error||e.message;
+            } finally{this.fwding=false;}
+        },
+        async delReaction({message, reac}){
             try{
                 const response = await this.$axios.delete(
-                    `/chats/${this.$route.params.chatid}/messages/${msg.messageid}/reactions/${reac.reactionid}`);
+                    `/chats/${this.$route.params.chatid}/messages/${message.messageid}/reactions/${reac.reactionid}`);
                 console.log("uncommentmsg:\n", response.data)
-                msg.reactions=(msg.reactions||[]).filter(r=>r.ReactionID!==reac.reactionid);
+                message.reactions=(message.reactions||[]).filter(r=>r.reactionid!==reac.reactionid);
             }catch(e){
-                this.errormsg=e.toString();
+                this.errormsg=e.response?.data?.error ||e.message;
             }
         },
 
@@ -283,19 +315,34 @@ export default{
                 @reply="replyToMsg"
                 @unreact="delReaction"
                 @delete="delMsg"
+                @forward="startFwd"
             />
         </div>
 
         <div v-if="replyingto" class="reply-prev">
             <!--in case msg is deleted/not found-->
             <strong> Replying to {{ replyingto.username }} || 'message'</strong>
-            <p>{{ replyingto.Content }}</p>
+            <p>{{ replyingto.content }}</p> <!-- shorten it!-->
             <button type="button" @click="cancel">✕</button>
         </div>
 
         <div v-if="imgPrev" class="img-prev">
             <img :src="imgPrev" alt="msgphoto" />
             <button type="button" @click="removeImg">✕</button>
+        </div>
+
+        <div v-if="fwding" class="fwdable-list">
+            <h4> foward to...</h4>
+            <select v-model="targetchatid">
+                <option value="" disabled>select a chat</option>
+                <option v-for="chat in myChats" :key="chat.chatid" :value="chat.chatid">
+                    {{ chat.grouporchat ? chat.chatname : "SHOULD DISPLAY NAME OF OTHER USER"}}
+                </option>
+            </select>
+            <button @click="cancelFwd">cancel</button>
+            <button @click="forward" :disabled="!targetchatid || forwarding">
+                {{ forwarding ? "forwarding..." : "forward" }}
+            </button>
         </div>
         <form class="msg-composer" @submit.prevent="sendMessage">
             <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
@@ -349,6 +396,13 @@ export default{
 }
 .msg-composer input{
     flex: 1;
+}
+.fwdable-list{
+    padding:12px;
+    border: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .settings-button{
