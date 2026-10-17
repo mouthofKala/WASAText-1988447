@@ -3,14 +3,16 @@ package database
 import (
 	"database/sql"
 	"errors"
+
+	"github.com/gofrs/uuid"
 )
 
-func (db *appdbimpl) ForwardMessage(userID, targetchat_id string, fwdmsgID string, chatID string, newmsgID string) (Message, error) {
+func (db *appdbimpl) ForwardMessage(userID string, targetchat_ids []string, fwdmsgID string, chatID string) (Message, error) {
 	// check that both chats exist
 
 	// check that the user is a member of chat_id and targetchat_id, otherwise 403
 	var membership1 bool
-	var membership2 bool
+
 	err := db.c.QueryRow(`
 		SELECT EXISTS(
 			SELECT 1
@@ -19,16 +21,20 @@ func (db *appdbimpl) ForwardMessage(userID, targetchat_id string, fwdmsgID strin
 	if !errors.Is(err, nil) {
 		return Message{}, err // 500
 	}
-	err = db.c.QueryRow(`
-		SELECT EXISTS(
-			SELECT 1
-			FROM chat_members
-			WHERE user_id = ? AND chat_id = ?)`, userID, targetchat_id).Scan(&membership2)
-	if !errors.Is(err, nil) {
-		return Message{}, err
-	}
-	if !(membership1 && membership2) {
-		return Message{}, ErrForbidden
+
+	for _, targetchat_id := range targetchat_ids {
+		var membership2 bool
+		err = db.c.QueryRow(`
+			SELECT EXISTS(
+				SELECT 1
+				FROM chat_members
+				WHERE user_id = ? AND chat_id = ?)`, userID, targetchat_id).Scan(&membership2)
+		if !errors.Is(err, nil) {
+			return Message{}, err
+		}
+		if !(membership1 && membership2) {
+			return Message{}, ErrForbidden
+		}
 	}
 
 	// check that the msg exists, otherwise 400
@@ -49,9 +55,23 @@ func (db *appdbimpl) ForwardMessage(userID, targetchat_id string, fwdmsgID strin
 		return Message{}, err // 500
 	}
 
-	msg, err := db.SendMessage(userID, targetchat_id, fwdmsg.Content, fwdmsg.Photo, nil, &chatID, newmsgID)
-	if !errors.Is(err, nil) {
-		return Message{}, err
+	for _, targetchat_id := range targetchat_ids {
+		newmsgID, err := uuid.NewV4()
+		if err != nil {
+			return Message{}, err
+		}
+		_, err = db.SendMessage(userID, targetchat_id, fwdmsg.Content, fwdmsg.Photo, nil, &chatID, newmsgID.String())
+		if !errors.Is(err, nil) {
+			return Message{}, err
+		}
+
 	}
-	return msg, nil
+
+	return Message{
+		SenderID: userID,
+		Content:  fwdmsg.Content,
+		Photo:    fwdmsg.Photo,
+		Status:   "sent",
+		FwdFrom:  &chatID,
+	}, nil
 }

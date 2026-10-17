@@ -10,6 +10,7 @@ import './assets/dashboard.css';
 import './assets/main.css';
 import ProfileButton from './components/ProfileButton.vue';
 import Searchbar from './components/Searchbar.vue';
+import AddOrFwd from './components/AddOrFwd.vue';
 
 const app = createApp(App);
 const userID = sessionStorage.getItem("userID");
@@ -25,5 +26,6 @@ app.component("ChatItem",ChatItem);
 app.component("MessageItem",MessageItem);
 app.component("ProfileButton",ProfileButton);
 app.component("Searchbar",Searchbar);
+app.component("AddOrFwd", AddOrFwd);
 app.use(router);
 app.mount('#app');

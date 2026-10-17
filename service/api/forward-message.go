@@ -7,7 +7,6 @@ import (
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -20,25 +19,19 @@ func (rt *_router) forwardMessage(
 	userID := ctx.UserID
 	chatID := ps.ByName("chatID")
 	fwdmessageID := ps.ByName("messageID")
-	newmsgID, err := uuid.NewV4()
-	if !errors.Is(err, nil) {
-		ctx.Logger.WithError(err).Error("error generating messgae ID")
-		http.Error(w, database.ISE, http.StatusInternalServerError)
-		return
-	}
 
 	var request struct {
-		TargetChatID string `json:"targetchat_id"`
+		TargetChatIDs []string `json:"targetchat_ids"`
 	}
 
-	err = json.NewDecoder(r.Body).Decode(&request)
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error(database.ErrDecodingReq)
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
 
-	msg, err := rt.db.ForwardMessage(userID, request.TargetChatID, fwdmessageID, chatID, newmsgID.String())
+	msg, err := rt.db.ForwardMessage(userID, request.TargetChatIDs, fwdmessageID, chatID)
 	if errors.Is(err, database.ErrForbidden) {
 		ctx.Logger.WithError(err).Error("403: forbidden in fwdmsg method")
 		http.Error(w, database.F, http.StatusForbidden)

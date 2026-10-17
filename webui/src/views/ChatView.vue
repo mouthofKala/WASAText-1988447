@@ -1,5 +1,6 @@
 
 <script>
+
 export default{
     data: function(){
         return{
@@ -20,6 +21,7 @@ export default{
             targetchatid: "",
             myChats:[],
             fwding: false,
+            addOrFwdMode:null,
         };
     },
     methods:{
@@ -88,8 +90,10 @@ export default{
             }
         },
 
-        addMembers(){
-            this.$router.push(`/chats/${this.$route.params.chatid}/members`);
+        async addMembers(){
+            this.addOrFwdMode="add";
+            const response= await this.$axios.post(`/chats/${this.$route.params.chatid}/members`);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         },
 
         async addReaction({message, emoji}){
@@ -188,6 +192,7 @@ export default{
             }
         },
         async startFwd(message){
+            this.addOrFwdMode="forward";
             this.fwdmsg=message;
             this.targetchatid="";
             try{
@@ -203,6 +208,7 @@ export default{
             this.fwdmsg=null;
             this.targetchatid="";
         },
+        closeAddFwd(){this.addOrFwdMode=null;},
         async forward(){
             if (!this.fwdmsg || !this.targetchatid) return;
             this.fwding=true;
@@ -304,7 +310,6 @@ export default{
 
         <ErrorMsg v-if="errormsg" :msg="errormsg" />
         <LoadingSpinner v-if="loading" />
-
         <div v-else class="message-list" @scroll="handleScroll">
             <p v-if="msglist.length===0"></p>
             <MessageItem
@@ -319,6 +324,14 @@ export default{
                 @forward="startFwd"
             />
         </div>
+        <AddOrFwd 
+            v-if="addOrFwdMode"
+            :mode="addOrFwdMode"
+            :chatid="$route.params.chatid"
+            :members="convo?.chat?.members||[]"
+            @close="closeAddFwd"
+            @completed="closeAddFwd"
+        />
 
         <div v-if="replyingto" class="reply-prev">
             <!--in case msg is deleted/not found-->
