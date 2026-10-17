@@ -38,14 +38,13 @@ func (rt *_router) commentMessage(
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
-	emojiRunes := []rune(request.Emoji)
-	if len(emojiRunes) != 1 || !emojiList[emojiRunes[0]] {
+	if !emojiList[request.Emoji] {
 		ctx.Logger.Error("invalid reaction")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
 
-	reaction, err := rt.db.CommentMessage(msgID, chatID, userID, reactionID.String(), emojiRunes[0])
+	reaction, err := rt.db.CommentMessage(msgID, chatID, userID, reactionID.String(), request.Emoji)
 	if errors.Is(err, database.ErrBadReq) {
 		ctx.Logger.WithError(err).Error("bad request: chatID or messageID do not exist")
 		http.Error(w, database.BR, http.StatusBadRequest)

@@ -105,9 +105,9 @@ type _router struct {
 	db         database.AppDatabase
 }
 
-var emojiList = map[rune]bool{
-	'❤': true,
-	'👍': true,
-	'😂': true,
-	'😭': true,
+var emojiList = map[string]bool{
+	"❤": true,
+	"👍": true,
+	"😂": true,
+	"😭": true,
 }

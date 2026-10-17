@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji rune) (Reaction, error) {
+func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji string) (Reaction, error) {
 	// does chatID exist? 400
 	var exist bool
 	err := db.c.QueryRow(`

@@ -85,7 +85,7 @@ type AppDatabase interface {
 	SendMessage(userID, chat_id string, content *string, photo *string, replyto *string, fwdfrom *string, messageID string) (Message, error)
 	DeleteMessage(msgID string, userID string, chatID string) error
 	ForwardMessage(userID, targetchat_id string, fwdmsgID string, chatID string, newmsgID string) (Message, error)
-	CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji rune) (Reaction, error)
+	CommentMessage(msgID string, chatID string, userID string, reactionID string, emoji string) (Reaction, error)
 	UncommentMessage(msgID string, chatID string, userID string, reactionID string) error
 	LeaveGroup(userID string, chatID string) (bool, error)
 	UserExists(userID string) (bool, error)
