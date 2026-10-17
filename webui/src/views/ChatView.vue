@@ -160,6 +160,9 @@ export default{
             if (this.replyingto){
                 formData.append("replyto", this.replyingto.messageid);
             }
+            if (this.forward){
+                formData.append("")
+            }
             try{
                 const response = await this.$axios.post(
                     `/chats/${this.$route.params.chatid}/messages`, formData);
