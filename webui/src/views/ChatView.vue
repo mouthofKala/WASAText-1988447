@@ -103,6 +103,7 @@ export default{
                 }
                 const idx=message.reactions.findIndex(r=>r.userid===this.userID);
                 if (idx!==-1){message.reactions.splice(idx,1,response.data);}
+                else{message.reactions.push(response.data);}
                 // message.reactions.push(response.data);
             } catch(e){
                 this.errormsg=e.response?.data?.error||e.message;

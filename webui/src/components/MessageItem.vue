@@ -16,7 +16,7 @@ export default {
             return (this.message.reactions||[]).find(reaction=>reaction.userid===this.userID);
         },
         isMyMsg(){
-            return this.message.SenderID===this.userID;
+            return this.message.senderid===this.userID;
         }
     },
     methods: {
@@ -73,7 +73,7 @@ export default {
         </div>
         <div v-if="showMenu" class="menuuu">
             <template v-if="!myReac">
-                <button @click="react('❤️')">❤️</button>
+                <button @click="react('❤')">❤️</button>
                 <button @click="react('👍')">👍</button>
                 <button @click="react('😂')">😂</button>
                 <button @click="react('😢')">😢</button>
