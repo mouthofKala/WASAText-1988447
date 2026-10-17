@@ -76,7 +76,7 @@ export default {
                 <button @click="react('❤️')">❤️</button>
                 <button @click="react('👍')">👍</button>
                 <button @click="react('😂')">😂</button>
-                <button @click="react('😭')">😢</button>
+                <button @click="react('😭')">😭</button>
             </template>
             <button v-else @click="unreact">
                 remove comment

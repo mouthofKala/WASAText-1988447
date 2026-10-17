@@ -216,12 +216,12 @@ export default{
                 this.errormsg=e.response?.data?.error||e.message;
             } finally{this.fwding=false;}
         },
-        async delReaction({message, reac}){
+        async delReaction({message, reaction}){
             try{
                 const response = await this.$axios.delete(
-                    `/chats/${this.$route.params.chatid}/messages/${message.messageid}/reactions/${reac.reactionid}`);
+                    `/chats/${this.$route.params.chatid}/messages/${message.messageid}/reactions/${reaction.reactionid}`);
                 console.log("uncommentmsg:\n", response.data)
-                message.reactions=(message.reactions||[]).filter(r=>r.reactionid!==reac.reactionid);
+                message.reactions=(message.reactions||[]).filter(r=>r.reactionid!==reaction.reactionid);
             }catch(e){
                 this.errormsg=e.response?.data?.error ||e.message;
             }
