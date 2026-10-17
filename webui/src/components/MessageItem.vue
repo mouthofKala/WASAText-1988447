@@ -73,10 +73,10 @@ export default {
         </div>
         <div v-if="showMenu" class="menuuu">
             <template v-if="!myReac">
-                <button @click="react('❤')">❤️</button>
+                <button @click="react('❤️')">❤️</button>
                 <button @click="react('👍')">👍</button>
                 <button @click="react('😂')">😂</button>
-                <button @click="react('😢')">😢</button>
+                <button @click="react('😭')">😢</button>
             </template>
             <button v-else @click="unreact">
                 remove comment
