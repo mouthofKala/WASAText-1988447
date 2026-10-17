@@ -4,7 +4,8 @@ export default{
         mode:{type:String,required:true,validator:value=>["add","fwd"].includes(value),},
         chatid:{type:String,required:true},
         members:{type:Array, default:()=>[],},
-        messageid:{type:String,required:true},
+        messageid:{type:String,default:""},
+        isgroup:{type:Boolean, default:false},
 
     },
     data(){
@@ -113,7 +114,8 @@ export default{
             no available chats to fwd to!
         </p>
         <button @click="cancel">✕</button>
-        <button @click="addOrFwd" :disabled="loading||selected.length===0">
+        <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+        <button @click="addOrFwd" :disabled="loading||selected.length===0||(mode==='add' && !isgroup)">
             {{ loading ? 'working...' : mode==="add" ? "add" : "forward" }}
         </button>
     </template>

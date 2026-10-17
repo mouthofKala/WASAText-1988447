@@ -63,6 +63,7 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 				message_id,
 				chat_id,
 				sender_id,
+				sender_n,
 				content,
 				photo,
 				status,
@@ -84,6 +85,7 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 				message_id,
 				chat_id,
 				sender_id,
+				sender_n,
 				content,
 				photo,
 				status,
@@ -113,6 +115,7 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 			&message.MessageID,
 			&message.ChatID,
 			&message.SenderID,
+			&message.SenderN,
 			&message.Content,
 			&message.Photo,
 			&message.Status,
@@ -138,7 +141,7 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 		defer reacrows.Close()
 		for reacrows.Next() {
 			var reaction Reaction
-			if err := rows.Scan(
+			if err := reacrows.Scan(
 				&reaction.ReactionID,
 				&reaction.MessageID,
 				&reaction.ChatID,

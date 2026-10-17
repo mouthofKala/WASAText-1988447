@@ -192,7 +192,7 @@ export default{
             }
         },
         async startFwd(message){
-            this.addOrFwdMode="forward";
+            this.addOrFwdMode="fwd";
             this.fwdmsg=message;
             this.targetchatid="";
             try{
@@ -328,6 +328,8 @@ export default{
             v-if="addOrFwdMode"
             :mode="addOrFwdMode"
             :chatid="$route.params.chatid"
+            :messageid="fwdmsg?.messageid ||''"
+            :isgroup="convo?.chat?.grouporchat||false"
             :members="convo?.chat?.members||[]"
             @close="closeAddFwd"
             @completed="closeAddFwd"

@@ -51,7 +51,6 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 		SELECT COUNT(*)
 		FROM chat_members
 		WHERE chat_id = ?
-		GROUP BY user_id
 	`, groupID).Scan(&membercount)
 	if err != nil {
 		return Chat{}, ErrFetchingMembers // 500

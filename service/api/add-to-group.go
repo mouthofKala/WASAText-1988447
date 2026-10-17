@@ -17,13 +17,14 @@ func (rt *_router) addToGroup(
 	ctx reqcontext.RequestContext,
 ) {
 	var request struct {
-		TUserID []string `json:"targetuserID"`
+		TUserID []string `json:"targetuserIDs"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error reading request")
 		http.Error(w, database.BR, http.StatusBadRequest)
+		return
 	}
 	userID := ctx.UserID
 	GroupID := ps.ByName("chatID")
