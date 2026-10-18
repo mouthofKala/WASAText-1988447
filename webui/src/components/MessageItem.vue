@@ -63,6 +63,7 @@ export default {
         <button class="all-msg" @click="actions">
             <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
             <img v-if="message.photouri" :src="message.photouri" alt="msgphoto" />
+            <!--gotta resolve this better by using baseurl.-->
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
