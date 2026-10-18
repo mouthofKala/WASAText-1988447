@@ -3,7 +3,7 @@ export default {
     data(){
             return{
                 showMenu: false,
-                senderProfile:null,
+                senderProfile:null, // remove?
                 profileerr:null,
             }
     },
@@ -69,6 +69,7 @@ export default {
             class="sender-pfp" />
             {{ message.username }}:</button>
         <button class="all-msg" @click="actions">
+            <p v-if="message.replyto" class="reply">replying to {{ message.replyto }}:</p>
             <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
             <img v-if="message.photouri"
                 :src="(message.photouri ? `${$axios.defaults.baseURL}/${message.photouri.replace(/^\/+/,'')}` : null)"

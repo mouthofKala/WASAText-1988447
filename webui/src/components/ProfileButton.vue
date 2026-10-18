@@ -40,7 +40,6 @@
 <template>
     <button class="profile-buttn" @click="goToProfile">
         <img v-if="photo" :src="photoUrl" alt="pfp" @error="photo = null">
-        <span v-else>🧑</span> <!--substitute with default black pic-->
     </button>
 </template>
 

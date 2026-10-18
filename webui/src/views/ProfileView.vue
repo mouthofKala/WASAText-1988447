@@ -54,14 +54,14 @@ export default{
                 if (this.profileType==="mine"){
                     const newUsername=this.newName.trim();
                     const response = await this.$axios.put("profile/username",{
-                        username: newUsername,
+                        targetusername: newUsername,
                     });
                     console.log("setmyusername:\n", response.data)
                     this.profile.username = newUsername;
                 } else if (this.profileType === "group"){
                     const newUsername=this.newName.trim();
                     const response = await this.$axios.put(`/chats/${this.$route.params.chatid}/groupname`,
-                            {groupname: newUsername,});
+                            {newname: newUsername,});
                     console.log("setgroupusername:\n", response.data);
                     this.profile.chatname = newUsername;
 
