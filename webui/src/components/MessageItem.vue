@@ -76,7 +76,7 @@ export default {
                 </template>
                 <template v-else>replying to a msg </template> <!--when msg got deleted-->
             </div>
-            <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
+            <p v-if="message.fwdfrom" class="fwd">forwarded</p>
             <img v-if="message.photouri"
                 :src="(message.photouri ? `${$axios.defaults.baseURL}/${message.photouri.replace(/^\/+/,'')}` : null)"
                  alt="msgphoto" />
