@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 
 	"github.com/gofrs/uuid"
 )
@@ -19,6 +20,7 @@ func (db *appdbimpl) ForwardMessage(userID string, targetchat_ids []string, fwdm
 			FROM chat_members
 			WHERE user_id = ? AND chat_id = ?)`, userID, chatID).Scan(&membership1)
 	if !errors.Is(err, nil) {
+		log.Printf("error checking membership1 %v", err)
 		return Message{}, err // 500
 	}
 
@@ -30,9 +32,11 @@ func (db *appdbimpl) ForwardMessage(userID string, targetchat_ids []string, fwdm
 				FROM chat_members
 				WHERE user_id = ? AND chat_id = ?)`, userID, targetchat_id).Scan(&membership2)
 		if !errors.Is(err, nil) {
+			log.Printf("error checking membership2 %v", err)
 			return Message{}, err
 		}
 		if !(membership1 && membership2) {
+
 			return Message{}, ErrForbidden
 		}
 	}
@@ -52,16 +56,19 @@ func (db *appdbimpl) ForwardMessage(userID string, targetchat_ids []string, fwdm
 		return Message{}, ErrBadReq
 	}
 	if !errors.Is(err, nil) {
+		log.Printf("error checking if msg exists %v", err)
 		return Message{}, err // 500
 	}
 
 	for _, targetchat_id := range targetchat_ids {
 		newmsgID, err := uuid.NewV4()
 		if err != nil {
+			log.Printf("error generating new msg id %v", err)
 			return Message{}, err
 		}
 		_, err = db.SendMessage(userID, targetchat_id, fwdmsg.Content, fwdmsg.Photo, nil, &chatID, newmsgID.String())
 		if !errors.Is(err, nil) {
+			log.Printf("error using sendmessage %v", err)
 			return Message{}, err
 		}
 
