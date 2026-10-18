@@ -30,7 +30,10 @@ export default {
 
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
-        <img alt="chat pfp" :src="chat.photo ? `${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`:`${$axios.defaults.baseURL}/storage/data/pfp/black.png`" class="item-photo" @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+        <img alt="chat pfp"
+            :src="chat.photo ? `${$axios.defaults.baseURL}/${chat.photo.replace(/^\/+/, '')}`:`${$axios.defaults.baseURL}/storage/data/pfp/black.png`"
+            class="item-photo"
+            @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
         <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
         <h5 v-else>{{ otheruser?.username || 'chat' }}</h5>
         <div v-if="chat.mostRecentMsg">

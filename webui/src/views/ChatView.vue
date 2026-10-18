@@ -22,6 +22,7 @@ export default{
             myChats:[],
             fwding: false,
             addOrFwdMode:null,
+            userProfiles:{},
         };
     },
     methods:{
@@ -33,6 +34,8 @@ export default{
                 console.log("gtconversation:\n", response.data)
                 this.convo=response.data;
                 this.msglist = response.data.messages || [];
+
+                const senderIDs=[...new Set(this.msglist.map(message=>message.userid).filter(Boolean))];
                 const chat = this.convo.chat;
                 if (!chat.grouporchat && chat.members){
                     const otherID = chat.members.find(id=>id!==this.userID);
@@ -49,6 +52,16 @@ export default{
 				this.loading = false;
 			}
         },
+        async getUserProfile(userID){
+            if (!userID) return;
+            if (this.userProfiles[userID]) return;
+            try{
+                const response = await this.$axios.get(`/users/${userID}`);
+                this.userProfiles[userID]=response.data;
+            } catch(e){
+                console.error(`couldn't get profile for ${userID}: `, e);
+            }
+        },
         async loadingOlderMsg(){
             if (this.loadingOlder || !this.moremsg || this.msglist.length === 0){
                 return;
@@ -62,6 +75,10 @@ export default{
                 const oldermsgs= response.data.messages||[];
                 if (oldermsgs.length===0){this.moremsg=false;}
                 else {
+                    const senderIDs = [...new Set(oldermsgs.map(message=>message.userid).filter(Boolean))];
+
+                    await Promise.all(senderIDs.map(id=>this.getUserProfile(id)));
+
                     this.msglist=[
                         ...oldermsgs,
                         ...this.msglist
@@ -80,6 +97,9 @@ export default{
         async openChatProfile(){
             if (!this.convo) return;
             const chat = this.convo.chat;
+            console.log("chat=", chat);
+            console.log("members=", chat.members);
+            console.log("my userID=", this.userID);
             if (chat.grouporchat){
                 this.$router.push(`/chats/${chat.chatid}/settings`);
             } else {
@@ -317,6 +337,7 @@ export default{
                 :key="message.messageid"
                 :message="message"
                 :userID="userID"
+                :senderprofile="userProfiles[message.userid]||null"
                 @react="addReaction"
                 @reply="replyToMsg"
                 @unreact="delReaction"

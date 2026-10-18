@@ -3,6 +3,8 @@ export default {
     data(){
             return{
                 showMenu: false,
+                senderProfile:null,
+                profileerr:null,
             }
     },
     props: {
@@ -10,6 +12,7 @@ export default {
             type: Object, required: true
         },
         userID: {type: String, required: true},
+        senderProfile:{type:Object, default:null},
     },
     computed:{
         myReac()   {
@@ -59,16 +62,22 @@ export default {
 
 <template>
     <div class="message-item">
-        <button class="msg-user" @click="openProfile">{{ message.username }}:</button>
+        <button class="msg-user" @click="openProfile">
+            <img v-if="senderProfile?.photo"
+            :src="`${$axios.defaults.baseURL}/${senderProfile.photo.replace(/^\/+/,'')}`"
+            alt="sender pfp"
+            class="sender-pfp" />
+            {{ message.username }}:</button>
         <button class="all-msg" @click="actions">
             <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
-            <img v-if="message.photouri" :src="message.photouri" alt="msgphoto" />
-            <!--gotta resolve this better by using baseurl.-->
+            <img v-if="message.photouri"
+                :src="(message.photouri ? `${$axios.defaults.baseURL}/${message.photouri.replace(/^\/+/,'')}` : null)"
+                 alt="msgphoto" />
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
         </button>
-        <!--already present reactions on msg-->
+
         <div v-if="message.reactions?.length" class="reacs">
             <span v-for="reac in message.reactions" :key="reac.reactionid">{{ reac.emoji }}</span>
         </div>
@@ -96,6 +105,20 @@ export default {
         width: auto;
         height: auto;
         display: block;
+    .sender-pic{
+        width:30px;
+        height:30px;
+        border-radius:50%;
+        object-fit:cover;
+        display:inline-block;
+        vertical-align: middle;
+    }
+    .msg-user .sender-pic{
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+    }
     }
 
 

@@ -29,7 +29,7 @@ export default{
 
                 } else if(this.$route.params.userid){
                     this.profileType="user";
-                    const response = await this.$axios.get(`/users/${this.$route.params.userID}`);
+                    const response = await this.$axios.get(`/users/${this.$route.params.userid}`);
                     console.log("getuserprofile:\n", response.data)
                     this.profile = response.data;
 

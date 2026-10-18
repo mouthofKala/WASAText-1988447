@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -15,7 +14,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	userID := ps.ByName("userID")
 	user, err := rt.db.GetUserProfile(userID)
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, database.ErrUserNotFound) {
 		ctx.Logger.WithError(err).Error("user not found")
 		http.Error(w, database.NF, http.StatusNotFound)
 		return

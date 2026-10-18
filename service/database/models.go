@@ -30,7 +30,7 @@ type Message struct {
 	ReplyTo   *string    `json:"replyto"` // ptr to msgID
 	FwdFrom   *string    `json:"fwdfrom"` // ptr2 chatID
 	Reacts    []Reaction `json:"reactions"`
-} // basically use ptrs when info is optional
+}
 
 type Conversation struct {
 	Chat     Chat      `json:"chat"`

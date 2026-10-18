@@ -43,7 +43,7 @@ func (rt *_router) makeChatGroup(
 		return
 	}
 	photouri := database.DefaultGroupPhoto
-	basepath := "storage/data/pfp"
+	basepath := "storage/data/pfp/"
 
 	err, chatid := rt.db.ValidateChatGroup(request.Members, request.GrouporChat, chatID.String())
 	if errors.Is(err, database.ErrUserNotFound) {
