@@ -46,7 +46,7 @@ export default{
                             const otherID=chat.members.find(id=>id!==myID);
                             if (!otherID) return {...chat, displayName: "private chat"};
                             try{
-                                const userresponse=await this.$axios.get(`\/users/${otherID}`);
+                                const userresponse=await this.$axios.get(`/users/${otherID}`);
                                 return {...chat,displayName:userresponse.data.username};
                             } catch{return{...chat,displayName:"private chat"};}
                         }
