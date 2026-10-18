@@ -62,6 +62,7 @@ export default {
 
 <template>
     <div class="message-item">
+        <pre>{{ JSON.stringify(senderProfile, null, 2) }}</pre>
         <button class="msg-user" @click="openProfile">
             <img v-if="senderProfile?.photo"
             :src="`${$axios.defaults.baseURL}/${senderProfile.photo.replace(/^\/+/,'')}`"
@@ -107,14 +108,14 @@ export default {
 </template>
 
 <style scoped>
-    .message-item img {
+    .message-item{
         max-width: 100%;
         max-height: 400px;
         width: auto;
         height: auto;
         display: block;
     }
-    .sender-pic{
+    .sender-pfp{
         width:30px;
         height:30px;
         border-radius:50%;
@@ -122,7 +123,7 @@ export default {
         display:inline-block;
         vertical-align: middle;
     }
-    .msg-user .sender-pic{
+    .msg-user .sender-pfp{
         display: inline-block;
         width: 30px;
         height: 30px;

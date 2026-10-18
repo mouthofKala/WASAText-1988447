@@ -45,6 +45,7 @@ export default{
 
                 const senderIDs=[...new Set(this.msglist.map(message=>message.userid).filter(Boolean))];
                 const chat = this.convo.chat;
+                await Promise.all(senderIDs.map(id=>this.getUserProfile(id)))
                 if (!chat.grouporchat && chat.members){
                     const otherID = chat.members.find(id=>id!==this.userID);
                     if (otherID){
