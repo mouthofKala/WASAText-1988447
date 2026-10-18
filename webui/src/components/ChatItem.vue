@@ -31,6 +31,7 @@ export default {
 
 <template>
     <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
+        <pre>{{ JSON.stringify(chat, null, 2) }}</pre>
         <img v-if="chat.grouporchat ? chat.photo : otheruser?.photo"
             alt="chat pfp"
             :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
