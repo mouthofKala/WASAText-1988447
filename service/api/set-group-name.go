@@ -22,6 +22,16 @@ func (rt *_router) setGroupName(
 	var request struct {
 		NewName string `json:"newname"`
 	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		ctx.Logger.WithError(err).Error("error decoding group name")
+		http.Error(w, database.BR, http.StatusBadRequest)
+		return
+	}
+	if len(request.NewName) < 3 {
+		ctx.Logger.Error("chosen name too short!")
+		http.Error(w, database.BR, http.StatusBadRequest)
+		return
+	}
 
 	err := rt.db.SetGroupName(request.NewName, ChatID, userID)
 
