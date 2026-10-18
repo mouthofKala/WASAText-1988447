@@ -61,7 +61,7 @@ export default{
             try{
                 if (this.mode === 'fwd'){
                     await this.$axios.post(`chats/${this.chatid}/messages/${this.messageid}/forward`,
-                    {targetchatIDs:this.selected,});
+                    {targetchat_ids:this.selected,});
                 }else{
                     await this.$axios.post(`chats/${this.chatid}/members`,
                     {targetuserIDs:this.selected,});
