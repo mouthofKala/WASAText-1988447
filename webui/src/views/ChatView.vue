@@ -288,6 +288,9 @@ export default{
     mounted(){
         this.getConversation()
     },
+    beforeUpdated(){
+        this.getConversation()
+    },
     beforeUnmount(){
         if (this.imgPrev){
             URL.revokeObjectURL(this.imgPrev);
