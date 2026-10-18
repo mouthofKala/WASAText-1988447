@@ -25,6 +25,14 @@ export default{
             userProfiles:{},
         };
     },
+    computed:{
+        msgsWithReplies(){
+            return this.msglist.map(message=>{
+                const originalmsg=this.msglist.find(m=>m.messageid===message.replyto);
+                return {...message,repliedMsg:originalmsg||null};
+            });
+        },
+    },
     methods:{
         async getConversation(){
             this.loading = true;
@@ -333,7 +341,7 @@ export default{
         <div v-else class="message-list" @scroll="handleScroll">
             <p v-if="msglist.length===0"></p>
             <MessageItem
-                v-for="message in msglist"
+                v-for="message in msgsWithReplies"
                 :key="message.messageid"
                 :message="message"
                 :userID="userID"
@@ -358,7 +366,7 @@ export default{
 
         <div v-if="replyingto" class="reply-prev">
             <!--in case msg is deleted/not found-->
-            <strong> Replying to {{ replyingto.username }} || 'message'</strong>
+            <strong> Replying to {{ replyingto.username }}</strong>
             <p>{{ replyingto.content }}</p> <!-- shorten it!-->
             <button type="button" @click="cancel">✕</button>
         </div>

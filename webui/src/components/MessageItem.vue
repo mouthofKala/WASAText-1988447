@@ -69,7 +69,13 @@ export default {
             class="sender-pfp" />
             {{ message.username }}:</button>
         <button class="all-msg" @click="actions">
-            <p v-if="message.replyto" class="reply">replying to {{ message.replyto }}:</p>
+            <div v-if="message.replyto" class="reply">
+                <template v-if="message.repliedMsg">
+                    replying to {{ message.repliedMsg.username }}:
+                    <p class="reply-content">{{ message.repliedMsg.content || '📷 photo'}}</p>
+                </template>
+                <template v-else>replying to a msg </template> <!--when msg got deleted-->
+            </div>
             <p v-if="message.fwdfrom" class="fwd">forwarded from {{ message.fwdfrom.chatname }}</p>
             <img v-if="message.photouri"
                 :src="(message.photouri ? `${$axios.defaults.baseURL}/${message.photouri.replace(/^\/+/,'')}` : null)"
@@ -106,6 +112,7 @@ export default {
         width: auto;
         height: auto;
         display: block;
+    }
     .sender-pic{
         width:30px;
         height:30px;
@@ -120,6 +127,21 @@ export default {
         height: 30px;
         object-fit: cover;
     }
+    .reply{
+        border-left: 3px solid gray;
+        margin-bottom: 8px;
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 12px;
+    }
+    .reply img{padding:8px 12px;}
+    .reply p{
+        margin: 4px 0 0;
+        opacity: 0.8;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
 
