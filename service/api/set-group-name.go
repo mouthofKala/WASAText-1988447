@@ -36,7 +36,7 @@ func (rt *_router) setGroupName(
 	err := rt.db.SetGroupName(request.NewName, ChatID, userID)
 
 	if errors.Is(err, database.ErrNotaGroup) {
-		ctx.Logger.WithError(err).Error("can't change private chat pfps")
+		ctx.Logger.WithError(err).Error("can't change private chat name")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
 	}
@@ -54,7 +54,7 @@ func (rt *_router) setGroupName(
 	}
 
 	if !errors.Is(err, nil) {
-		ctx.Logger.WithError(err).Error("error setting photo")
+		ctx.Logger.WithError(err).Error("error setting group name")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
 	}
