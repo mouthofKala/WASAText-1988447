@@ -40,16 +40,16 @@ export default {
         <h5 v-else>{{ otheruser?.username || 'user loading...'}}</h5>
         <div v-if="chat.mostRecentMsg">
             <p class="mb-1">
-                {{ chat.mostRecentMsg.username }}:
+                {{ chat.mostrecentmsg.username }}:
             </p>
-            <p v-if="chat.mostRecentMsg.content && !chat.mostRecentMsg.photo" class="msg-prev">
-                {{ chat.mostRecentMsg.content || 'msg loading...'}}
+            <p v-if="chat.mostrecentmsg.content && !chat.mostrecentmsg.photo" class="msg-prev">
+                {{ chat.mostrecentmsg.content || 'msg loading...'}}
             </p>
-            <p v-else-if="chat.mostRecentMsg.photo && !chat.mostRecentMsg.content">
+            <p v-else-if="chat.mostrecentmsg.photo && !chat.mostrecentmsg.content">
                 📷 Photo
             </p>
-            <p v-else-if="chat.mostRecentMsg.content && chat.mostRecentMsg.photo" class="msg-prev">
-                📷 {{ chat.mostRecentMsg.content || 'msg loading...'}}
+            <p v-else-if="chat.mostrecentmsg.content && chat.mostrecentmsg.photo" class="msg-prev">
+                📷 {{ chat.mostrecentmsg.content || 'msg loading...'}}
             </p>
             <p v-else>error with message preview...</p>
         </div>
