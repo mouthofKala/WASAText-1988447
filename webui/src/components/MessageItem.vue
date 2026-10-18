@@ -83,6 +83,7 @@ export default {
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
+            <p>{{ message.status === "sent" ? "🗸" : "🗸🗸" }}</p>
         </button>
 
         <div v-if="message.reactions?.length" class="reacs">
