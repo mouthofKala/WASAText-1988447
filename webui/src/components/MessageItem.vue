@@ -3,7 +3,7 @@ export default {
     data(){
             return{
                 showMenu: false,
-                senderProfile:null, // remove?
+                // senderProfile:null, // remove?
                 profileerr:null,
             }
     },

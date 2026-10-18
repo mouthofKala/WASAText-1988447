@@ -39,7 +39,18 @@ export default{
                     this.users=response.data||[];
                 }else{
                     const response = await this.$axios.get("/chats");
-                    this.chats=response.data||[];
+                    const myID = sessionStorage.getItem("userID");
+                    this.chats= await Promise.all(response.data||[]).map(
+                        async chat=>{
+                            if(chat.grouporchat||!chat.members) return chat;
+                            const otherID=chat.members.find(id=>id!==myID);
+                            if (!otherID) return {...chat, displayName: "private chat"};
+                            try{
+                                const userresponse=await this.$axios.get(`\/users/${otherID}`);
+                                return {...chat,displayName:userresponse.data.username};
+                            } catch{return{...chat,displayName:"private chat"};}
+                        }
+                    );
                 }
             } catch(e){
                 this.errormsg=e.response?.data?.error||e.message;
@@ -57,11 +68,13 @@ export default{
                     await this.$axios.post(`chats/${this.chatid}/members`,
                     {targetuserIDs:this.selected,});
                 }
-                this.$emit("completed");
-                this.$emit("close");
             } catch(e){
                 this.errormsg=e.response?.data?.error || e.response?.data || e.message;
-            } finally {this.loading= false;}
+            } finally {
+                this.loading= false;
+                this.$emit("completed");
+                this.$emit("close");                
+            }
 
         },
         toggleselect(item, id){
@@ -102,7 +115,7 @@ export default{
                     :value="chat.chatid"
                     :checked="selected.includes(chat.chatid)"
                     @change="toggleselect(chat,chat.chatid)" />
-                    {{ chat.chatname || 'private chat' }}
+                    {{ chat.grouporchat ? chat.chatname : (chat.displayName || 'private chat') }}
                 </label>
             </div>
         </template>
