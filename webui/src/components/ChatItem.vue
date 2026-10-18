@@ -38,7 +38,7 @@ export default {
             @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
         <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
         <h5 v-else>{{ otheruser?.username || 'user loading...'}}</h5>
-        <div v-if="chat.mostRecentMsg">
+        <div v-if="chat.mostrecentmsg">
             <p class="mb-1">
                 {{ chat.mostrecentmsg.username }}:
             </p>
