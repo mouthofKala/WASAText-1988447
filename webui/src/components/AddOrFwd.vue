@@ -40,17 +40,15 @@ export default{
                 }else{
                     const response = await this.$axios.get("/chats");
                     const myID = sessionStorage.getItem("userID");
-                    this.chats= await Promise.all(response.data||[]).map(
-                        async chat=>{
-                            if(chat.grouporchat||!chat.members) return chat;
+                    this.chats= await Promise.all((response.data||[]).map(async chat=>{
+                            if (chat.grouporchat||!chat.members) return chat;
                             const otherID=chat.members.find(id=>id!==myID);
                             if (!otherID) return {...chat, displayName: "private chat"};
                             try{
                                 const userresponse=await this.$axios.get(`/users/${otherID}`);
                                 return {...chat,displayName:userresponse.data.username};
                             } catch{return{...chat,displayName:"private chat"};}
-                        }
-                    );
+                        }));
                 }
             } catch(e){
                 this.errormsg=e.response?.data?.error||e.message;
