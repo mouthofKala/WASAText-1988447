@@ -44,7 +44,7 @@ func (db *appdbimpl) ForwardMessage(userID string, targetchat_ids []string, fwdm
 	// check that the msg exists, otherwise 400
 	fwdmsg := Message{}
 	err = db.c.QueryRow(`
-		SELECT user_id, content, photo, timestamp
+		SELECT sender_id, content, photo, timestamp
 		FROM messages
 		WHERE chat_id = ? AND message_id = ?	
 	`, chatID, fwdmsgID).Scan(
