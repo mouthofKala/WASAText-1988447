@@ -12,6 +12,9 @@ export default {
             otheruser:null,
         };
     },
+    watch:{
+        'chat.members'(){this.getOtherUser();},
+    },
     methods: {
         getConversation(){
             this.$router.push(`/chats/${this.chat.chatid}/messages`)
@@ -25,7 +28,7 @@ export default {
             } catch(e){console.error("failed to dfind otheruser:",e);}
         } 
     },
-    mounted(){this.getOtherUser();}
+    mounted(){this.getOtherUser();},
 }
 </script>
 
@@ -35,7 +38,7 @@ export default {
             alt="chat pfp"
             :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
             class="item-photo"
-            @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+            @error="if (!$event.target.src.endsWith('/black.png')) $event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
         <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
         <h5 v-else>{{ otheruser?.username || 'user loading...'}}</h5>
         <div v-if="chat.mostrecentmsg">
@@ -73,6 +76,9 @@ export default {
         height:55px;
         width:55px;
         border-radius:50%;
+        object-fit: cover;
+        display: block;
+        flex-shrink: 0;
         overflow: hidden;
         border:none;
         padding:0;

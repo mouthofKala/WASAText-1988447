@@ -10,6 +10,8 @@ export default {
 			searchlist:[],
 			searchin: false,
 			searchTimeout:null,
+			refresh: null,
+			init: true,
 		}
 	},
 	watch: {
@@ -32,8 +34,10 @@ export default {
 			} catch (e) {
 				this.errormsg = e.response?.data?.error || e.message || "could not load chats..";
 				this.chatlist=[];
+				if (this.init){this.chatlist=[];}
 			} finally {
 				this.loading = false;
+				this.init=false;
 			}
 		},
 		togglebuttns(){
@@ -74,8 +78,9 @@ export default {
 
 	mounted() {
 		this.getMyConversations()
+		this.refresh=setInterval(()=>{this.getMyConversations();}, 3000)
 	},
-	beforeUnmount(){clearTimeout(this.searchTimeout);},	
+	beforeUnmount(){clearTimeout(this.searchTimeout);clearInterval(this.refresh);},	
 }
 </script>
 

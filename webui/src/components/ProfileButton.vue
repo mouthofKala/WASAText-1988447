@@ -2,7 +2,8 @@
     export default{
         data: function(){
             return{
-                photo: null
+                photo: null,
+                refraiche: null,
             }
         },
         computed:{
@@ -32,7 +33,13 @@
         },
         mounted(){
             this.getMyProfile();
+            this.refraiche=setInterval(()=>{
+                this.getMyProfile();
+            },3000);
         },
+        beforeUnmount(){
+            clearInterval(this.refraiche);
+        }
 
     }
 </script>
@@ -52,5 +59,10 @@
     padding:0;
     border: none;
     cursor: pointer;
+.profile-buttn img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 }
 </style>
