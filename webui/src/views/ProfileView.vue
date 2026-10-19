@@ -11,11 +11,16 @@ export default{
             newPhoto: null,
             imgPrev: null,
             savingPhoto: false,
+            refresh: null,
+            refreshing: false,
+            init: true,
         };
     },
     methods:{
         async getProfile(){
-            this.loading = true;
+            if (this.refreshing) return;
+            this.refreshing=true;
+            if (this.init){this.loading=true;}
             this.errormsg = null;
 
             try{
@@ -45,9 +50,10 @@ export default{
                 }
             }catch(e){
                 this.errormsg=e.toString();
-                this.profile="";
-                this.newName="";
-            } finally {this.loading=false;}
+                // this.profile="";
+                // this.newName="";
+
+            } finally {this.loading=false;this.init=false;this.refreshing=false;}
         },
         async newNameSave(){
             try{
@@ -137,8 +143,10 @@ export default{
     },
     mounted(){
         this.getProfile();
+        this.refresh=setInterval(()=>{this.getProfile();},5000);
     },
     beforeUnmount(){
+        clearInterval(this.refresh);
         if (this.imgPrev){
             URL.revokeObjectURL(this.imgPrev);
         }

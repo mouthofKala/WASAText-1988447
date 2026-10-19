@@ -23,6 +23,9 @@ export default{
             fwding: false,
             addOrFwdMode:null,
             userProfiles:{},
+            refreshing: false,
+            refresh: null,
+            init: true,
         };
     },
     computed:{
@@ -35,7 +38,9 @@ export default{
     },
     methods:{
         async getConversation(){
-            this.loading = true;
+            if (this.refreshing) return;
+            this.refresh = true;
+            if (this.init){this.loading=true;}
             this.errormsg = null;
             try{
                 const response = await this.$axios.get( `/chats/${this.$route.params.chatid}/messages`)
@@ -44,8 +49,8 @@ export default{
                 this.msglist = response.data.messages || [];
 
                 const senderIDs=[...new Set(this.msglist.map(message=>message.userid).filter(Boolean))];
+                await Promise.all(senderIDs.map(id=>this.getUserProfile(id)));
                 const chat = this.convo.chat;
-                await Promise.all(senderIDs.map(id=>this.getUserProfile(id)))
                 if (!chat.grouporchat && chat.members){
                     const otherID = chat.members.find(id=>id!==this.userID);
                     if (otherID){
@@ -55,10 +60,11 @@ export default{
                     }
                 }
             } catch (e) {
-				this.errormsg = e.response?.data?.error || e.message || "could not load chat..";
-				this.msglist=[];
+				this.errormsg = e.response?.data?.error || e.message || "could not load chat :(";
 			} finally {
 				this.loading = false;
+                this.init=false;
+                this.refreshing=false;
 			}
         },
         async getUserProfile(userID){
@@ -287,9 +293,10 @@ export default{
         },
     },
     mounted(){
-        this.getConversation()
-    },
+        this.getConversation();
+        this.refresh=setInterval(()=>{this.getConversation();},3000);},
     beforeUnmount(){
+        clearInterval(this.refresh);
         if (this.imgPrev){
             URL.revokeObjectURL(this.imgPrev);
         }

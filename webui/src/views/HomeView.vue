@@ -12,6 +12,7 @@ export default {
 			searchTimeout:null,
 			refresh: false,
 			init: true,
+			refreshing: null,
 		}
 	},
 	watch: {
@@ -80,9 +81,11 @@ export default {
 	},
 
 	mounted() {
-		this.getMyConversations()
+		this.getMyConversations();
+		this.refreshing=setInterval(()=>{
+			this.getMyConversations();}, 3000);
 	},
-	beforeUnmount(){clearTimeout(this.searchTimeout);},	
+	beforeUnmount(){clearTimeout(this.searchTimeout); clearInterval(this.refreshing);},	
 }
 </script>
 
