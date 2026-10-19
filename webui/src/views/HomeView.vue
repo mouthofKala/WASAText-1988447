@@ -10,7 +10,7 @@ export default {
 			searchlist:[],
 			searchin: false,
 			searchTimeout:null,
-			refresh: null,
+			refresh: false,
 			init: true,
 		}
 	},
@@ -25,17 +25,20 @@ export default {
 	},
 	methods: {
 		async getMyConversations() {
-			this.loading = true;
+			if (this.refresh) return;
+			this.refresh = true;
+			if (this.init){this.loading=true;}
 			this.errormsg = null;
 			try {
 				const response = await this.$axios.get("/chats");
 				console.log("getmyconversations: \n",response.data)
 				this.chatlist = Array.isArray(response.data) ? response.data : [];
 			} catch (e) {
-				this.errormsg = e.response?.data?.error || e.message || "could not load chats..";
+				this.errormsg = e.response?.data?.error || e.message || "could not load chats :(";
 				this.chatlist=[];
 				if (this.init){this.chatlist=[];}
 			} finally {
+				this.refresh=false;
 				this.loading = false;
 				this.init=false;
 			}
@@ -78,9 +81,8 @@ export default {
 
 	mounted() {
 		this.getMyConversations()
-		this.refresh=setInterval(()=>{this.getMyConversations();}, 3000)
 	},
-	beforeUnmount(){clearTimeout(this.searchTimeout);clearInterval(this.refresh);},	
+	beforeUnmount(){clearTimeout(this.searchTimeout);},	
 }
 </script>
 
