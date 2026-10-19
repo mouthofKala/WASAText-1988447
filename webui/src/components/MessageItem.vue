@@ -3,23 +3,21 @@ export default {
     data(){
             return{
                 showMenu: false,
-                // senderProfile:null, // remove?
+                // senderProfile:null,
                 profileerr:null,
             }
     },
     props: {
-        message: {
-            type: Object, required: true
-        },
+        message: {type: Object, required: true},
         userID: {type: String, required: true},
-        senderProfile:{type:Object, default:null},
+        senderprofile:{type:Object,default:null,},
     },
     computed:{
         myReac()   {
             return (this.message.reactions||[]).find(reaction=>reaction.userid===this.userID);
         },
         isMyMsg(){
-            return this.message.senderid===this.userID;
+            return this.message.userid===this.userID; // idk y it worked anyway b4 lol
         }
     },
     methods: {
@@ -62,10 +60,9 @@ export default {
 
 <template>
     <div class="message-item">
-        <pre>{{ JSON.stringify(senderProfile, null, 2) }}</pre>
         <button class="msg-user" @click="openProfile">
-            <img v-if="senderProfile?.photo"
-            :src="`${$axios.defaults.baseURL}/${senderProfile.photo.replace(/^\/+/,'')}`"
+            <img v-if="senderprofile?.photo"
+            :src="`${$axios.defaults.baseURL}/${senderprofile.photo.replace(/^\/+/,'')}`"
             alt="sender pfp"
             class="sender-pfp" />
             {{ message.username }}:</button>

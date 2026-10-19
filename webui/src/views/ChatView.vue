@@ -217,6 +217,7 @@ export default{
                     reactions: response.data.reactions||[],
                 };
                 this.msglist.push(newmsg);
+                this.getUserProfile(message.userid);
                 this.msgtext="";
                 this.replyingto=null;
                 this.removeImg();
