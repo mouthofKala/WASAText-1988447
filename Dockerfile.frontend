@@ -1,4 +1,4 @@
-FROM node:lts AS builder
+FROM node:22 AS builder
 
 ### Copy Vue.js code
 WORKDIR /app
@@ -6,7 +6,7 @@ WORKDIR /app
 ### Build Vue.js into plain HTML/CSS/JS
 RUN corepack enable
 COPY webui/ ./
-RUN yarn install
+RUN yarn install --immutable
 RUN yarn run vite build --mode production
 
 EXPOSE 4173
