@@ -66,7 +66,7 @@ func run() error {
 	}
 
 	// start storage
-	storage := storage.New("../../data")
+	storage := storage.New("data")
 
 	// Start (main) API server
 	logger.Info("initializing API server")
