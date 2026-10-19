@@ -38,7 +38,8 @@ export default {
             alt="chat pfp"
             :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
             class="item-photo"
-            @error="if (!$event.target.src.endsWith('/black.png')) $event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+            @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+        <!-- if (!$event.target.src.endsWith('/black.png')) -->
         <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
         <h5 v-else>{{ otheruser?.username || 'user loading...'}}</h5>
         <div v-if="chat.mostrecentmsg">
