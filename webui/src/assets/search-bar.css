@@ -5,6 +5,7 @@
 
 .form-control{
 	border-radius: none;
+	color:#ddd7e3;
 }
 
 .search-list{
@@ -42,7 +43,7 @@
 	padding: 10px;
 	text-align: left;
 	align-items: center;
-	border-bottom: none;
+	border-bottom: 1px;
 	cursor: pointer;
 }
 

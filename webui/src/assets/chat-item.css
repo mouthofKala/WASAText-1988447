@@ -9,6 +9,22 @@
 
 
 }
+
+.chat-item:hover{
+    background: #f2f0f8;
+}
+.img-box{
+    display: flex;
+    height:55px;
+    width:55px;   
+    border-radius:50%;
+    object-fit: cover;
+    overflow: hidden;   
+}
+
+.chat-box{
+    display: flex;
+}
 .msg-prev{
     display: block;
     -webkit-line-clamp: 2;
@@ -16,11 +32,9 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/*
 .item-photo{
-    height:55px;
-    width:55px;
-    border-radius:50%;
-    object-fit: cover;
-    display: block;
-    overflow: hidden;
 }
+
+*/

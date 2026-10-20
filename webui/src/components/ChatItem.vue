@@ -34,15 +34,18 @@ export default {
 
 <template>
     <div class="chat-item" @click="getConversation">
-        <img v-if="chat.grouporchat ? chat.photo : otheruser?.photo"
-            alt="chat pfp"
-            :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
-            class="item-photo"
-            @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />
+        <div class="img-box">
+            <img v-if="chat.grouporchat ? chat.photo : otheruser?.photo"
+                alt="chat pfp"
+                :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
+                class="item-photo"
+                @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />            
+        </div>
         <!-- if (!$event.target.src.endsWith('/black.png')) -->
-        <h5 v-if="chat.grouporchat">{{ chat.chatname }}</h5>
-        <h5 v-else>{{ otheruser?.username || 'user loading...'}}</h5>
-        <div v-if="chat.mostrecentmsg">
+
+        <div v-if="chat.mostrecentmsg" class="chat-box">
+            <h5 class="chatname" v-if="chat.grouporchat">{{ chat.chatname }}</h5>
+            <h5 class="chatname" v-else>{{ otheruser?.username || 'user loading...'}}</h5>  
             <p class="mb-1">
                 {{ chat.mostrecentmsg.username }}:
             </p>
