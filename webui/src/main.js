@@ -6,8 +6,6 @@ import ErrorMsg from './components/ErrorMsg.vue';
 import LoadingSpinner from './components/LoadingSpinner.vue';
 import ChatItem from './components/ChatItem.vue';
 import MessageItem from './components/MessageItem.vue';
-import './assets/dashboard.css';
-import './assets/main.css';
 import ProfileButton from './components/ProfileButton.vue';
 import Searchbar from './components/Searchbar.vue';
 import AddOrFwd from './components/AddOrFwd.vue';
