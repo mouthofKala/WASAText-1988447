@@ -65,7 +65,7 @@ export default{
 				}
 				}catch(e){
 					console.error("failed to make or open chat: ", e);
-					this.errorMsg=e.response?.data?.error || e.response?.data || "couldn't create/open chat :(";	
+					this.errormsg=e.response?.data?.error || e.response?.data || "couldn't create/open chat :(";	
 				}
 		},
 		async selectuser(user){
@@ -87,10 +87,10 @@ export default{
     <div class="search-bar">
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
-            <button v-for="user in searchlist" :key="user.userid" class="search-res" @click="selectuser(user)">
-				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="pfp" @error="$event.target.style.display='none'"  class="searchpic"/>
-                {{ user.username }}
-            </button>
+            <button v-for="user in searchlist" :key="user.userid" class="item" @click="selectuser(user)">
+				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="pfp" @error="$event.target.style.display='none'"  class="item-pic"/>
+                <p class="item-text">{{ user.username }}</p>
+			</button>
         </div>
         <p v-if="!searchin && searchkey.trim() && searchlist.length===0">
             No users found. Try another searchkey...
