@@ -31,7 +31,7 @@ func (rt *_router) makeChatGroup(
 	}
 	request.Members = append(request.Members, ctx.UserID)
 
-	if request.Photo != nil && request.GrouporChat == false {
+	if request.Photo != nil && !request.GrouporChat {
 		ctx.Logger.Error("bad req: requesting private chat but attaching a photo")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return

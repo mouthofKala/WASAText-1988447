@@ -126,7 +126,11 @@ func (db *appdbimpl) SendMessage(
 		log.Printf("error fetching users for unreads: %v", err)
 		return Message{}, err //  500
 	}
-	defer rows.Close()
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 
 	for rows.Next() {
 		var memberID string

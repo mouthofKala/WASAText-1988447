@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 )
 
@@ -151,8 +152,11 @@ func (db *appdbimpl) AddToGroup(targetuserIDs []string, groupID string, userID s
 	if !errors.Is(err, nil) {
 		return Chat{}, ErrFetchingMembers // internal server error
 	}
-	defer rows.Close()
-
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		var member string
 

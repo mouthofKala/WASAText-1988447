@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 )
 
 func (db *appdbimpl) LeaveGroup(userID string, chatID string) (bool, error) {
@@ -47,7 +48,11 @@ func (db *appdbimpl) LeaveGroup(userID string, chatID string) (bool, error) {
 	if !errors.Is(err, nil) {
 		return false, err // 500
 	}
-	defer rows.Close()
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 
 	var members []string
 	for rows.Next() {

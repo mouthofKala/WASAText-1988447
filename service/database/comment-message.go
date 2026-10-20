@@ -63,7 +63,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 			INSERT INTO reactions
 			(reaction_id, message_id, chat_id, user_id, emoji)
 			VALUES (?,?,?,?,?)`,
-			reactionID, msgID, chatID, userID, string(emoji))
+			reactionID, msgID, chatID, userID, emoji)
 		if !errors.Is(err, nil) {
 			return Reaction{}, ErrExec
 		}
@@ -72,7 +72,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 			MessageID:  msgID,
 			ChatID:     chatID,
 			UserID:     userID,
-			Emoji:      string(emoji),
+			Emoji:      emoji,
 		}, nil
 	}
 	if !errors.Is(err, nil) {
@@ -85,7 +85,7 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		WHERE reaction_id = ?
 			AND message_id = ?
 			AND user_id = ?
-	`, string(emoji), reac.ReactionID, msgID, userID)
+	`, emoji, reac.ReactionID, msgID, userID)
 	if !errors.Is(err, nil) {
 		return Reaction{}, ErrExec
 	}
@@ -97,6 +97,6 @@ func (db *appdbimpl) CommentMessage(msgID string, chatID string, userID string, 
 		MessageID:  msgID,
 		ChatID:     chatID,
 		UserID:     userID,
-		Emoji:      string(emoji),
+		Emoji:      emoji,
 	}, nil
 }

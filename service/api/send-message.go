@@ -61,7 +61,11 @@ func (rt *_router) sendMessage(
 	}()
 	file, _, err := r.FormFile("photo")
 	if errors.Is(err, nil) {
-		defer file.Close()
+		defer func() {
+			if errclose := file.Close(); errclose != nil {
+				ctx.Logger.WithError(errclose).Error("error closing msg attachment")
+			}
+		}()
 		data, err := io.ReadAll(file)
 		if !errors.Is(err, nil) {
 			ctx.Logger.WithError(err).Error("error reading msg attachment")

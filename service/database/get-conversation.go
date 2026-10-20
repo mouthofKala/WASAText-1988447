@@ -43,7 +43,12 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 	if !errors.Is(err, nil) {
 		return Conversation{}, ErrFetchingMembers // 500 this includes norows
 	}
-	defer rows.Close()
+
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 
 	for rows.Next() {
 		var memberID string
@@ -107,7 +112,11 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 	if !errors.Is(err, nil) {
 		return Conversation{}, ErrFetchingMessages
 	}
-	defer rows.Close()
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 	for rows.Next() {
 		var message Message
 
@@ -138,7 +147,11 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 			log.Printf("error fetching reactions for msg: %v", err)
 			return Conversation{}, err
 		}
-		defer reacrows.Close()
+		defer func() {
+			if errclose := reacrows.Close(); errclose != nil {
+				log.Printf("error closing rows: %v", errclose)
+			}
+		}()
 		for reacrows.Next() {
 			var reaction Reaction
 			if err := reacrows.Scan(
@@ -153,10 +166,14 @@ func (db *appdbimpl) GetConversation(userID string, chatID string, before string
 			message.Reacts = append(message.Reacts, reaction)
 		}
 		if err := reacrows.Err(); err != nil {
-			reacrows.Close()
+			if err2 := reacrows.Close(); err2 != nil {
+				log.Printf("error closing rows: %v", err2)
+			}
 			return Conversation{}, err
 		}
-		reacrows.Close()
+		if errclose := reacrows.Close(); errclose != nil {
+			log.Printf("error closing reacrows: %v", errclose)
+		}
 
 		convo.Messages = append(convo.Messages, message)
 	}

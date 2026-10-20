@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 )
 
 func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
@@ -37,7 +38,12 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 	if !errors.Is(err, nil) {
 		return nil, err
 	}
-	defer rows.Close()
+
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 
 	for rows.Next() {
 		var chat Chat
@@ -73,9 +79,6 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			if timestamp.Valid {
 				preview.Timestamp = timestamp.Time
 			}
-			if timestamp.Valid {
-				preview.Timestamp = timestamp.Time
-			}
 			if content.Valid {
 				preview.Content = &content.String
 			}
@@ -84,7 +87,7 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 			}
 			chat.MostRecentMsg = &preview
 		}
-		if chat.GroupOrChat != groupchat {
+		if !chat.GroupOrChat {
 			chat.Photo = ""
 		}
 
@@ -98,7 +101,9 @@ func (db *appdbimpl) GetMyConversations(userID string) ([]Chat, error) {
 		for membrows.Next() {
 			var member string
 			if err := membrows.Scan(&member); err != nil {
-				membrows.Close()
+				if err := membrows.Close(); err != nil {
+					log.Printf("error closing rows: %v", err)
+				}
 				return nil, err
 			}
 			chat.Members = append(chat.Members, member)

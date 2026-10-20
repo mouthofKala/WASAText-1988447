@@ -134,10 +134,6 @@ func run() error {
 		err = apiserver.Shutdown(ctx)
 		if err != nil {
 			logger.WithError(err).Warning("error during graceful shutdown of HTTP server, forcing closing of server")
-			err = apiserver.Close()
-			if err != nil {
-				// what?
-			}
 			if closeErr := apiserver.Close(); closeErr != nil {
 				logger.WithError(closeErr).Warning("error forcing closure of HTTP server")
 			}

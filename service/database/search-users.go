@@ -1,6 +1,9 @@
 package database
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 func (db *appdbimpl) SearchUsers(searchkey string, userID string) ([]User, error) {
 
@@ -13,7 +16,11 @@ func (db *appdbimpl) SearchUsers(searchkey string, userID string) ([]User, error
 	if !errors.Is(err, nil) {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if errclose := rows.Close(); errclose != nil {
+			log.Printf("error closing rows: %v", errclose)
+		}
+	}()
 
 	var userlist []User
 	for rows.Next() {
