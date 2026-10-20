@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
@@ -16,6 +17,12 @@ func (rt *_router) getMyProfile(
 	ctx reqcontext.RequestContext,
 ) {
 	user, err := rt.db.GetUserProfile(ctx.UserID)
+
+	if errors.Is(err, database.ErrUserNotFound) {
+		ctx.Logger.WithError(err).Error("user not found")
+		http.Error(w, database.NF, http.StatusNotFound)
+		return
+	}
 	if err != nil {
 		http.Error(w, database.ISE, http.StatusInternalServerError)
 		return
