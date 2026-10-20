@@ -324,7 +324,7 @@ paths:
         # '409': {$ref: "#/components/responses/Conflict"}
         '500': {$ref: "#/components/responses/InternalServerError"}
 
-  /chats/{chatId}:
+  /chats/{chatId}/members/me:
     parameters:
       - $ref: "#/components/parameters/chatId"
     delete:
