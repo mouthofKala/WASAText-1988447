@@ -340,7 +340,7 @@ export default{
                     <button @click="leave" class="leavebttn">Leave</button>
                 </template>
                 <template v-else>
-                    <button @click="leave"class="leavebttn">Leave</button>
+                    <button @click="leave" class="leavebttn">Leave</button>
                 </template>
             </div>
         </div>

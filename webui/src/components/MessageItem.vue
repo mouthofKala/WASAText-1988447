@@ -77,7 +77,7 @@ export default {
             <p v-if="message.fwdfrom" class="fwd">forwarded</p>
             <img v-if="message.photouri"
                 :src="(message.photouri ? `${$axios.defaults.baseURL}/${message.photouri.replace(/^\/+/,'')}` : null)"
-                 alt="msgphoto" />
+                alt="msgphoto" />
             <p v-if="message.content" class="msg-content">
                 {{ message.content }} 
             </p>
