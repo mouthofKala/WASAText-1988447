@@ -10,8 +10,10 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: #faf9ff;
+    /*
     background-image: url("./service/storage/data/wallpaper.png");
-    background-repeat: repeat-y;
+    background-repeat: repeat-y; */
 }
 .chat-header{
     flex-shrink: 0;

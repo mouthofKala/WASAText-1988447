@@ -4,8 +4,11 @@
     gap: 1rem;
     padding: 1rem;
     height:100%;
+    background-color: #faf9ff;
+    /*
     background-image: url("./service/storage/data/wallpaper.png");
     background-repeat: repeat-y;
+    */
 }
 .group-info{
     min-height:90px;
