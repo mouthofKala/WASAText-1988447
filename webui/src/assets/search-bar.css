@@ -1,0 +1,35 @@
+.search-bar{
+	position: relative;
+}
+.search-list{
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	max-height:33vh;
+	overflow-y: auto;
+	background: white;
+	border: 1px solid whitesmoke;
+	z-index: 10;
+}
+
+.searchpic{
+	width:55px;
+	height:55px;
+    border-radius:50%;
+    object-fit: cover;
+    display: block;
+}
+
+.search-res{
+	display: block;
+	width: 100%;
+	padding: 10px;
+	text-align: left;
+	border: none;
+	background: white;
+}
+
+.search-res:hover{
+	background: whitesmoke;
+}

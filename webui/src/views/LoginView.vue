@@ -1,5 +1,6 @@
 
 <script>
+import "../assets/login-page.css";
 export default {
     data: function(){
         return {
@@ -41,9 +42,7 @@ export default {
             <p>Welcome! Please enter your (new or current) username to log in.</p>
             <form @submit.prevent="doLogin">
                 <div class="mb-3">
-                    <label for="username" class="form-label"> username</label>
                     <input
-                        id="username"
                         type="text"
                         class="form-control"
                         v-model="username"
@@ -52,8 +51,8 @@ export default {
                 </div>
                 <button
                     type="submit"
-                    class="btn btn-primary w-100"
-                    :disabled="loading||!username"
+                    class="buttn"
+                    :disabled="loading||!username.trim()"
                 >
                 {{ loading ? "logging in..." : "login"}}
                 </button>
@@ -66,29 +65,3 @@ export default {
         </div>
     </div>    
 </template>
-
-<style scoped>
-.login-page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.login-box {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-}
-
-.version {
-    position: absolute;
-    bottom: 1rem;
-    font-size: 0.8rem;
-    color: lightgrey
-}
-
-
-</style>

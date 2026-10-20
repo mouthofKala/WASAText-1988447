@@ -1,0 +1,12 @@
+.profile-page{
+    padding: 20px;
+    background-image: url("./service/storage/data/wallpaper.png");
+    background-repeat: repeat-y;
+}
+.profile-pic{
+    width: 250px;
+    height: 250px;
+    border-radius:50%;
+    object-fit: cover;
+    display: block;
+}

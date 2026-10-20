@@ -1,4 +1,5 @@
 <script>
+import "../assets/home-page.css";
 export default {
 	data: function() {
 		return {
@@ -92,7 +93,7 @@ export default {
 <template>
 	<div class="home-page">
 		<div class="home-header">
-			<h1 class="h2">Conversations</h1>
+			<h1 class="header-left">Conversations</h1>
 			<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
 			<button class="menu-button" @click="togglebuttns">⋮
 				<div v-if="showbuttns" class="smolmenu">
@@ -113,63 +114,3 @@ export default {
 		</div>
 	</div>
 </template>
-
-<style scoped>
-	.home-page{
-		height: 100vh;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.home-header{
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		position: relative;
-		padding: 0,75rem 1rem;
-	}
-
-	.chat-list{
-		flex: 1;
-		overflow-y: auto;
-	}
-
-	.search-bar{
-		position: relative;
-	}
-
-	.menu-button{
-		flex-shrink: 0;
-	}
-	.smolmenu{
-		position: absolute;
-		top: 100%;
-		right: 1rem;
-		z-index:100;
-	}
-	.search-list{
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
-		max-height:33vh;
-		overflow-y: auto;
-		background: white;
-		border: 1px solid whitesmoke;
-		z-index: 10;
-	}
-
-	.search-res{
-		display: block;
-		width: 100%;
-		padding: 10px;
-		text-align: left;
-		border: none;
-		background: white;
-	}
-
-	.search-res:hover{
-		background: whitesmoke;
-	}
-</style>

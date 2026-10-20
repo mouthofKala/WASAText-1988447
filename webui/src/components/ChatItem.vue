@@ -33,7 +33,7 @@ export default {
 </script>
 
 <template>
-    <div class="chat-item border rounded p-3 mb-2" @click="getConversation">
+    <div class="chat-item" @click="getConversation">
         <img v-if="chat.grouporchat ? chat.photo : otheruser?.photo"
             alt="chat pfp"
             :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
@@ -60,29 +60,3 @@ export default {
         <p v-else></p>
     </div>
 </template>
-
-<style scoped>
-    .chat-item {
-        cursor:pointer;
-
-    }
-    .msg-prev{
-        display: block;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .item-photo{
-        height:55px;
-        width:55px;
-        border-radius:50%;
-        object-fit: cover;
-        display: block;
-        flex-shrink: 0;
-        overflow: hidden;
-        border:none;
-        padding:0;
-
-    }
-</style>

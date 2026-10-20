@@ -1,0 +1,13 @@
+.profile-buttn{
+    width: 45px;
+    height:45px;
+    border-radius:50%;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+.profile-buttn img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+}

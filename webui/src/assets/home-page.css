@@ -1,0 +1,77 @@
+.home-page{
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+    background-image: url("./service/storage/data/wallpaper.png");
+    background-repeat: repeat-y;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+/*
+.header-left{
+
+}
+*/
+
+.home-header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	position: relative;
+	padding: 0,75rem 1rem;
+	border-radius: 8px;
+	/*
+	border-color: #9574c5;
+	background-color: #9574c5;
+	box-shadow: 100% 100% 100% #9574c5 inset; 
+	*/
+}
+
+.chat-list{
+	flex: 1;
+	overflow-y: auto;
+	padding-top: 30px;
+}
+
+.search-bar{
+	position: relative;
+}
+
+.menu-button{
+	flex-shrink: 0;
+}
+.smolmenu{
+	position: absolute;
+	top: 100%;
+	right: 1rem;
+	z-index:100;
+}
+.search-list{
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	max-height:33vh;
+	overflow-y: auto;
+	background: white;
+	border: 1px solid whitesmoke;
+	z-index: 10;
+}
+
+.search-res{
+	display: block;
+	width: 100%;
+	padding: 10px;
+	text-align: left;
+	border: none;
+	background: white;
+}
+
+.search-res:hover{
+	background: whitesmoke;
+}
+
+.logout-buttn{
+	
+}

@@ -1,0 +1,120 @@
+.chat-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+.chat-page{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: url("./service/storage/data/wallpaper.png");
+    background-repeat: repeat-y;
+}
+.chat-header{
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 8px;
+}
+.chat-profile-pic
+.message-list{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border-bottom-style: solid gainsboro
+}
+.chat-profile-pic{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.msg-composer{
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+}
+.msg-composer input{
+    flex: 1;
+}
+.fwdable-list{
+    padding:12px;
+    border: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-button{
+    background-color: blueviolet;
+    text-decoration-color:white;
+}
+
+.menuuu{
+    position:absolute;
+    top:100%;
+    right:8px;
+    z-index:10;
+    display: flex;
+    border: 1px solid grey;
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    flex-direction: column;
+}
+
+.reply-prev{
+    border-left: 3px solid gray;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+}
+.reply-prev img{
+    padding: 8px 12px;
+}
+.reply-prev p {
+    margin: 4px 0 0;
+}
+
+.chat-title{
+    background: transparent;
+}
+
+
+.img-prev{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+.img-prev img{
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain;
+    
+}
+
+.msg-composer button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fallback-pic{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.leavebttn{
+    background: red;
+    text-decoration-color: white;
+}

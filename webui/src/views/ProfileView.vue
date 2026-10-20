@@ -192,16 +192,3 @@ export default{
 
     </div>
 </template>
-
-<style scoped>
-.profile-page{
-    padding: 20px;
-}
-.profile-pic{
-    width: 250px;
-    height: 250px;
-    border-radius:50%;
-    object-fit: cover;
-    display: block;
-}
-</style>
