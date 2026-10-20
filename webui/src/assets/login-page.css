@@ -5,7 +5,8 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    background-image: url("/service/storage/data/wallpaper.png");
+/*    background-image: url("/service/storage/data/wallpaper.png");
+    background-color: #ede9ff; */
     background-repeat: repeat-y;
     font-family: 'Courier New', Courier, monospace;
 }
