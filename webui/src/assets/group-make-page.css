@@ -95,7 +95,7 @@
     margin-left: auto;
     flex-shrink: 0;
 }
-@media (max0width: 600px){
+@media (max-width: 600px){
     .members-n-added{
         grid-template-columns: 1fr 1fr;
         gap: 0.4rem;
