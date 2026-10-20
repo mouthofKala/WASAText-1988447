@@ -2,8 +2,10 @@
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
-    background-image: url("./service/storage/data/wallpaper.png");
-    background-repeat: repeat-y;
+    /* background-image: url("./service/storage/data/wallpaper.png");
+	background-repeat: repeat-y;
+	*/
+	background-color: #ede9ff;
 	font-family: 'Courier New', Courier, monospace;
 }
 

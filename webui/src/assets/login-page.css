@@ -6,8 +6,10 @@
     justify-content: center;
     position: relative;
 /*    background-image: url("/service/storage/data/wallpaper.png");
-    background-color: #ede9ff; */
     background-repeat: repeat-y;
+*/
+    background-color: #ede9ff;
+    
     font-family: 'Courier New', Courier, monospace;
 }
 
