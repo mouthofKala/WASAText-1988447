@@ -5,8 +5,9 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    background-image: url("./service/storage/data/wallpaper.png");
+    background-image: url("/service/storage/data/wallpaper.png");
     background-repeat: repeat-y;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 .login-box {
@@ -19,9 +20,10 @@
     border-radius: 8px;
     background-color: blueviolet;
     border: none;
-    font-family: 'Courier New', Courier, monospace;
     color: white;
     cursor: pointer;
+    width:100%;
+    justify-content: center;
 }
 
 .version {
