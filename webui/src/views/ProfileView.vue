@@ -163,7 +163,7 @@ export default{
         <ErrorMsg v-if="errormsg" :msg="errormsg" />
         <LoadingSpinner v-if="loading" />
 
-        <div v-else-if="profile">
+        <div v-else-if="profile" class="profilediv">
             <img
                 v-if="imgPrev || profile.photo"
                 :src="imgPrev || (profile.photo ? `${$axios.defaults.baseURL}/${profile.photo.replace(/^\/+/,'')}` : null)"

@@ -121,7 +121,7 @@ export default {
 <template>
     <div class="group-make-page">
         <div class="group-info">
-            <button @click="this.$router.push('/chats')">↩</button>
+            <button @click="this.$router.push('/chats')" class="back">↩</button>
             <label class="photo-picker">
                 <img v-if="photoPreview" :src="photoPreview" class="photo-picker img" @click="selectPhoto" />
                 <span v-else>＋</span>

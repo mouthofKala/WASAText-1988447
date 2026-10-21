@@ -1,6 +1,7 @@
 .profile-page{
     padding: 20px;
     background-color: #faf9ff;
+    align-items: center;
     /*
     background-image: url("./service/storage/data/wallpaper.png");
     background-repeat: repeat-y;

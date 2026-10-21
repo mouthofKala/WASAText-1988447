@@ -10,6 +10,10 @@
     background-repeat: repeat-y;
     */
 }
+.back{
+    background-color: #8f4ecb;
+    color: white;
+}
 .group-info{
     min-height:90px;
     height:33vh;
@@ -38,7 +42,7 @@
     min-width: 0;
     padding: 0.7rem;
     border: none;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #efeef9;
     font-size: 1.1rem;
 }
 .create-button{
