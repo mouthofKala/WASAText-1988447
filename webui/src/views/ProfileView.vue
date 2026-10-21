@@ -159,7 +159,7 @@ export default{
 
 <template>
     <div class="profile-page">
-        <button @click="this.$router.back()">↩</button>
+        <button class="back" @click="this.$router.back()">↩</button>
 
         <ErrorMsg v-if="errormsg" :msg="errormsg" />
         <LoadingSpinner v-if="loading" />
@@ -172,8 +172,8 @@ export default{
                 class="profile-pic" />
             <input ref="photoInput" type="file" accept="image/*" hidden @change="selectPhoto"/>
             <template v-if="profileType==='mine'||profileType==='group'">
-                <button type="button" @click="$refs.photoInput.click()">choose photo</button>
-                <button type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
+                <button class="botton" type="button" @click="$refs.photoInput.click()">choose photo</button>
+                <button class="botton" type="button" @click="newPhotoSave" :disabled="!newPhoto ||savingPhoto">
                     {{ savingPhoto ? 'saving...' : 'save photo' }}
                 </button>
             </template>
@@ -186,7 +186,7 @@ export default{
             </h2>
             <template v-if="profileType==='mine'||profileType==='group'">
                 <input v-model="newName" />
-                <button @click="newNameSave">update username</button>
+                <button class="botton" @click="newNameSave">update username</button>
             </template>
 
         </div>

@@ -57,6 +57,10 @@
     text-decoration-color:white;
 }
 
+.addbuttn{
+    background-color: #b187d8;
+    color: white;
+}
 
 .menuuu{
     position:absolute;
@@ -66,8 +70,6 @@
     display: flex;
     border-radius: 8px;
     padding: 8px;
-    background-color: #b187d8;
-    color: white;
     flex-direction: column;
 }
 

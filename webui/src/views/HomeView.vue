@@ -97,7 +97,7 @@ export default {
 			<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
 			<button class="menu-button" @click="togglebuttns">⋮
 				<div v-if="showbuttns" class="smolmenu">
-					<button @click="gomakegroupview">New group</button>
+					<button @click="gomakegroupview" class="groupbuttn">New group</button>
 					<button @click="logout" class="logout-buttn">Log out</button>
 				</div>
 			</button>

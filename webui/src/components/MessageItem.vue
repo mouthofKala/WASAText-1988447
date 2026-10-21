@@ -90,17 +90,17 @@ export default {
         </div>
         <div v-if="showMenu" class="menuuu">
             <template v-if="!myReac">
-                <button @click="react('❤️')">❤️</button>
-                <button @click="react('👍')">👍</button>
-                <button @click="react('😂')">😂</button>
-                <button @click="react('😭')">😭</button>
+                <button @click="react('❤️')" class="buttn">❤️</button>
+                <button @click="react('👍')" class="buttn">👍</button>
+                <button @click="react('😂')" class="buttn">😂</button>
+                <button @click="react('😭')" class="buttn">😭</button>
             </template>
             <button v-else @click="unreact">
                 remove comment
             </button>
-            <button @click="reply">↩ Reply</button>
-            <button @click="forward">forward</button>
-            <button v-if="isMyMsg" @click="delmsg">delete</button>
+            <button @click="reply" class="buttn">↩ Reply</button>
+            <button @click="forward" class="buttn">forward</button>
+            <button v-if="isMyMsg" @click="delmsg" class="buttn">delete</button>
         </div>
     </div>
 </template>

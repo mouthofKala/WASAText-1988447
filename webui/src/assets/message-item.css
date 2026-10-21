@@ -4,11 +4,12 @@
     width: auto;
     height: auto;
     display: block;
-    background-color: #b198cf;
+    background-color: #e6daf5;
+    margin-bottom: 10px;
 }
 .sender-pfp{
-    max-width:50px;
-    max-height:50px;
+    max-width:60px;
+    max-height:60px;
     border-radius:50%;
     object-fit:cover;
     display:inline-block;
@@ -28,6 +29,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px 12px;
+    background-color: #ece8f2;
 }
 .reply img{
     padding:8px 12px;
@@ -48,7 +50,13 @@
     object-fit: contain;
 }
 
-.menuu{
+.menuu, .buttn{
     background-color: #b187d8;
     color: white;
+}
+
+
+.all-msg{
+    border: none;
+    background-color: #e6daf5;
 }

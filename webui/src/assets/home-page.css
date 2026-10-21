@@ -53,7 +53,9 @@
 }
 
 
-
+.groupbuttn{
+	background-color: rgb(212, 198, 225);
+}
 .logout-buttn{
 	background-color: #8f4ecb;
 	color: white;

@@ -14,3 +14,16 @@
     object-fit: cover;
     display: block;
 }
+.back{
+    background-color: rgb(172, 126, 214);
+    color: white;
+}
+
+.botton{
+    background-color: rgb(211, 185, 236);
+}
+
+.profilediv{
+    align-items: center;
+    align-content: center;
+}

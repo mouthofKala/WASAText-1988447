@@ -336,7 +336,7 @@ export default{
 
             <div v-if="showbuttns" class="menuuu">
                 <template v-if="convo?.chat.grouporchat">
-                    <button @click="addMembers">Add users</button>
+                    <button class="addbuttn" @click="addMembers">Add users</button>
                     <button @click="leave" class="leavebttn">Leave</button>
                 </template>
                 <template v-else>
