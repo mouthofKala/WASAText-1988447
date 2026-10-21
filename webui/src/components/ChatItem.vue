@@ -1,4 +1,5 @@
 <script>
+import "../assets/chat-item.css";
 export default {
     props: {
         chat: {

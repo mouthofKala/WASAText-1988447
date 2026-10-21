@@ -1,4 +1,5 @@
 <script>
+import "../assets/search-bar.css";
 export default{
 	props:{selectmode:{type: Boolean, default: false,},},
 	emits: ['select-user'],

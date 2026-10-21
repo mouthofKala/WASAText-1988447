@@ -1,4 +1,5 @@
 <script>
+import "../assets/profile-page.css";
 export default{
     data() {
         return{

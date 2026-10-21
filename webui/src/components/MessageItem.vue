@@ -1,4 +1,5 @@
 <script>
+import "../assets/message-item.css";
 export default {
     data(){
             return{

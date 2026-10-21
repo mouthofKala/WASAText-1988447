@@ -1,4 +1,5 @@
 <script>
+import "../assets/group-make-page.css";
 export default {
     data: function(){
         return {
