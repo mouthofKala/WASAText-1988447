@@ -1,7 +1,7 @@
 .add-or-fwd{
     position: fixed;
-    top:50%;
-    left:50%;
+    inset: 0;
+    margin: auto;
     max-height:80vh;
     padding: 24px;
     box-sizing: border-box;
