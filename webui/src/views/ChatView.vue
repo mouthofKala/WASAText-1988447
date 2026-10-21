@@ -391,7 +391,7 @@ export default{
             <select v-model="targetchatid">
                 <option value="" disabled>select a chat</option>
                 <option v-for="chat in myChats" :key="chat.chatid" :value="chat.chatid">
-                    {{ chat.grouporchat ? chat.chatname : "SHOULD DISPLAY NAME OF OTHER USER"}}
+                    {{ chat.grouporchat ? chat.chatname : "other user"}}
                 </option>
             </select>
             <button @click="cancelFwd">cancel</button>

@@ -91,17 +91,17 @@ export default {
         </div>
         <div v-if="showMenu" class="msgmenuuu" @click.stop>
             <template v-if="!myReac">
-                <button @click="react('❤️')" class="buttn">❤️</button>
-                <button @click="react('👍')" class="buttn">👍</button>
-                <button @click="react('😂')" class="buttn">😂</button>
-                <button @click="react('😭')" class="buttn">😭</button>
+                <button @click="react('❤️')" class="buttnn">❤️</button>
+                <button @click="react('👍')" class="buttnn">👍</button>
+                <button @click="react('😂')" class="buttnn">😂</button>
+                <button @click="react('😭')" class="buttnn">😭</button>
             </template>
-            <button v-else @click="unreact">
+            <button v-else @click="unreact" class="buttnn">
                 remove comment
             </button>
             <button @click="reply" class="buttn">↩ reply</button>
             <button @click="forward" class="buttn">forward</button>
-            <button v-if="isMyMsg" @click="delmsg" class="buttn">delete</button>
+            <button v-if="isMyMsg" @click="delmsg" class="buttnn">delete</button>
         </div>
     </div>
 </template>
