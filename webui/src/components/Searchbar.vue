@@ -88,8 +88,8 @@ export default{
     <div class="search-bar">
         <input v-model="searchkey" type="text" class="form-control" placeholder="search users...">
         <div v-if="searchkey.trim()" class="search-list">
-            <button v-for="user in searchlist" :key="user.userid" class="item" @click="selectuser(user)">
-				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="pfp" @error="$event.target.style.display='none'"  class="item-pic"/>
+            <button v-for="user in searchlist" :key="user.userid" class="item" v-on:click="selectuser(user)">
+				<img v-if="user.photo" :src="`${this.$axios.defaults.baseURL}/${user.photo}`" alt="pfp" v-on:error="$event.target.style.display='none'"  class="item-pic"/>
                 <p class="item-text">{{ user.username }}</p>
 			</button>
         </div>

@@ -402,7 +402,7 @@ export default{
             <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
             <button type="button" @click="chooseImg" aria-label="attach img">📷</button>
             <input v-model="msgtext" type="text" placeholder="write a message..." maxlength="20000"/>
-            <button type="submit" disabled="!msgtext.trim() && !imgFile" aria-label="send msg">➤</button>
+            <button type="submit" :disabled="!msgtext.trim() && !imgFile" aria-label="send msg">➤</button>
             <!--disable if msg has img and length exceeds ... chars TBD-->
         </form>
         
