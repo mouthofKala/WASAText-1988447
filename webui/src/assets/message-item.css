@@ -6,6 +6,7 @@
     display: block;
     background-color: #e6daf5;
     margin-bottom: 10px;
+    position: relative;
 }
 .sender-pfp{
     max-width:60px;
@@ -56,7 +57,10 @@
     object-fit: contain;
 }
 
-.menuu, .buttn{
+.menuuu, .buttn{
+    position: absolute;
+    z-index: 10;
+    top: 100%;
     background-color: #b187d8;
     color: white;
 }
