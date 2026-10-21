@@ -57,10 +57,17 @@
     object-fit: contain;
 }
 
-.menuuu, .buttn{
+.menuuu{
     position: absolute;
     z-index: 10;
     top: 100%;
+    left: 0;
+    width: max-content;
+    padding: 8px;
+
+}
+
+.buttn{
     background-color: #b187d8;
     color: white;
 }
