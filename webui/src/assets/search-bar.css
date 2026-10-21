@@ -14,9 +14,10 @@
 	left: 0;
 	right: 0;
 	max-height:33vh;
+	max-width: 180px;
 	overflow-y: auto;
 	background-color:#faf9ff;
-	border: none;
+	border: 1px solid #efeef9;
 	z-index: 10;
 }
 
@@ -36,7 +37,7 @@
 
 .item{
 	display: flex;
-	width: 100%;
+	max-width: 180px;
 	padding: 10px;
 	text-align: left;
 	align-items: center;

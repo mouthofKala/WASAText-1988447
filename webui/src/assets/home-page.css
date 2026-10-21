@@ -22,7 +22,7 @@
 	gap: 1rem;
 	position: relative;
 	padding: 0,75rem 1rem;
-	border-radius: 8px;
+	background-color: #efeef9;
 	/*
 	border-color: #9574c5;
 	background-color: #9574c5;
@@ -48,33 +48,12 @@
 	top: 100%;
 	right: 1rem;
 	z-index:100;
-}
-.search-list{
-	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
-	max-height:33vh;
-	overflow-y: auto;
-	background: white;
-	border: 1px solid whitesmoke;
-	z-index: 10;
-}
-
-.search-res{
 	display: block;
-	width: 100%;
-	padding: 10px;
-	text-align: left;
-	border: none;
-	background: white;
 }
 
-.search-res:hover{
-	background: whitesmoke;
-}
 
 
 .logout-buttn{
-	
+	background-color: #8f4ecb;
+	color: white;
 }
