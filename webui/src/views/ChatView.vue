@@ -1,6 +1,7 @@
 
 <script>
 import "../assets/chat-page.css";
+import "../assets/message-item.css";
 export default{
     data: function(){
         return{
