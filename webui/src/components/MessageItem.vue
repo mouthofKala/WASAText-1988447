@@ -66,7 +66,8 @@ export default {
             :src="`${$axios.defaults.baseURL}/${senderprofile.photo.replace(/^\/+/,'')}`"
             alt="sender pfp"
             class="sender-pfp" />
-            {{ message.username }}:</button>
+            <p>{{ message.username }}:</p>
+            </button>
         <button class="all-msg" @click="actions">
             <div v-if="message.replyto" class="reply">
                 <template v-if="message.repliedMsg">

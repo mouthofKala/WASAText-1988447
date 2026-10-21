@@ -46,7 +46,7 @@
 }
 .fwdable-list{
     padding:12px;
-    border: 1px solid lightgray;
+    border: 1px solid rgb(201, 195, 207);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -74,7 +74,7 @@
 }
 
 .reply-prev{
-    border-left: 3px solid gray;
+    border-left: 3px solid rgb(177, 163, 190);
     align-items: center;
     display: flex;
     justify-content: space-between;
@@ -110,6 +110,11 @@
 .msg-composer button:disabled{
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.buttn{
+    border: none;
+    background-color: rgb(155, 106, 202);
 }
 
 .fallback-pic{

@@ -15,8 +15,8 @@
 }
 .img-box{
     display: flex;
-    height:55px;
-    width:55px;   
+    flex-direction: column;
+    max-width: 100px;
     border-radius:50%;
     object-fit: cover;
     overflow: hidden;   
@@ -24,13 +24,15 @@
 
 .chat-box{
     display: flex;
+    align-items: center;
+    padding-left: 20px;
 }
+
 .msg-prev{
     display: block;
-    -webkit-line-clamp: 2;
     line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    padding-left: 20px;
 }
 
 .img-box img {

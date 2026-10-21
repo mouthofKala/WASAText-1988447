@@ -34,7 +34,7 @@ export default {
 </script>
 
 <template>
-    <div class="chat-item" @click="getConversation">
+    <div class="chat-item" >
         <div class="img-box">
             <img v-if="chat.grouporchat ? chat.photo : otheruser?.photo"
                 alt="chat pfp"
@@ -44,10 +44,10 @@ export default {
         </div>
         <!-- if (!$event.target.src.endsWith('/black.png')) -->
 
-        <div v-if="chat.mostrecentmsg" class="chat-box">
+        <div v-if="chat.mostrecentmsg" class="chat-box" @click="getConversation">
             <h5 class="chatname" v-if="chat.grouporchat">{{ chat.chatname }}</h5>
             <h5 class="chatname" v-else>{{ otheruser?.username || 'user loading...'}}</h5>  
-            <p class="mb-1">
+            <p class="usrname">
                 {{ chat.mostrecentmsg.username }}:
             </p>
             <p v-if="chat.mostrecentmsg.content && !chat.mostrecentmsg.photo" class="msg-prev">

@@ -43,6 +43,8 @@
 
 .menu-button{
 	flex-shrink: 0;
+	background-color: #8f4ecb;
+	color: white;
 }
 .smolmenu{
 	position: absolute;

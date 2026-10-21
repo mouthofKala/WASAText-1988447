@@ -20,6 +20,12 @@
     width: 30px;
     height: 30px;
     object-fit: cover;
+
+}
+
+.msg-user{
+    border: none;
+    background-color: #e6daf5;
 }
 .reply{
     border-left: 3px solid #b198cf ;
@@ -45,8 +51,8 @@
     display: block;
     width: auto;
     height: auto;
-    max-height: 150px;
-    max-width: 150px;
+    max-height: 250px;
+    max-width: 250px;
     object-fit: contain;
 }
 
