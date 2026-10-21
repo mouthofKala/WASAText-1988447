@@ -99,7 +99,7 @@ export default {
             <button v-else @click="unreact">
                 remove comment
             </button>
-            <button @click="reply" class="buttn">↩ Reply</button>
+            <button @click="reply" class="buttn">↩ reply</button>
             <button @click="forward" class="buttn">forward</button>
             <button v-if="isMyMsg" @click="delmsg" class="buttn">delete</button>
         </div>

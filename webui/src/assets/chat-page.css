@@ -132,6 +132,10 @@
     border: none;
     background-color: rgb(155, 106, 202);
 }
+.buttn.smol{
+    width: 60px;
+    height:60px;
+}
 
 .fallback-pic{
     display: inline-flex;

@@ -64,7 +64,7 @@
     left: 0;
     width: max-content;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: max-content;
     background-color: #b187d8;
     color: white;
