@@ -60,7 +60,7 @@ export default {
 </script>
 
 <template>
-    <div class="message-item">
+    <div class="message-item" @click="actions">
         <button class="msg-user" @click="openProfile">
             <img v-if="senderprofile?.photo"
             :src="`${$axios.defaults.baseURL}/${senderprofile.photo.replace(/^\/+/,'')}`"
@@ -68,7 +68,7 @@ export default {
             class="sender-pfp" />
             <p>{{ message.username }}:</p>
             </button>
-        <button class="all-msg" @click="actions">
+        <button class="all-msg">
             <div v-if="message.replyto" class="reply">
                 <template v-if="message.repliedMsg">
                     replying to {{ message.repliedMsg.username }}:
@@ -89,7 +89,7 @@ export default {
         <div v-if="message.reactions?.length" class="reacs">
             <span v-for="reac in message.reactions" :key="reac.reactionid">{{ reac.emoji }}</span>
         </div>
-        <div v-if="showMenu" class="menuuu">
+        <div v-if="showMenu" class="msgmenuuu" @click.stop>
             <template v-if="!myReac">
                 <button @click="react('❤️')" class="buttn">❤️</button>
                 <button @click="react('👍')" class="buttn">👍</button>

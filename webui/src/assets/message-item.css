@@ -1,6 +1,6 @@
 .message-item{
     max-width: 100%;
-    max-height: 400px;
+    max-width:100%;
     width: auto;
     height: auto;
     display: block;
@@ -57,23 +57,40 @@
     object-fit: contain;
 }
 
-.menuuu{
+.msgmenuuu{
     position: absolute;
-    z-index: 10;
+    z-index: 20;
     top: 100%;
     left: 0;
     width: max-content;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    background-color: #b187d8;
+    color: white;
     padding: 8px;
+    max-width: calc(100vw - 24px);
 
 }
+.message-actions-menu button {
+    border: none;
+    padding: 6px 10px;
+    background-color: #b187d8;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+
 
 .buttn{
     background-color: #b187d8;
     color: white;
 }
-
+.message-item, .all-msg{box-sizing: border-box;}
 
 .all-msg{
     border: none;
     background-color: #e6daf5;
+    max-width: 100%;
 }

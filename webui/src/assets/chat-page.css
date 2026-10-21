@@ -40,9 +40,19 @@
     display: flex;
     gap: 8px;
     padding: 10px;
+    width:100%;
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: center;
 }
-.msg-composer input{
-    flex: 1;
+.msg-composer input[type="text"]{
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.msg-composer button{
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 .fwdable-list{
     padding:12px;
@@ -62,7 +72,7 @@
     color: white;
 }
 
-.menuuu{
+.chatmenuuu{
     position:absolute;
     top:100%;
     right:8px;
@@ -71,6 +81,12 @@
     border-radius: 8px;
     padding: 8px;
     flex-direction: column;
+    background-color: #b187d8;
+}
+.chat-settings-menu button {
+    border: none;
+    color: white;
+    cursor: pointer;
 }
 
 .reply-prev{

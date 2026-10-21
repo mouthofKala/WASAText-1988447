@@ -335,7 +335,7 @@ export default{
 
             <button class="settings-button" @click="togglebuttns">⋮</button>
 
-            <div v-if="showbuttns" class="menuuu">
+            <div v-if="showbuttns" class="chatmenuuu">
                 <template v-if="convo?.chat.grouporchat">
                     <button class="addbuttn" @click="addMembers">Add users</button>
                     <button @click="leave" class="leavebttn">Leave</button>
