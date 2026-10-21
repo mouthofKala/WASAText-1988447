@@ -64,7 +64,7 @@
 
 .settings-button{
     background-color: blueviolet;
-    text-decoration-color:white;
+    color:white;
 }
 
 .addbuttn{
@@ -81,7 +81,7 @@
     border-radius: 8px;
     padding: 8px;
     flex-direction: column;
-    background-color: #b187d8;
+    background-color: transparent;
 }
 .chat-settings-menu button {
     border: none;
@@ -128,13 +128,12 @@
     cursor: not-allowed;
 }
 
-.buttn{
-    border: none;
-    background-color: rgb(155, 106, 202);
-}
-.buttn.smol{
+
+.smol{
     width: 30px;
     height:30px;
+    border: 1px solid rgb(162, 136, 186);
+    background-color: rgb(183, 156, 209);
 }
 
 .fallback-pic{

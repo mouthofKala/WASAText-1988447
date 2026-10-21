@@ -1,4 +1,5 @@
 <script>
+import '../assets/add-fwd.css';
 export default{
     props:{
         mode:{type:String,required:true,validator:value=>["add","fwd"].includes(value),},

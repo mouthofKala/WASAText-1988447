@@ -226,6 +226,8 @@ export default{
                 this.errormsg=e.toString();
                 this.msgtext="";
                 this.replyingto=null;  
+            } finally{
+                this.imgPrev=null;
             }
         },
         async startFwd(message){
@@ -378,12 +380,12 @@ export default{
             <!--in case msg is deleted/not found-->
             <strong> Replying to {{ replyingto.username }}</strong>
             <p>{{ replyingto.content }}</p> <!-- shorten it!-->
-            <button type="button" @click="cancel" class="buttn">✕</button>
+            <button type="button" @click="cancel" class="smol">✕</button>
         </div>
 
         <div v-if="imgPrev" class="img-prev">
             <img :src="imgPrev" alt="msgphoto" />
-            <button type="button" @click="removeImg" class="buttn">✕</button>
+            <button type="button" @click="removeImg" class="smol">✕</button>
         </div>
 
         <div v-if="fwding" class="fwdable-list">
@@ -401,9 +403,9 @@ export default{
         </div>
         <form class="msg-composer" @submit.prevent="sendMessage">
             <input ref="imageInput" type="file" accept="image/*" hidden @change="selectImg" />
-            <button type="button" @click="chooseImg" aria-label="attach img" class="buttn smol">📷</button>
+            <button type="button" @click="chooseImg" aria-label="attach img" class="smol">📷</button>
             <input v-model="msgtext" type="text" placeholder="write a message..." maxlength="20000"/>
-            <button type="submit" :disabled="!msgtext.trim() && !imgFile" aria-label="send msg" class="buttn smol">➤</button>
+            <button type="submit" :disabled="!msgtext.trim() && !imgFile" aria-label="send msg" class="smol">➤</button>
             <!--disable if msg has img and length exceeds ... chars TBD-->
         </form>
         
