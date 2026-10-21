@@ -40,27 +40,33 @@ export default {
                 alt="chat pfp"
                 :src="`${$axios.defaults.baseURL}/${(chat.grouporchat ? chat.photo : otheruser.photo).replace(/^\/+/, '')}`"
                 class="item-photo"
-                @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />            
+                @error="$event.target.src = `${$axios.defaults.baseURL}/storage/data/pfp/black.png`" />   
+            <h5 class="chatname" v-if="chat.grouporchat">{{ chat.chatname }}</h5>
+            <h5 class="chatname" v-else>{{ otheruser?.username || 'user loading...'}}</h5>                                   
         </div>
         <!-- if (!$event.target.src.endsWith('/black.png')) -->
 
         <div v-if="chat.mostrecentmsg" class="chat-box" @click="getConversation">
-            <h5 class="chatname" v-if="chat.grouporchat">{{ chat.chatname }}</h5>
-            <h5 class="chatname" v-else>{{ otheruser?.username || 'user loading...'}}</h5>  
-            <p class="usrname">
-                {{ chat.mostrecentmsg.username }}:
-            </p>
-            <p v-if="chat.mostrecentmsg.content && !chat.mostrecentmsg.photo" class="msg-prev">
-                {{ chat.mostrecentmsg.content || 'msg loading...'}}
-            </p>
-            <p v-else-if="chat.mostrecentmsg.photo && !chat.mostrecentmsg.content">
-                📷 Photo
-            </p>
-            <p v-else-if="chat.mostrecentmsg.content && chat.mostrecentmsg.photo" class="msg-prev">
-                📷 {{ chat.mostrecentmsg.content || 'msg loading...'}}
-            </p>
-            <p v-else>error with message preview...</p>
+            <div class="userinf">
+                <p class="usrname">
+                    {{ chat.mostrecentmsg.username }}:
+                </p>
+            </div>
+            <div class="mesg">
+                <p v-if="chat.mostrecentmsg.content && !chat.mostrecentmsg.photo" class="msg-prev">
+                    {{ chat.mostrecentmsg.content || 'msg loading...'}}
+                </p>
+                <p v-else-if="chat.mostrecentmsg.photo && !chat.mostrecentmsg.content">
+                    📷 Photo
+                </p>
+                <p v-else-if="chat.mostrecentmsg.content && chat.mostrecentmsg.photo" class="msg-prev">
+                    📷 {{ chat.mostrecentmsg.content || 'msg loading...'}}
+                </p>
+                <p v-else>error with message preview...</p>
+            </div>
         </div>
-        <p v-else></p>
+        <div v-else>
+
+        </div>
     </div>
 </template>

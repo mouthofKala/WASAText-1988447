@@ -125,9 +125,9 @@ export default{
         <p v-if="mode==='fwd' && availableChats.length===0">
             no available chats to fwd to!
         </p>
-        <button @click="cancel">✕</button>
+        <button @click="cancel" class="bu">✕</button>
         <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-        <button @click="addOrFwd" :disabled="loading||selected.length===0||(mode==='add' && !isgroup)">
+        <button @click="addOrFwd" :disabled="loading||selected.length===0||(mode==='add' && !isgroup)" class="bu">
             {{ loading ? 'working...' : mode==="add" ? "add" : "forward" }}
         </button>
     </template>

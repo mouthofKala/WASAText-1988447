@@ -1,6 +1,9 @@
 .chat-item {
     cursor:pointer;
     display: flex;
+    align-items: center;
+    gap: 16px;
+    box-sizing: border-box;
     padding-left: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid #decfed;
@@ -23,7 +26,30 @@
 .chat-box{
     display: flex;
     align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+}
+
+.userinf{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 120px;
+}
+.chatname, .usrname{
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+.chatname{font-size: 1rem;}
+.usrname{font-size: 0.85rem;}
+
+.mesg{
+    flex:1;
+    min-width: 0;
     padding-left: 20px;
+    text-align: left;
 }
 
 .msg-prev{
@@ -39,5 +65,4 @@
     object-fit: cover;
     border-radius: 50%;
     display: block;
-    flex-shrink: 0;
 }
