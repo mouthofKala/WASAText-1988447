@@ -4,10 +4,11 @@
     width: auto;
     height: auto;
     display: block;
+    background-color: #b198cf;
 }
 .sender-pfp{
-    width:30px;
-    height:30px;
+    max-width:50px;
+    max-height:50px;
     border-radius:50%;
     object-fit:cover;
     display:inline-block;
@@ -20,7 +21,7 @@
     object-fit: cover;
 }
 .reply{
-    border-left: 3px solid gray;
+    border-left: 3px solid #b198cf ;
     margin-bottom: 8px;
     align-items: center;
     display: flex;
@@ -28,10 +29,26 @@
     gap: 12px;
     padding: 8px 12px;
 }
-.reply img{padding:8px 12px;}
+.reply img{
+    padding:8px 12px;
+}
 .reply p{
     margin: 4px 0 0;
     opacity: 0.8;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.all-msg img{
+    display: block;
+    width: auto;
+    height: auto;
+    max-height: 150px;
+    max-width: 150px;
+    object-fit: contain;
+}
+
+.menuu{
+    background-color: #b187d8;
+    color: white;
 }

@@ -57,16 +57,17 @@
     text-decoration-color:white;
 }
 
+
 .menuuu{
     position:absolute;
     top:100%;
     right:8px;
     z-index:10;
     display: flex;
-    border: 1px solid grey;
     border-radius: 8px;
     padding: 8px;
-    background: white;
+    background-color: #b187d8;
+    color: white;
     flex-direction: column;
 }
 
