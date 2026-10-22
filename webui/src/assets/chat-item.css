@@ -36,11 +36,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 120px;
+    min-width: 80px;
 }
-.chatname, .usrname{
+.chatname{
     margin: 0;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
 }
 .chatname{font-size: 1rem;}
 .usrname{font-size: 0.85rem;}
@@ -50,6 +50,8 @@
     min-width: 0;
     padding-left: 20px;
     text-align: left;
+    overflow-y: hidden;
+    max-height: 80px;
 }
 
 .msg-prev{

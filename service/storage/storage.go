@@ -27,6 +27,9 @@ func New(basePath string) *Storage {
 }
 
 func (s *Storage) ParseURI(data []byte, userID string) (string, error) {
+	if len(data) == 0 {
+		return "", database.ErrInvalidImage
+	}
 	_, format, err := image.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
 		return "", database.ErrInvalidImage

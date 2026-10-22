@@ -31,7 +31,7 @@ func (rt *_router) makeChatGroup(
 	}
 	request.Members = append(request.Members, ctx.UserID)
 
-	if request.Photo != nil && !request.GrouporChat {
+	if len(request.Photo) > 0 && !request.GrouporChat {
 		ctx.Logger.Error("bad req: requesting private chat but attaching a photo")
 		http.Error(w, database.BR, http.StatusBadRequest)
 		return
@@ -72,7 +72,7 @@ func (rt *_router) makeChatGroup(
 		return
 	}
 
-	if request.Photo != nil {
+	if len(request.Photo) > 0 {
 		p, err := rt.storage.ParseURI(request.Photo, chatID.String())
 		if err != nil {
 			ctx.Logger.WithError(err).Error("bad req: invalid image")
@@ -128,7 +128,7 @@ func (rt *_router) makeChatGroup(
 		return
 	}
 
-	if request.Photo != nil {
+	if len(request.Photo) > 0 {
 		_, err := rt.storage.SavePFP(request.Photo, chatID.String())
 		if errors.Is(err, database.ErrStorage) {
 			ctx.Logger.WithError(err).Error("error saving group picture")
