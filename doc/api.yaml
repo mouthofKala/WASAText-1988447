@@ -657,7 +657,7 @@ components:
           type: string
           pattern: '^[\s\S]+$'
           minLength: 1
-          maxLength: 20000
+          maxLength: 5000
           description: text contents of msg
         replyTo: 
           type: string
@@ -697,7 +697,7 @@ components:
           type: string
           pattern: '^[\s\S]+$'
           minLength: 1
-          maxLength: 20000
+          maxLength: 5000
           description: text caption for the message
         photo:
           type: string
@@ -873,7 +873,7 @@ components:
               type: string
               description: text contents of msg
               minLength: 1
-              maxLength: 20000
+              maxLength: 5000
               pattern: '^[\s\S]+$'
         - type: object
           description: img only msg option
@@ -929,7 +929,7 @@ components:
           type: string
           pattern: '^[\s\S]+$'
           minLength: 1
-          maxLength: 20000
+          maxLength: 5000
         contentType:
           type: string
           description: whether msg is text, photo or both
