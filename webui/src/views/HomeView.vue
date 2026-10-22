@@ -21,8 +21,7 @@ export default {
 			clearTimeout(this.searchTimeout);
 			this.searchTimeout=setTimeout(()=>{
 				this.searchUsers();
-			},300); // wrapped searchUsers with a timeout
-		},
+			},300);},
 		'$route.path'(newpath){if (newpath==='/chats'){this.getMyProfile();}},
 	},
 	methods: {
@@ -49,7 +48,6 @@ export default {
 			this.showbuttns = !this.showbuttns;
 		},
 		gomakegroupview(){
-			// might collide with chatid!! so, will go back and then push newgroup
 			this.$router.push("/newgroup"); 
 			
 		},
@@ -94,7 +92,7 @@ export default {
 	<div class="home-page">
 		<div class="home-header">
 			<h1 class="header-left">Conversations</h1>
-			<Searchbar /><!--...small defect: this setup does not search groups. will see later how to fix-->
+			<Searchbar /> <!--...small defect: this setup does not search groups.-->
 			<button class="menu-button" @click="togglebuttns">⋮
 				<div v-if="showbuttns" class="smolmenu">
 					<button @click="gomakegroupview" class="groupbuttn">New group</button>

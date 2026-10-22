@@ -121,9 +121,8 @@ export default{
         />
 
         <div v-if="replyingto" class="reply-prev">
-            <!--in case msg is deleted/not found-->
             <strong> Replying to {{ replyingto.username }}</strong>
-            <p>{{ replyingto.content }}</p> <!-- shorten it!-->
+            <p>{{ replyingto.content }}</p>
             <button type="button" @click="cancel" class="smol">✕</button>
         </div>
 
