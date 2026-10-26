@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: backend1
+    container_name: backend
     ports:
       - "3000:3000"
     volumes:
@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: frontend1
+    container_name: frontend
     ports:
       - "4173:80"
     depends_on:

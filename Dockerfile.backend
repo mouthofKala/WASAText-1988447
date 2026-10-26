@@ -7,7 +7,7 @@ RUN go mod download
 
 ### Build executables
 COPY . .
-RUN go build -mod=vendor -o /app/webapi ./cmd/webapi
+RUN go build -mod=mod -o /app/webapi ./cmd/webapi
 
 
 ### Create final container
