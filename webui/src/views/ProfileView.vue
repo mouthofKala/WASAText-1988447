@@ -22,7 +22,7 @@ export default{
 
     mounted(){
         this.getProfile();
-        this.refresh=setInterval(()=>{this.getProfile();},5000);
+        this.refresh=setInterval(()=>{if (!this.savingPhoto){this.getProfile();}},5000);
     },
     beforeUnmount(){
         clearInterval(this.refresh);

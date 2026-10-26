@@ -94,8 +94,8 @@ export default{
                     this.$refs.photoInput.value='';
                 }
             } catch(e){
-                this.errormsg=e.toString();
-                this.newPhoto=this.profile.photo;
+                this.errormsg=e.response?.data?.error || e.message ||e.toString();
+                this.newPhoto=null;
             } finally {
                 this.savingPhoto=false;
             }

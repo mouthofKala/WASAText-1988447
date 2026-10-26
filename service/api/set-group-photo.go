@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
@@ -30,7 +32,8 @@ func (rt *_router) setGroupPhoto(
 	}
 
 	// save newphotobytes to a uri
-	photoURI, err := rt.storage.SavePFP(newphotobytes, ChatID)
+	photoID := fmt.Sprintf("%s-%d", ChatID, time.Now().UnixNano())
+	photoURI, err := rt.storage.SavePFP(newphotobytes, photoID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error storing photo")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
@@ -38,6 +41,11 @@ func (rt *_router) setGroupPhoto(
 	}
 
 	oldphotoURI, err := rt.db.SetGroupPhoto(photoURI, ChatID, userID)
+	if err != nil {
+		if deleteErr := rt.storage.DeletePFP(photoURI); deleteErr != nil {
+			ctx.Logger.WithError(deleteErr).Error("error deleting failed photo upload")
+		}
+	}
 
 	if errors.Is(err, database.ErrNotaGroup) {
 		ctx.Logger.WithError(err).Error("can't change private chat pfps")
@@ -59,7 +67,7 @@ func (rt *_router) setGroupPhoto(
 
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error setting photo. rolling back...")
-		if err := rt.storage.DeletePFP(oldphotoURI); err != nil {
+		if err := rt.storage.DeletePFP(photoURI); err != nil {
 			ctx.Logger.WithError(err).Error("storage error during reaction to: setting photo 500 err")
 			http.Error(w, database.ISE, http.StatusInternalServerError)
 			return

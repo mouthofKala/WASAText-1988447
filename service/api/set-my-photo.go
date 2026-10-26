@@ -3,8 +3,10 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
@@ -26,7 +28,8 @@ func (rt *_router) setMyPhoto(
 	}
 
 	// save newphotobytes to a uri
-	photoURI, err := rt.storage.SavePFP(newphotobytes, ctx.UserID)
+	photoID := fmt.Sprintf("%s-%d", ctx.UserID, time.Now().UnixNano())
+	photoURI, err := rt.storage.SavePFP(newphotobytes, photoID)
 	if !errors.Is(err, nil) {
 		ctx.Logger.WithError(err).Error("error storing photo")
 		http.Error(w, database.ISE, http.StatusInternalServerError)
